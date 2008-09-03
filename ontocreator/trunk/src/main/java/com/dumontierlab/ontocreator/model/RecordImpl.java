@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class RecordImpl implements Record {
 
-	private final String id;
+	private String id;
 
 	private final Map<String, Field<?>> fields;
 
@@ -50,6 +50,9 @@ public class RecordImpl implements Record {
 
 	public void removeField(String fieldId) {
 		fields.remove(fieldId);
+	}
 
+	public void setId(String _id) {
+		id = _id;
 	}
 }
