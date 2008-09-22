@@ -11,5 +11,10 @@
   		<artifactId>api</artifactId>
   		<version>2.2.0</version>
   	</dependency>
+  	<dependency>
+  		<groupId>owlapi</groupId>
+  		<artifactId>apibinding</artifactId>
+  		<version>2.2.0</version>
+  	</dependency>
   </dependencies>
 </project>
