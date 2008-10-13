@@ -17,7 +17,7 @@ public class TabFileInputReaderImpl implements InputReader {
 		delimeter = _delimeter;
 	}
 
-	public RecordSet read(InputStream input) {
+	public RecordSet read(InputStream input, boolean isFirstRowHeader) {
 
 		RecordSetImpl rset = new RecordSetImpl("1");
 		RecordImpl newRecord;
@@ -28,14 +28,19 @@ public class TabFileInputReaderImpl implements InputReader {
 					input));
 
 			String newLine = breader.readLine();
-
+			String[] header = null;
+			if (isFirstRowHeader) {
+				header = newLine.split(delimeter);
+				newLine = breader.readLine();
+			}
 			while (newLine != null) {
 				recordFields = newLine.split(delimeter);
 
 				newRecord = new RecordImpl(recordFields[0]);
 
 				for (int i = 0; i < recordFields.length; i++) {
-					newRecord.addField(Integer.toString(i), recordFields[i]);
+					newRecord.addField(header != null ? header[i] : Integer
+							.toString(i), recordFields[i]);
 				}
 
 				rset.addRecord(newRecord);

@@ -6,5 +6,5 @@ import com.dumontierlab.ontocreator.model.RecordSet;
 
 public interface InputReader {
 
-	RecordSet read(InputStream input);
+	RecordSet read(InputStream input, boolean isFirstRowHeader);
 }

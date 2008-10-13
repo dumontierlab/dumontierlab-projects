@@ -60,6 +60,7 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 			addAxiom = new AddAxiom(ontology, axiom);
 			manager.applyChange(addAxiom);
 
+			fieldCounter = 0;
 			fieldIterator = r.getFields();
 			while (fieldIterator.hasNext()) {
 				fieldCounter++;
@@ -74,8 +75,8 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 				addAxiom = new AddAxiom(ontology, axiom);
 				manager.applyChange(addAxiom);
 
-				clsFieldName = factory.getOWLClass(URI.create(ontologyURI
-						+ "#FieldName" + field.getName()));
+				clsFieldName = factory.getOWLClass(URI.create(ontologyURI + "#"
+						+ field.getName()));
 				axiom = factory.getOWLSubClassAxiom(clsColumn, clsFieldName);
 				addAxiom = new AddAxiom(ontology, axiom);
 				manager.applyChange(addAxiom);
@@ -88,6 +89,7 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 				addAxiom = new AddAxiom(ontology, axiom);
 				manager.applyChange(addAxiom);
 			}
+
 		}
 
 		return ontology;

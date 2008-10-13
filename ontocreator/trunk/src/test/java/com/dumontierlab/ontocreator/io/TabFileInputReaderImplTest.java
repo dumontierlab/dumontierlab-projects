@@ -26,7 +26,7 @@ public class TabFileInputReaderImplTest {
 
 	@Test
 	public void myTest() {
-		RecordSet rset = reader.read(in);
+		RecordSet rset = reader.read(in, true);
 		Iterator<Record> recordIterator = rset.getRecords();
 		RecordImpl record = (RecordImpl) recordIterator.next();
 

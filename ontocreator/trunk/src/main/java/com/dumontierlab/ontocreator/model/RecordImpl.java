@@ -1,7 +1,7 @@
 package com.dumontierlab.ontocreator.model;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public class RecordImpl implements Record {
 	}
 
 	public RecordImpl(String _id) {
-		fields = new HashMap<String, Field<?>>();
+		fields = new LinkedHashMap<String, Field<?>>();
 		id = _id;
 	}
 
