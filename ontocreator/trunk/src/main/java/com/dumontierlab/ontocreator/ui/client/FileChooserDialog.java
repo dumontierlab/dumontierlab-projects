@@ -1,6 +1,8 @@
 package com.dumontierlab.ontocreator.ui.client;
 
+import com.dumontierlab.ontocreator.ui.client.util.Constants;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -21,17 +23,23 @@ public class FileChooserDialog extends DialogBox {
 	}
 
 	private Widget createUi() {
+		VerticalPanel container = new VerticalPanel();
+
 		final FormPanel form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
-		form.setAction(GWT.getModuleBaseURL() + "fileUpload");
+		form.setAction(GWT.getModuleBaseURL() + "fileUpload?"
+				+ Constants.FILE_TYPE_PARAMETER + "=" + URL.encode(type));
 
 		VerticalPanel panel = new VerticalPanel();
-
-		// panel.add(new Hidden(Constants.FILE_TYPE_PARAMETER, type));
+		form.setWidget(panel);
 
 		FileUpload fileUpload = new FileUpload();
+		fileUpload.setName("upload-file");
 		panel.add(fileUpload);
+
+		panel.add(new Spacer(null, "10px"));
+		container.add(form);
 
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 
@@ -56,9 +64,8 @@ public class FileChooserDialog extends DialogBox {
 				HorizontalPanel.ALIGN_RIGHT);
 
 		buttonsPanel.setWidth("100%");
-		panel.add(new Spacer(null, "10px"));
-		panel.add(buttonsPanel);
-		form.add(panel);
-		return form;
+		container.add(buttonsPanel);
+
+		return container;
 	}
 }

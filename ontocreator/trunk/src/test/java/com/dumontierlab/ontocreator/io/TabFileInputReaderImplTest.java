@@ -33,17 +33,24 @@ public class TabFileInputReaderImplTest {
 		System.out.println(record.getId());
 		Assert.assertEquals("a", record.getId());
 
-		Assert.assertEquals("a", record.getField("0").getValue());
-		Assert.assertEquals("b", record.getField("1").getValue());
-		Assert.assertEquals("c", record.getField("2").getValue());
-		Assert.assertEquals("d", record.getField("3").getValue());
+		Assert.assertEquals("a", record.getField("Id").getValue());
+		Assert.assertEquals("b", record.getField("Name").getValue());
+		Assert.assertEquals("c", record.getField("Address").getValue());
+		Assert.assertEquals("d", record.getField("Phone").getValue());
 
 		record = (RecordImpl) recordIterator.next();
 
-		Assert.assertEquals("1", record.getField("0").getValue());
-		Assert.assertEquals("2", record.getField("1").getValue());
-		Assert.assertEquals("3", record.getField("2").getValue());
-		Assert.assertEquals("4", record.getField("3").getValue());
+		Assert.assertEquals("1", record.getField("Id").getValue());
+		Assert.assertEquals("2", record.getField("Name").getValue());
+		Assert.assertEquals("3", record.getField("Address").getValue());
+		Assert.assertEquals("4", record.getField("Phone").getValue());
+
+		/*
+		 * Assert.assertEquals("1", record.getField("0").getValue());
+		 * Assert.assertEquals("2", record.getField("1").getValue());
+		 * Assert.assertEquals("3", record.getField("2").getValue());
+		 * Assert.assertEquals("4", record.getField("3").getValue());
+		 */
 
 		System.out.println(record.getId());
 		Assert.assertEquals("1", record.getId());

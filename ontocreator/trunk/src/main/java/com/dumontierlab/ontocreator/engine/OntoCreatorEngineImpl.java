@@ -20,7 +20,9 @@ import com.dumontierlab.ontocreator.model.Field;
 import com.dumontierlab.ontocreator.model.Record;
 import com.dumontierlab.ontocreator.model.RecordSet;
 import com.dumontierlab.ontocreator.util.Constants;
+import com.google.inject.Singleton;
 
+@Singleton
 public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 
 	public OWLOntology buildInitialOnthology(RecordSet records)

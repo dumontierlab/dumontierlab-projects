@@ -14,19 +14,53 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.semanticweb.owl.model.OWLOntology;
 
+import com.dumontierlab.ontocreator.engine.OntoCreatorEngine;
+import com.dumontierlab.ontocreator.inject.InjectorHelper;
+import com.dumontierlab.ontocreator.io.TabFileInputReaderImpl;
+import com.dumontierlab.ontocreator.model.RecordSet;
 import com.dumontierlab.ontocreator.ui.client.util.Constants;
+import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
+import com.google.inject.Inject;
 
 public class FileUploadServlet extends HttpServlet {
+
+	private OntoCreatorEngine engine;
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		InjectorHelper.inject(this);
+	}
+
+	@Inject
+	public void setEngine(OntoCreatorEngine _engine) {
+		engine = _engine;
+	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String type = req.getParameter(Constants.FILE_TYPE_PARAMETER);
 		InputStream in = getUploadFile(req);
+		TabFileInputReaderImpl reader;
+
 		if (in != null) {
 			if (Constants.TAB_FILE_TYPE.equals(type)) {
-				System.out.println("is a tab file");
+				reader = new TabFileInputReaderImpl("\t");
+				RecordSet rset = reader.read(in, true);
+				try {
+					OWLOntology ontology = engine.buildInitialOnthology(rset);
+					SessionHelper.getClientSession(req).addOntology(ontology);
+				} catch (Exception e) {
+					resp.sendError(
+							HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+							"Error while creating ontology: " + e.getMessage());
+				}
+
+			} else if (Constants.ONTOLOGY_FILE_TYPE.equals(type)) {
+
 			}
 		}
 	}
@@ -43,7 +77,6 @@ public class FileUploadServlet extends HttpServlet {
 				return null;
 			}
 
-			System.out.println(items.get(0).getContentType());
 			return items.get(0).getInputStream();
 
 		} catch (FileUploadException e) {
