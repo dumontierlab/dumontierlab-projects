@@ -21,4 +21,8 @@ public class ClientSession {
 		ontologies.remove(ontology);
 	}
 
+	public Set<OWLOntology> getOntologies() {
+		return ontologies;
+	}
+
 }

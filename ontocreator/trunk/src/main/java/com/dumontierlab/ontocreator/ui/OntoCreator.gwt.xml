@@ -2,6 +2,6 @@
     <inherits name="com.google.gwt.user.User"/>
     <inherits name="com.google.gwt.user.theme.chrome.Chrome"/>
     <entry-point class="com.dumontierlab.ontocreator.ui.client.OntoCreator"/>
-    
+    <servlet path="/diag" class="com.dumontierlab.ontocreator.diagnostic.DiagnosticServlet"/>
     <servlet path="/fileUpload" class="com.dumontierlab.ontocreator.ui.server.fileupload.FileUploadServlet"/>
  </module>
