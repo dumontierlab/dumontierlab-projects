@@ -19,7 +19,13 @@ public class ActionServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String actionRequest = req.getParameter(SERVER_ACTION_PARAMETER);
 		HttpCommand command = actions.get(actionRequest);
-		command.execute(req, resp);
+		if (command != null) {
+			command.execute(req, resp);
+		} else {
+			resp
+					.sendError(HttpServletResponse.SC_BAD_REQUEST,
+							"Invalid Action");
+		}
 	}
 
 	public void removeAction(String action) {

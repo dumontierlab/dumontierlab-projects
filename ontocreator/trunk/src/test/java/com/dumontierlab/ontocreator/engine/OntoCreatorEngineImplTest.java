@@ -38,7 +38,8 @@ public class OntoCreatorEngineImplTest {
 			OWLOntologyStorageException {
 
 		RecordSet records = reader.read(in, true);
-		OWLOntology ontology = engine.buildInitialOnthology(records);
+		OWLOntology ontology = engine.buildInitialOnthology(records, OWLManager
+				.createOWLOntologyManager());
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		manager.saveOntology(ontology, new RDFXMLOntologyFormat(), URI
 				.create("file:///tmp/test.owl"));

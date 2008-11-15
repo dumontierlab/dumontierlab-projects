@@ -1,28 +1,24 @@
 package com.dumontierlab.ontocreator.ui.server.session;
 
-import java.util.HashSet;
 import java.util.Set;
 
+import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class ClientSession {
 
-	private final Set<OWLOntology> ontologies;
+	private final OWLOntologyManager ontologyManager;
 
 	public ClientSession() {
-		ontologies = new HashSet<OWLOntology>();
+		ontologyManager = OWLManager.createOWLOntologyManager();
 	}
 
-	public void addOntology(OWLOntology ontology) {
-		ontologies.add(ontology);
-	}
-
-	public void removeOntology(OWLOntology ontology) {
-		ontologies.remove(ontology);
+	public OWLOntologyManager getOntologyManager() {
+		return ontologyManager;
 	}
 
 	public Set<OWLOntology> getOntologies() {
-		return ontologies;
+		return ontologyManager.getOntologies();
 	}
-
 }

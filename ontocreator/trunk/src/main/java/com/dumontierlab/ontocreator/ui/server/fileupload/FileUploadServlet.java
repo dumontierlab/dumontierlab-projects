@@ -14,7 +14,6 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.semanticweb.owl.model.OWLOntology;
 
 import com.dumontierlab.ontocreator.engine.OntoCreatorEngine;
 import com.dumontierlab.ontocreator.inject.InjectorHelper;
@@ -40,10 +39,10 @@ public class FileUploadServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		String type = req.getParameter(Constants.FILE_TYPE_PARAMETER);
-		InputStream in = getUploadFile(req);
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		String type = request.getParameter(Constants.FILE_TYPE_PARAMETER);
+		InputStream in = getUploadFile(request);
 		TabFileInputReaderImpl reader;
 
 		if (in != null) {
@@ -51,10 +50,10 @@ public class FileUploadServlet extends HttpServlet {
 				reader = new TabFileInputReaderImpl("\t");
 				RecordSet rset = reader.read(in, true);
 				try {
-					OWLOntology ontology = engine.buildInitialOnthology(rset);
-					SessionHelper.getClientSession(req).addOntology(ontology);
+					engine.buildInitialOnthology(rset, SessionHelper
+							.getClientSession(request).getOntologyManager());
 				} catch (Exception e) {
-					resp.sendError(
+					response.sendError(
 							HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 							"Error while creating ontology: " + e.getMessage());
 				}
