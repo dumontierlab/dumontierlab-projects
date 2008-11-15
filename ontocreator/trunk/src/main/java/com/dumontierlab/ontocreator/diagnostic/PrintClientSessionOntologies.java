@@ -18,20 +18,16 @@ import com.dumontierlab.ontocreator.util.HttpCommand;
 
 public class PrintClientSessionOntologies implements HttpCommand {
 
-	public void execute(HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.setContentType("text/plain");
 		PrintWriter writer = response.getWriter();
 
 		ClientSession session = SessionHelper.getClientSession(request);
-		OWLOntologyManager ontologyManager = OWLManager
-				.createOWLOntologyManager();
+		OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
 		for (OWLOntology ontology : session.getOntologies()) {
-			RDFXMLRenderer renderer = new RDFXMLRenderer(ontologyManager,
-					ontology, writer, new RDFXMLOntologyFormat());
+			RDFXMLRenderer renderer = new RDFXMLRenderer(ontologyManager, ontology, writer, new RDFXMLOntologyFormat());
 			renderer.render();
-			writer
-					.println("-------------------------------------------------------------------");
+			writer.println("-------------------------------------------------------------------");
 		}
 		writer.flush();
 	}

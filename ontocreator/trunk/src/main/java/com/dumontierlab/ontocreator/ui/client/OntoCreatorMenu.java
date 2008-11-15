@@ -18,14 +18,12 @@ public class OntoCreatorMenu extends Composite {
 	}
 
 	public void loadTabFile() {
-		FileChooserDialog chooser = new FileChooserDialog("Select a tab file",
-				Constants.TAB_FILE_TYPE);
+		FileChooserDialog chooser = new FileChooserDialog("Select a tab file", Constants.TAB_FILE_TYPE);
 		chooser.show();
 	}
 
 	public void loadOntology() {
-		FileChooserDialog chooser = new FileChooserDialog(
-				"Select an OWL ontology file", Constants.ONTOLOGY_FILE_TYPE);
+		FileChooserDialog chooser = new FileChooserDialog("Select an OWL ontology file", Constants.ONTOLOGY_FILE_TYPE);
 		chooser.show();
 	}
 

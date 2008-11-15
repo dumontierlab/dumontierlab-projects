@@ -15,16 +15,13 @@ public class ActionServlet extends HttpServlet {
 	private final Map<String, HttpCommand> actions = new HashMap<String, HttpCommand>();
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String actionRequest = req.getParameter(SERVER_ACTION_PARAMETER);
 		HttpCommand command = actions.get(actionRequest);
 		if (command != null) {
 			command.execute(req, resp);
 		} else {
-			resp
-					.sendError(HttpServletResponse.SC_BAD_REQUEST,
-							"Invalid Action");
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Action");
 		}
 	}
 

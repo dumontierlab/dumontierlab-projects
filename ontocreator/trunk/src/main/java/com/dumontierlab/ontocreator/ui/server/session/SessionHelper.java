@@ -9,8 +9,7 @@ public class SessionHelper {
 
 	public static ClientSession getClientSession(HttpServletRequest request) {
 		HttpSession session = request.getSession(true);
-		ClientSession clientSession = (ClientSession) session
-				.getAttribute(CLIENT_SESSION_ATTRIBUTE_NAME);
+		ClientSession clientSession = (ClientSession) session.getAttribute(CLIENT_SESSION_ATTRIBUTE_NAME);
 		if (clientSession == null) {
 			clientSession = new ClientSession();
 			session.setAttribute(CLIENT_SESSION_ATTRIBUTE_NAME, clientSession);

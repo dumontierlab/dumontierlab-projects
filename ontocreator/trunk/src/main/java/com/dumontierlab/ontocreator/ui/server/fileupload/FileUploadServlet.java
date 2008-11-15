@@ -39,8 +39,7 @@ public class FileUploadServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String type = request.getParameter(Constants.FILE_TYPE_PARAMETER);
 		InputStream in = getUploadFile(request);
 		TabFileInputReaderImpl reader;
@@ -50,12 +49,10 @@ public class FileUploadServlet extends HttpServlet {
 				reader = new TabFileInputReaderImpl("\t");
 				RecordSet rset = reader.read(in, true);
 				try {
-					engine.buildInitialOnthology(rset, SessionHelper
-							.getClientSession(request).getOntologyManager());
+					engine.buildInitialOnthology(rset, SessionHelper.getClientSession(request).getOntologyManager());
 				} catch (Exception e) {
-					response.sendError(
-							HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-							"Error while creating ontology: " + e.getMessage());
+					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while creating ontology: "
+							+ e.getMessage());
 				}
 
 			} else if (Constants.ONTOLOGY_FILE_TYPE.equals(type)) {
@@ -64,8 +61,7 @@ public class FileUploadServlet extends HttpServlet {
 		}
 	}
 
-	private InputStream getUploadFile(HttpServletRequest request)
-			throws IOException {
+	private InputStream getUploadFile(HttpServletRequest request) throws IOException {
 
 		FileItemFactory factory = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(factory);

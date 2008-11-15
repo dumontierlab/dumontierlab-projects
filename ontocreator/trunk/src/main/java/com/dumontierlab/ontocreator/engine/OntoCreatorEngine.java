@@ -9,8 +9,7 @@ import com.dumontierlab.ontocreator.model.RecordSet;
 
 public interface OntoCreatorEngine {
 
-	public OWLOntology buildInitialOnthology(RecordSet records,
-			OWLOntologyManager ontologyManager)
+	public OWLOntology buildInitialOnthology(RecordSet records, OWLOntologyManager ontologyManager)
 			throws OWLOntologyCreationException, OWLOntologyChangeException;
 
 }

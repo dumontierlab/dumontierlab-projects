@@ -19,8 +19,7 @@ public class TabFileInputReaderImplTest {
 
 	@Before
 	public void setup() {
-		in = TabFileInputReaderImplTest.class
-				.getResourceAsStream("/testTabFile.txt");
+		in = TabFileInputReaderImplTest.class.getResourceAsStream("/testTabFile.txt");
 		reader = new TabFileInputReaderImpl("\t");
 	}
 

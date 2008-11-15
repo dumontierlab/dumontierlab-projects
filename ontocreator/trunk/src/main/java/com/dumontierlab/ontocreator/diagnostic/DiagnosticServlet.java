@@ -8,8 +8,7 @@ public class DiagnosticServlet extends ActionServlet {
 
 	@Override
 	public void init() throws ServletException {
-		addAction("printClientSessionOntologies",
-				new PrintClientSessionOntologies());
+		addAction("printClientSessionOntologies", new PrintClientSessionOntologies());
 	}
 
 }

@@ -26,23 +26,19 @@ public class OntoCreatorEngineImplTest {
 
 	@Before
 	public void setup() {
-		in = TabFileInputReaderImplTest.class
-				.getResourceAsStream("/testTabFile.txt");
+		in = TabFileInputReaderImplTest.class.getResourceAsStream("/testTabFile.txt");
 		reader = new TabFileInputReaderImpl("\t");
 		engine = new OntoCreatorEngineImpl();
 	}
 
 	@Test
-	public void printOntologyTest() throws OWLOntologyCreationException,
-			OWLOntologyChangeException, UnknownOWLOntologyException,
-			OWLOntologyStorageException {
+	public void printOntologyTest() throws OWLOntologyCreationException, OWLOntologyChangeException,
+			UnknownOWLOntologyException, OWLOntologyStorageException {
 
 		RecordSet records = reader.read(in, true);
-		OWLOntology ontology = engine.buildInitialOnthology(records, OWLManager
-				.createOWLOntologyManager());
+		OWLOntology ontology = engine.buildInitialOnthology(records, OWLManager.createOWLOntologyManager());
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		manager.saveOntology(ontology, new RDFXMLOntologyFormat(), URI
-				.create("file:///tmp/test.owl"));
+		manager.saveOntology(ontology, new RDFXMLOntologyFormat(), URI.create("file:///tmp/test.owl"));
 
 	}
 }

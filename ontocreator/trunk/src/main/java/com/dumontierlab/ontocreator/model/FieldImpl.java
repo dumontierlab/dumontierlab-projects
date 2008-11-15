@@ -4,17 +4,17 @@ public class FieldImpl<E> implements Field<E> {
 
 	private String name;
 	private E value;
-	
+
 	public FieldImpl() {
 		name = null;
 		value = null;
 	}
-	
+
 	public FieldImpl(String _name, E _value) {
 		name = _name;
 		value = _value;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

@@ -24,8 +24,7 @@ public class TabFileInputReaderImpl implements InputReader {
 		String[] recordFields;
 
 		try {
-			BufferedReader breader = new BufferedReader(new InputStreamReader(
-					input));
+			BufferedReader breader = new BufferedReader(new InputStreamReader(input));
 
 			String newLine = breader.readLine();
 			String[] header = null;
@@ -39,8 +38,7 @@ public class TabFileInputReaderImpl implements InputReader {
 				newRecord = new RecordImpl(recordFields[0]);
 
 				for (int i = 0; i < recordFields.length; i++) {
-					newRecord.addField(header != null ? header[i] : Integer
-							.toString(i), recordFields[i]);
+					newRecord.addField(header != null ? header[i] : Integer.toString(i), recordFields[i]);
 				}
 
 				rset.addRecord(newRecord);

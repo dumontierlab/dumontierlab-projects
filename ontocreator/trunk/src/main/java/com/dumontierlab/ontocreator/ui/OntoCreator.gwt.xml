@@ -1,7 +1,16 @@
 <module>
     <inherits name="com.google.gwt.user.User"/>
     <inherits name="com.google.gwt.user.theme.chrome.Chrome"/>
-    <entry-point class="com.dumontierlab.ontocreator.ui.client.OntoCreator"/>
+    <inherits name="com.gwtext.GwtExt"/>
+    
+    <stylesheet src="js/ext/resources/css/ext-all.css" />
+    <stylesheet src="js/ext/resources/css/xtheme-gray.css"/>
+	<script src="js/ext/adapter/ext/ext-base.js" />
+	<script src="js/ext/ext-all.js" />
+    
+   
+    <entry-point class="com.dumontierlab.ontocreator.ui.client.OntoCreatorUi"/>
     <servlet path="/diag" class="com.dumontierlab.ontocreator.diagnostic.DiagnosticServlet"/>
     <servlet path="/fileUpload" class="com.dumontierlab.ontocreator.ui.server.fileupload.FileUploadServlet"/>
+    
  </module>

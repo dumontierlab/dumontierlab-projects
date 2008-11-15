@@ -28,8 +28,7 @@ public class FileChooserDialog extends DialogBox {
 		final FormPanel form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
-		form.setAction(GWT.getModuleBaseURL() + "fileUpload?"
-				+ Constants.FILE_TYPE_PARAMETER + "=" + URL.encode(type));
+		form.setAction(GWT.getModuleBaseURL() + "fileUpload?" + Constants.FILE_TYPE_PARAMETER + "=" + URL.encode(type));
 
 		VerticalPanel panel = new VerticalPanel();
 		form.setWidget(panel);
@@ -56,12 +55,10 @@ public class FileChooserDialog extends DialogBox {
 
 		buttonsPanel.add(cancelButton);
 		buttonsPanel.setCellWidth(cancelButton, "100%");
-		buttonsPanel.setCellHorizontalAlignment(cancelButton,
-				HorizontalPanel.ALIGN_RIGHT);
+		buttonsPanel.setCellHorizontalAlignment(cancelButton, HorizontalPanel.ALIGN_RIGHT);
 		buttonsPanel.add(new Spacer("8px", null));
 		buttonsPanel.add(acceptButton);
-		buttonsPanel.setCellHorizontalAlignment(acceptButton,
-				HorizontalPanel.ALIGN_RIGHT);
+		buttonsPanel.setCellHorizontalAlignment(acceptButton, HorizontalPanel.ALIGN_RIGHT);
 
 		buttonsPanel.setWidth("100%");
 		container.add(buttonsPanel);
