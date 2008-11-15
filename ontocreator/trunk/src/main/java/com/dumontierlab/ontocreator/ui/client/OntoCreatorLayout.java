@@ -12,7 +12,7 @@ public class OntoCreatorLayout extends Composite {
 
 	private Widget createUi() {
 		DockPanel panel = new DockPanel();
-		panel.add(new OntoCreatorMenuController().getMenu(), DockPanel.NORTH);
+		panel.add(new OntoCreatorMenu(), DockPanel.NORTH);
 		return panel;
 	}
 

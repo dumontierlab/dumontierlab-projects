@@ -1,40 +1,32 @@
 package com.dumontierlab.ontocreator.ui.client;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
+import com.dumontierlab.ontocreator.ui.client.util.Constants;
+import com.dumontierlab.ontocreator.ui.client.view.OntoCreatorMenuView;
+import com.google.gwt.user.client.ui.Composite;
 
-public class OntoCreatorMenu extends MenuBar {
+public class OntoCreatorMenu extends Composite {
 
-	private final OntoCreatorMenuController controller;
+	private final OntoCreatorMenuView view;
 
-	public OntoCreatorMenu(OntoCreatorMenuController _controller) {
-		controller = _controller;
-		MenuItem fileItem = new MenuItem("File", createFileMenu());
-		addItem(fileItem);
-
+	public OntoCreatorMenu() {
+		view = new OntoCreatorMenuView(this);
+		initWidget(view);
 	}
 
-	private MenuBar createFileMenu() {
-		MenuBar fileBar = new MenuBar();
-		MenuBar loadBar = new MenuBar();
-		MenuItem loadTabFileItem = new MenuItem("Tab File", new Command() {
-			public void execute() {
-				controller.loadTabFile();
+	public OntoCreatorMenuView getView() {
+		return view;
+	}
 
-			}
-		});
-		MenuItem loadOntologyItem = new MenuItem("Ontology", new Command() {
-			public void execute() {
-				controller.loadOntology();
+	public void loadTabFile() {
+		FileChooserDialog chooser = new FileChooserDialog("Select a tab file",
+				Constants.TAB_FILE_TYPE);
+		chooser.show();
+	}
 
-			}
-		});
-		loadBar.addItem(loadTabFileItem);
-		loadBar.addItem(loadOntologyItem);
-		MenuItem loadItem = new MenuItem("Load", loadBar);
-		fileBar.addItem(loadItem);
-		return fileBar;
+	public void loadOntology() {
+		FileChooserDialog chooser = new FileChooserDialog(
+				"Select an OWL ontology file", Constants.ONTOLOGY_FILE_TYPE);
+		chooser.show();
 	}
 
 }
