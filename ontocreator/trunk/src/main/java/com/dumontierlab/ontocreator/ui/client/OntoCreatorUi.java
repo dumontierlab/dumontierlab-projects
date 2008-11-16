@@ -47,6 +47,7 @@ public class OntoCreatorUi implements EntryPoint {
 		borderPanel.add(outputPanel, eastLayoutData);
 
 		mainPanel.add(borderPanel);
+
 		Viewport viewport = new Viewport(mainPanel);
 	}
 
@@ -69,7 +70,8 @@ public class OntoCreatorUi implements EntryPoint {
 
 		Panel entititesPanel = new Panel();
 		entititesPanel.setLayout(new FitLayout());
-		entititesPanel.add(new EntitiesTabs());
+		EntitiesTabs tabs = new EntitiesTabs(new InputClassTree(), new Spacer(), new Spacer());
+		entititesPanel.add(tabs);
 
 		verticalPanel.add(entititesPanel, new BorderLayoutData(RegionPosition.CENTER));
 
@@ -81,7 +83,7 @@ public class OntoCreatorUi implements EntryPoint {
 		Panel panel = new Panel("OUTPUT");
 		panel.setLayout(new FitLayout());
 		panel.setCollapsible(true);
-		panel.add(new EntitiesTabs());
+		panel.add(new EntitiesTabs(new ClassTree(), new Spacer(), new Spacer()));
 
 		return panel;
 	}

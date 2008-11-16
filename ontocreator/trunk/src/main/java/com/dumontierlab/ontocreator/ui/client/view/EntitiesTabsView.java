@@ -1,6 +1,5 @@
 package com.dumontierlab.ontocreator.ui.client.view;
 
-import com.dumontierlab.ontocreator.ui.client.ClassTree;
 import com.dumontierlab.ontocreator.ui.client.EntitiesTabs;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
@@ -11,12 +10,12 @@ public class EntitiesTabsView extends Composite {
 
 	private final EntitiesTabs controller;
 
-	public EntitiesTabsView(EntitiesTabs controller) {
+	public EntitiesTabsView(Widget classesView, Widget propertiesView, Widget individualsView, EntitiesTabs controller) {
 		this.controller = controller;
-		initWidget(createUi());
+		initWidget(createUi(classesView, propertiesView, individualsView));
 	}
 
-	private Widget createUi() {
+	private Widget createUi(Widget classesView, Widget propertiesView, Widget individualsView) {
 		TabPanel tabs = new TabPanel();
 		tabs.setResizeTabs(true);
 		tabs.setMinTabWidth(75);
@@ -24,13 +23,15 @@ public class EntitiesTabsView extends Composite {
 		tabs.setEnableTabScroll(true);
 
 		Panel classPanel = new Panel("Classes");
-		classPanel.add(new ClassTree());
+		classPanel.add(classesView);
 		tabs.add(classPanel);
 
 		Panel propertiesPanel = new Panel("Properties");
+		propertiesPanel.add(propertiesView);
 		tabs.add(propertiesPanel);
 
 		Panel individualPanel = new Panel("Individuals");
+		individualPanel.add(individualsView);
 		tabs.add(individualPanel);
 
 		return tabs;

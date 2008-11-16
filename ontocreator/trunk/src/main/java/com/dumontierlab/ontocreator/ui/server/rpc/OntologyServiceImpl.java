@@ -16,16 +16,23 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
+import com.dumontierlab.ontocreator.ui.client.util.RetryException;
 import com.dumontierlab.ontocreator.ui.server.rpc.util.ContinousRpcServlet;
 import com.dumontierlab.ontocreator.ui.server.session.ClientSession;
 import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
 
 public class OntologyServiceImpl extends ContinousRpcServlet implements OntologyService {
 
+	private static final int RETRY_TIME = 3000;
 	private final OWLReasonerFactory reasonerFactory = new PelletReasonerFactory();
 
-	public Set<String> getLoadedOntologies() {
+	public Set<String> getLoadedOntologies() throws RetryException {
 		ClientSession session = getClientSession();
+
+		if (getLastResponseTimestamp() >= session.getLastOntologyChangeTime()) {
+			continueLater(RETRY_TIME);
+		}
+
 		Set<String> ontologyUris = new HashSet<String>();
 		for (OWLOntology ontology : session.getOntologies()) {
 			ontologyUris.add(ontology.getURI().toString());
@@ -34,8 +41,9 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		return ontologyUris;
 	}
 
-	public TreeNode<OWLClassBean> getClassHierarchy() {
+	public TreeNode<OWLClassBean> getClassHierarchy() throws RetryException {
 		ClientSession session = getClientSession();
+
 		OWLOntologyManager ontologyManager = session.getOntologyManager();
 		OWLReasoner reasoner = null;
 		TreeNode<OWLClassBean> tree = null;

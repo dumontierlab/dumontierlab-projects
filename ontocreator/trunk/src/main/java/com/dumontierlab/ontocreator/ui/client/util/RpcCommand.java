@@ -10,4 +10,6 @@ public interface RpcCommand {
 
 	public void cancel();
 
+	public boolean isRunInBackground();
+
 }

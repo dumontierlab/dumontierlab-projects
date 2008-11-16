@@ -2,11 +2,12 @@ package com.dumontierlab.ontocreator.ui.client;
 
 import java.util.Set;
 
-import com.dumontierlab.ontocreator.ui.client.event.NewLoadedOntologyEvent;
+import com.dumontierlab.ontocreator.ui.client.event.InputOntologiesChangedEvent;
 import com.dumontierlab.ontocreator.ui.client.event.UiEventBroker;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyServiceAsync;
-import com.dumontierlab.ontocreator.ui.client.util.PeriodicRpcCommand;
+import com.dumontierlab.ontocreator.ui.client.util.PersistentContinousRpcCommand;
+import com.dumontierlab.ontocreator.ui.client.util.RpcCommandPool;
 import com.dumontierlab.ontocreator.ui.client.view.OntologiesListView;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -22,16 +23,15 @@ public class OntologiesList extends Composite {
 
 	public static final String ONTOLOGY_NAME_DATA_INDEX = "ontologyName";
 
-	private static final int UPDATE_PERIOD_MILLIS = 2000;
-
 	private static final RecordDef recordDef = new RecordDef(new FieldDef[] { new StringFieldDef(
 			ONTOLOGY_NAME_DATA_INDEX) });
 
 	private final OntologiesListView view;
 	private final Store store;
-	private PeriodicRpcCommand<Set<String>> getLoadedOntologiesCommand;
+	private final RpcCommandPool rpcPool;
 
 	public OntologiesList() {
+		rpcPool = new RpcCommandPool();
 		store = new Store(new ArrayReader(recordDef));
 		view = new OntologiesListView(this);
 		initWidget(view);
@@ -39,7 +39,7 @@ public class OntologiesList extends Composite {
 	}
 
 	private void initRpc() {
-		getLoadedOntologiesCommand = new PeriodicRpcCommand<Set<String>>(UPDATE_PERIOD_MILLIS) {
+		rpcPool.addRpcCommand(new PersistentContinousRpcCommand<Set<String>>() {
 
 			private final OntologyServiceAsync service = OntologyService.Util.getInstace();
 
@@ -58,10 +58,10 @@ public class OntologiesList extends Composite {
 				DataProxy proxy = new MemoryProxy(new Object[][] { result.toArray() });
 				store.setDataProxy(proxy);
 				store.reload();
-				UiEventBroker.getInstance().publish(new NewLoadedOntologyEvent(null));
+				UiEventBroker.getInstance().publish(
+						new InputOntologiesChangedEvent(result.toArray(new String[result.size()])));
 			}
-		};
-		getLoadedOntologiesCommand.call();
+		});
 	}
 
 	public Store getStore() {
@@ -70,6 +70,6 @@ public class OntologiesList extends Composite {
 
 	@Override
 	protected void onLoad() {
-		getLoadedOntologiesCommand.call();
+		rpcPool.suspendAllNonBackgroundRpc();
 	}
 }

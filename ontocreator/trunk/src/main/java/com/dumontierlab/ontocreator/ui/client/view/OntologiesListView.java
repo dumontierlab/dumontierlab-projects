@@ -2,6 +2,7 @@ package com.dumontierlab.ontocreator.ui.client.view;
 
 import com.dumontierlab.ontocreator.ui.client.OntologiesList;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.widgets.grid.BaseColumnConfig;
 import com.gwtext.client.widgets.grid.ColumnConfig;
@@ -18,11 +19,15 @@ public class OntologiesListView extends Composite {
 	}
 
 	private Widget createUi() {
+		SimplePanel panel = new SimplePanel();
+
 		GridPanel list = new GridPanel(controller.getStore(), getColumModel());
 		list.hideColumnHeader();
 		list.getView().setAutoFill(true);
 		list.getView().setForceFit(true);
-		return list;
+
+		panel.setWidget(list);
+		return panel;
 	}
 
 	private ColumnModel getColumModel() {

@@ -1,6 +1,5 @@
 package com.dumontierlab.ontocreator.ui.client.util;
 
-import com.dumontierlab.ontocreator.ui.server.rpc.util.RetryException;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

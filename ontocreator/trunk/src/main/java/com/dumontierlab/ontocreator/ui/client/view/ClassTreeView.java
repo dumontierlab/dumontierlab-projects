@@ -3,6 +3,7 @@ package com.dumontierlab.ontocreator.ui.client.view;
 import com.dumontierlab.ontocreator.ui.client.ClassTree;
 import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.data.Node;
 import com.gwtext.client.widgets.tree.TreeNode;
@@ -24,7 +25,10 @@ public class ClassTreeView extends Composite {
 		TreePanel tree = new TreePanel();
 		owlThing = new TreeNode("Thing");
 		tree.setRootNode(owlThing);
-		return tree;
+
+		SimplePanel panel = new SimplePanel();
+		panel.setWidget(tree);
+		return panel;
 	}
 
 	public void setModel(com.dumontierlab.ontocreator.ui.client.model.TreeNode<OWLClassBean> model) {
@@ -34,6 +38,7 @@ public class ClassTreeView extends Composite {
 		for (com.dumontierlab.ontocreator.ui.client.model.TreeNode<OWLClassBean> modelNode : model) {
 			owlThing.appendChild(createTreeNode(modelNode));
 		}
+		owlThing.expand();
 	}
 
 	private TreeNode createTreeNode(com.dumontierlab.ontocreator.ui.client.model.TreeNode<OWLClassBean> model) {

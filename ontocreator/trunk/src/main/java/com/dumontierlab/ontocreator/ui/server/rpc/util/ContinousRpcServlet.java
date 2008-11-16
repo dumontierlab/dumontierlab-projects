@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.dumontierlab.ontocreator.ui.client.util.RetryException;
 import com.google.gwt.user.server.rpc.RPC;
 import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -22,6 +23,10 @@ public class ContinousRpcServlet extends RemoteServiceServlet {
 		RPCRequest rpcRequest = threadLocalPayload.get();
 		HttpServletRequest request = getThreadLocalRequest();
 		Cookie lastAccessCookie = null;
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null) {
+			return 0;
+		}
 		for (Cookie cookie : request.getCookies()) {
 			if (cookie.getName().equals(getCookieName(rpcRequest))) {
 				lastAccessCookie = cookie;
@@ -49,6 +54,10 @@ public class ContinousRpcServlet extends RemoteServiceServlet {
 
 	private String getCookieName(RPCRequest rpcRequest) {
 		String methodName = rpcRequest.getMethod().toString();
+
+		int parenthesisIndex = methodName.lastIndexOf(")");
+		methodName = methodName.substring(0, parenthesisIndex + 1);
+
 		int spaceIndex = methodName.lastIndexOf(" ");
 		return methodName.substring(spaceIndex + 1) + LAST_RESPONSE_SUFFIX;
 	}
