@@ -16,11 +16,11 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
+import com.dumontierlab.ontocreator.ui.server.rpc.util.ContinousRpcServlet;
 import com.dumontierlab.ontocreator.ui.server.session.ClientSession;
 import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class OntologyServiceImpl extends RemoteServiceServlet implements OntologyService {
+public class OntologyServiceImpl extends ContinousRpcServlet implements OntologyService {
 
 	private final OWLReasonerFactory reasonerFactory = new PelletReasonerFactory();
 

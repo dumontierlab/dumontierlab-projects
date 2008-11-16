@@ -1,20 +1,32 @@
 package com.dumontierlab.ontocreator.ui.server.session;
 
+import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyLoaderListener;
+import org.semanticweb.owl.model.OWLOntologyChange;
+import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-public class ClientSession implements OWLOntologyLoaderListener {
+public class ClientSession {
 
-	private long lastOntologyLoadTimestamp = 0;
+	private long lastOntologyChangeTime;
 	private final OWLOntologyManager ontologyManager;
 
-	public ClientSession() {
+	private ClientSession() {
 		ontologyManager = OWLManager.createOWLOntologyManager();
-		ontologyManager.addOntologyLoaderListener(this);
+	}
+
+	public static ClientSession newInstance() {
+		final ClientSession instance = new ClientSession();
+		instance.getOntologyManager().addOntologyChangeListener(new OWLOntologyChangeListener() {
+			public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
+				instance.lastOntologyChangeTime = System.currentTimeMillis();
+			}
+		});
+		return instance;
 	}
 
 	public OWLOntologyManager getOntologyManager() {
@@ -25,11 +37,8 @@ public class ClientSession implements OWLOntologyLoaderListener {
 		return ontologyManager.getOntologies();
 	}
 
-	public void finishedLoadingOntology(LoadingFinishedEvent event) {
-		lastOntologyLoadTimestamp = System.currentTimeMillis();
+	public long getLastOntologyChangeTime() {
+		return lastOntologyChangeTime;
 	}
 
-	public void startedLoadingOntology(LoadingStartedEvent event) {
-		// nothing to do
-	}
 }

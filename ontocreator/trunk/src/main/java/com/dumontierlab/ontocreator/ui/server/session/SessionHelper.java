@@ -11,7 +11,7 @@ public class SessionHelper {
 		HttpSession session = request.getSession(true);
 		ClientSession clientSession = (ClientSession) session.getAttribute(CLIENT_SESSION_ATTRIBUTE_NAME);
 		if (clientSession == null) {
-			clientSession = new ClientSession();
+			clientSession = ClientSession.newInstance();
 			session.setAttribute(CLIENT_SESSION_ATTRIBUTE_NAME, clientSession);
 		}
 		return clientSession;

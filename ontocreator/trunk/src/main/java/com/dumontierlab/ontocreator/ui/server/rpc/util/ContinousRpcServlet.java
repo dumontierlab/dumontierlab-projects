@@ -14,12 +14,16 @@ public class ContinousRpcServlet extends RemoteServiceServlet {
 
 	private final ThreadLocal<RPCRequest> threadLocalPayload = new ThreadLocal<RPCRequest>();
 
-	protected long getLastResponse() {
+	protected void continueLater(int waitBeforeRetry) throws RetryException {
+		throw new RetryException(waitBeforeRetry);
+	}
+
+	protected long getLastResponseTimestamp() {
 		RPCRequest rpcRequest = threadLocalPayload.get();
 		HttpServletRequest request = getThreadLocalRequest();
 		Cookie lastAccessCookie = null;
 		for (Cookie cookie : request.getCookies()) {
-			if (cookie.getName().equals(rpcRequest.getMethod().toString() + LAST_RESPONSE_SUFFIX)) {
+			if (cookie.getName().equals(getCookieName(rpcRequest))) {
 				lastAccessCookie = cookie;
 				break;
 			}
@@ -40,8 +44,13 @@ public class ContinousRpcServlet extends RemoteServiceServlet {
 	protected void onAfterResponseSerialized(String serializedResponse) {
 		RPCRequest rpcRequest = threadLocalPayload.get();
 		HttpServletResponse response = getThreadLocalResponse();
-		response.addCookie(new Cookie(rpcRequest.getMethod().toString() + LAST_RESPONSE_SUFFIX, Long.toString(System
-				.currentTimeMillis())));
+		response.addCookie(new Cookie(getCookieName(rpcRequest), Long.toString(System.currentTimeMillis())));
+	}
+
+	private String getCookieName(RPCRequest rpcRequest) {
+		String methodName = rpcRequest.getMethod().toString();
+		int spaceIndex = methodName.lastIndexOf(" ");
+		return methodName.substring(spaceIndex + 1) + LAST_RESPONSE_SUFFIX;
 	}
 
 }
