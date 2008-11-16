@@ -18,10 +18,10 @@ public class OntologiesListView extends Composite {
 	}
 
 	private Widget createUi() {
-
 		GridPanel list = new GridPanel(controller.getStore(), getColumModel());
 		list.hideColumnHeader();
-
+		list.getView().setAutoFill(true);
+		list.getView().setForceFit(true);
 		return list;
 	}
 
@@ -29,4 +29,5 @@ public class OntologiesListView extends Composite {
 		ColumnConfig columnConfig = new ColumnConfig("Ontologies", OntologiesList.ONTOLOGY_NAME_DATA_INDEX);
 		return new ColumnModel(new BaseColumnConfig[] { columnConfig });
 	}
+
 }

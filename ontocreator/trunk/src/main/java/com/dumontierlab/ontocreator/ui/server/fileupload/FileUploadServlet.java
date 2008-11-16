@@ -56,7 +56,7 @@ public class FileUploadServlet extends HttpServlet {
 				}
 
 			} else if (Constants.ONTOLOGY_FILE_TYPE.equals(type)) {
-
+				// TODO
 			}
 		}
 	}

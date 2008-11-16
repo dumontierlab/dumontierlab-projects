@@ -10,6 +10,9 @@
     
    
     <entry-point class="com.dumontierlab.ontocreator.ui.client.OntoCreatorUi"/>
+    
+    <servlet path="/OntologyService" class="com.dumontierlab.ontocreator.ui.server.rpc.OntologyServiceImpl"/>
+    
     <servlet path="/diag" class="com.dumontierlab.ontocreator.diagnostic.DiagnosticServlet"/>
     <servlet path="/fileUpload" class="com.dumontierlab.ontocreator.ui.server.fileupload.FileUploadServlet"/>
     
