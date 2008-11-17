@@ -13,6 +13,7 @@ import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
+import com.clarkparsia.owlapi.OWL;
 import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
@@ -54,7 +55,7 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		try {
 			reasoner.loadOntologies(session.getOntologies());
 			reasoner.classify();
-			tree = createTaxonomyTree(ontologyManager.getOWLDataFactory().getOWLThing(), reasoner);
+			tree = createTaxonomyTree(OWL.Thing, reasoner);
 		} catch (OWLReasonerException e) {
 			throw new RuntimeException("Ontology classification failed.", e);
 		}
@@ -63,11 +64,11 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 
 	private TreeNode<OWLClassBean> createTaxonomyTree(OWLClass concept, OWLReasoner reasoner)
 			throws OWLReasonerException {
-
+		OWLClass owlNothing = OWL.Nothing;
 		TreeNode<OWLClassBean> root = new TreeNode<OWLClassBean>(createOWLClassBean(concept, reasoner));
 		for (Set<OWLClass> children : reasoner.getSubClasses(concept)) {
 			for (OWLClass subclass : children) {
-				if (!subclass.equals(concept)) {
+				if (!subclass.equals(concept) && !subclass.equals(owlNothing)) {
 					TreeNode<OWLClassBean> node = createTaxonomyTree(subclass, reasoner);
 					root.addChild(node);
 				}

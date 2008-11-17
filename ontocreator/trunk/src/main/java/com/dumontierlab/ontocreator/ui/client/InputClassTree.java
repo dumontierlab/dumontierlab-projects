@@ -31,7 +31,7 @@ public class InputClassTree extends ClassTree implements UiEventHandler {
 
 			@Override
 			protected void rpcReturn(TreeNode<OWLClassBean> result) {
-
+				setTreeModel(result);
 			}
 		};
 		UiEventBroker.getInstance().registerEventHandler(this);
@@ -42,8 +42,9 @@ public class InputClassTree extends ClassTree implements UiEventHandler {
 	}
 
 	public void handleEvent(UiEvent event) {
-		InputOntologiesChangedEvent ontologiesChangedEvent = (InputOntologiesChangedEvent) event;
-
+		if (event.getEventName().equals(InputOntologiesChangedEvent.EVENT_NAME)) {
+			rpcCommand.call();
+		}
 	}
 
 }

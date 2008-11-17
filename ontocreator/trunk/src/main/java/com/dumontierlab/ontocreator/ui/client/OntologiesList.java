@@ -70,6 +70,11 @@ public class OntologiesList extends Composite {
 
 	@Override
 	protected void onLoad() {
+		rpcPool.resumeAllRpc();
+	}
+
+	@Override
+	protected void onUnload() {
 		rpcPool.suspendAllNonBackgroundRpc();
 	}
 }

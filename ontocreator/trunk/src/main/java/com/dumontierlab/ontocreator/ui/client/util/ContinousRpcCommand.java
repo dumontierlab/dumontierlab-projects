@@ -51,7 +51,7 @@ public abstract class ContinousRpcCommand<E> extends AbstractRpcCommand<E> {
 	protected void onResume() {
 		if (isRequestOutstanding()) {
 			retryTimer.cancel();
-			call();
 		}
+		call();
 	}
 }
