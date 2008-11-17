@@ -3,6 +3,7 @@ package com.dumontierlab.ontocreator.ui.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.gwtext.client.core.RegionPosition;
 import com.gwtext.client.widgets.Panel;
+import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.Viewport;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
@@ -34,7 +35,21 @@ public class OntoCreatorUi implements EntryPoint {
 
 		borderPanel.add(inputPanel, westLayoutData);
 
-		borderPanel.add(new Spacer(), new BorderLayoutData(RegionPosition.CENTER));
+		TabPanel tabs = new TabPanel();
+		tabs.setResizeTabs(true);
+		tabs.setTabWidth(90);
+
+		Panel rulesEditorPanel = new Panel("Rules Editor");
+		rulesEditorPanel.setLayout(new FitLayout());
+		rulesEditorPanel.add(new RulesEditor());
+		tabs.add(rulesEditorPanel);
+
+		Panel ontologyBrowserPanel = new Panel("Browser");
+		ontologyBrowserPanel.setLayout(new FitLayout());
+		ontologyBrowserPanel.add(new OntologyBrowser());
+		tabs.add(ontologyBrowserPanel);
+
+		borderPanel.add(tabs, new BorderLayoutData(RegionPosition.CENTER));
 
 		Panel outputPanel = createOutputPanel();
 		outputPanel.setWidth("25%");
