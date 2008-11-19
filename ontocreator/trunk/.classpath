@@ -8,9 +8,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/Users/alex/Development/pellet-2.0.0-rc3/lib/pellet-pellint.jar"/>
-	<classpathentry kind="lib" path="/Users/alex/Development/pellet-2.0.0-rc3/lib/xsdlib/relaxngDatatype.jar"/>
-	<classpathentry kind="lib" path="/Users/alex/Development/pellet-2.0.0-rc3/lib/pellet-el.jar"/>
-	<classpathentry kind="lib" path="/Users/alex/Development/pellet-2.0.0-rc3/lib/xsdlib/xsdlib.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
