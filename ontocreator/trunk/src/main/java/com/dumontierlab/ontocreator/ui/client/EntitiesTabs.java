@@ -9,7 +9,7 @@ public class EntitiesTabs extends Composite {
 	private final EntitiesTabsView view;
 
 	public EntitiesTabs(Widget classesView, Widget propertiesView, Widget individualsView) {
-		view = new EntitiesTabsView(classesView, propertiesView, individualsView, this);
+		view = new EntitiesTabsView(classesView, propertiesView, individualsView);
 		initWidget(view);
 	}
 

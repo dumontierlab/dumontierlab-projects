@@ -1,6 +1,5 @@
 package com.dumontierlab.ontocreator.ui.client.view;
 
-import com.dumontierlab.ontocreator.ui.client.ClassTree;
 import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -13,11 +12,9 @@ public class ClassTreeView extends Composite {
 
 	private static final String UNSATISFIABLE_STYLE_CLASS = null;
 
-	private final ClassTree controller;
 	private TreeNode owlThing;
 
-	public ClassTreeView(ClassTree controller) {
-		this.controller = controller;
+	public ClassTreeView() {
 		initWidget(createUi());
 	}
 

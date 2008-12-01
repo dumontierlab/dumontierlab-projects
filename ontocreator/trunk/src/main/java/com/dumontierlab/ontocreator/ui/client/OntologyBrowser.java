@@ -8,7 +8,7 @@ public class OntologyBrowser extends Composite {
 	private final OntologyBrowserView view;
 
 	public OntologyBrowser() {
-		view = new OntologyBrowserView(this);
+		view = new OntologyBrowserView();
 		initWidget(view);
 	}
 }

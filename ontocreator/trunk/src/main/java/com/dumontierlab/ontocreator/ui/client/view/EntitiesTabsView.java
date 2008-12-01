@@ -1,6 +1,5 @@
 package com.dumontierlab.ontocreator.ui.client.view;
 
-import com.dumontierlab.ontocreator.ui.client.EntitiesTabs;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.widgets.Panel;
@@ -8,10 +7,7 @@ import com.gwtext.client.widgets.TabPanel;
 
 public class EntitiesTabsView extends Composite {
 
-	private final EntitiesTabs controller;
-
-	public EntitiesTabsView(Widget classesView, Widget propertiesView, Widget individualsView, EntitiesTabs controller) {
-		this.controller = controller;
+	public EntitiesTabsView(Widget classesView, Widget propertiesView, Widget individualsView) {
 		initWidget(createUi(classesView, propertiesView, individualsView));
 	}
 

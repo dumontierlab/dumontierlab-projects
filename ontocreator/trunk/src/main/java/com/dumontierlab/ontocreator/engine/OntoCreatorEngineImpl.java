@@ -2,9 +2,10 @@ package com.dumontierlab.ontocreator.engine;
 
 import java.net.URI;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLIndividual;
@@ -34,58 +35,60 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 		ontologyManager.addURIMapper(mapper);
 		OWLOntology ontology = ontologyManager.createOntology(ontologyURI);
 
+		List<AddAxiom> changes = new LinkedList<AddAxiom>();
+
 		OWLDataFactory factory = ontologyManager.getOWLDataFactory();
 		OWLClass clsRow = factory.getOWLClass(URI.create(ontologyURI + "#Row"));
+		OWLObjectProperty propertyHasColumn = factory.getOWLObjectProperty(URI.create(ontologyURI + "#hasColumn"));
+
+		// add labels for Row class and hasColumn property
+		changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(clsRow, factory
+				.getOWLLabelAnnotation("Row"))));
+		changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(propertyHasColumn, factory
+				.getOWLLabelAnnotation("hasColumn"))));
+
 		OWLClass clsColumn;
 		OWLClass clsFieldName;
 		OWLIndividual column;
 		OWLIndividual row;
 
 		int rowCounter = 0;
-		int fieldCounter = 0;
+		int columnCounter = 0;
 
 		Iterator<Record> recordIterator = records.getRecords();
 		Iterator<Field<?>> fieldIterator;
-		OWLAxiom axiom;
-		AddAxiom addAxiom;
-		OWLObjectProperty property;
 
 		while (recordIterator.hasNext()) {
 			rowCounter++;
 			Record r = recordIterator.next();
 			row = factory.getOWLIndividual(URI.create(ontologyURI + "#row" + rowCounter));
-			axiom = factory.getOWLClassAssertionAxiom(row, clsRow);
-			addAxiom = new AddAxiom(ontology, axiom);
-			ontologyManager.applyChange(addAxiom);
+			changes.add(new AddAxiom(ontology, factory.getOWLClassAssertionAxiom(row, clsRow)));
 
-			fieldCounter = 0;
+			columnCounter = 0;
 			fieldIterator = r.getFields();
 			while (fieldIterator.hasNext()) {
-				fieldCounter++;
+				columnCounter++;
 
 				Field<?> field = fieldIterator.next();
 
-				clsColumn = factory.getOWLClass(URI.create(ontologyURI + "#Column" + fieldCounter));
+				clsColumn = factory.getOWLClass(URI.create(ontologyURI + "#Column" + columnCounter));
 				column = factory.getOWLIndividual(URI.create(ontologyURI + "#" + field.getValue()));
-				axiom = factory.getOWLClassAssertionAxiom(column, clsColumn);
-				addAxiom = new AddAxiom(ontology, axiom);
-				ontologyManager.applyChange(addAxiom);
+				changes.add(new AddAxiom(ontology, factory.getOWLClassAssertionAxiom(column, clsColumn)));
+				changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(clsColumn, factory
+						.getOWLLabelAnnotation("Column" + columnCounter))));
 
 				clsFieldName = factory.getOWLClass(URI.create(ontologyURI + "#" + field.getName()));
-				axiom = factory.getOWLSubClassAxiom(clsColumn, clsFieldName);
-				addAxiom = new AddAxiom(ontology, axiom);
-				ontologyManager.applyChange(addAxiom);
+				changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(clsFieldName, factory
+						.getOWLLabelAnnotation(field.getName()))));
 
-				property = factory.getOWLObjectProperty(URI.create(ontologyURI + "#hasColumn"));
-				axiom = factory.getOWLObjectPropertyAssertionAxiom(row, property, column);
+				changes.add(new AddAxiom(ontology, factory.getOWLSubClassAxiom(clsColumn, clsFieldName)));
 
-				addAxiom = new AddAxiom(ontology, axiom);
-				ontologyManager.applyChange(addAxiom);
+				changes.add(new AddAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(row, propertyHasColumn,
+						column)));
 			}
 
 		}
-
+		ontologyManager.applyChanges(changes);
 		return ontology;
 	}
-
 }

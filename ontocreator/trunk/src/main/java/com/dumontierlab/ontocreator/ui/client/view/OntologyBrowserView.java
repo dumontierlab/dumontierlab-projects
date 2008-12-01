@@ -1,6 +1,5 @@
 package com.dumontierlab.ontocreator.ui.client.view;
 
-import com.dumontierlab.ontocreator.ui.client.OntologyBrowser;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -10,10 +9,7 @@ import com.gwtext.client.widgets.Shadow;
 
 public class OntologyBrowserView extends Composite {
 
-	private final OntologyBrowser controller;
-
-	public OntologyBrowserView(OntologyBrowser controller) {
-		this.controller = controller;
+	public OntologyBrowserView() {
 		initWidget(createUi());
 	}
 
