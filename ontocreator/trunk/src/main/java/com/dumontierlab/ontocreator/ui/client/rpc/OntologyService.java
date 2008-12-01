@@ -1,8 +1,10 @@
 package com.dumontierlab.ontocreator.ui.client.rpc;
 
+import java.util.List;
 import java.util.Set;
 
 import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
+import com.dumontierlab.ontocreator.ui.client.model.OWLIndividualBean;
 import com.dumontierlab.ontocreator.ui.client.model.OWLPropertyBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
 import com.dumontierlab.ontocreator.ui.client.util.RetryException;
@@ -15,9 +17,11 @@ public interface OntologyService extends RemoteService {
 
 	Set<String> getLoadedOntologies() throws RetryException;
 
-	TreeNode<OWLClassBean> getClassHierarchy() throws RetryException;
+	TreeNode<OWLClassBean> getClassHierarchy();
 
-	TreeNode<OWLPropertyBean> getPropertyHierarchy() throws RetryException;
+	TreeNode<OWLPropertyBean> getPropertyHierarchy();
+
+	List<OWLIndividualBean> getIndividuals();
 
 	class Util {
 

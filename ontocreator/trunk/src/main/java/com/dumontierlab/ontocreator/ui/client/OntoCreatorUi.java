@@ -85,7 +85,7 @@ public class OntoCreatorUi implements EntryPoint {
 
 		Panel entititesPanel = new Panel();
 		entititesPanel.setLayout(new FitLayout());
-		EntitiesTabs tabs = new EntitiesTabs(new InputClassTree(), new InputPropertyTree(), new Spacer());
+		EntitiesTabs tabs = new EntitiesTabs(new InputClassTree(), new InputPropertyTree(), new InputIndividualList());
 		entititesPanel.add(tabs);
 
 		verticalPanel.add(entititesPanel, new BorderLayoutData(RegionPosition.CENTER));
