@@ -49,7 +49,7 @@ public class FileUploadServlet extends HttpServlet {
 				reader = new TabFileInputReaderImpl("\t");
 				RecordSet rset = reader.read(in, true);
 				try {
-					engine.buildInitialOnthology(rset, SessionHelper.getClientSession(request).getOntologyManager());
+					engine.buildInitialOnthology(rset, SessionHelper.getClientSession(request).getInputOntologyManager());
 				} catch (Exception e) {
 					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while creating ontology: "
 							+ e.getMessage());

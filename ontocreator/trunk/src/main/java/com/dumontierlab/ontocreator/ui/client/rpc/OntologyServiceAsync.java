@@ -13,6 +13,10 @@ public interface OntologyServiceAsync {
 
 	void getLoadedOntologies(AsyncCallback<Set<String>> callback);
 
+	void createOutputOntology(String uri, AsyncCallback<Void> callback);
+
+	void getOutputOntology(AsyncCallback<String> callback);
+
 	void getClassHierarchy(AsyncCallback<TreeNode<OWLClassBean>> callback);
 
 	void getPropertyHierarchy(AsyncCallback<TreeNode<OWLPropertyBean>> callback);

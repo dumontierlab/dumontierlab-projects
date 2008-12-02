@@ -24,7 +24,7 @@ public class PrintClientSessionOntologies implements HttpCommand {
 
 		ClientSession session = SessionHelper.getClientSession(request);
 		OWLOntologyManager ontologyManager = OWLManager.createOWLOntologyManager();
-		for (OWLOntology ontology : session.getOntologies()) {
+		for (OWLOntology ontology : session.getInputOntologies()) {
 			RDFXMLRenderer renderer = new RDFXMLRenderer(ontologyManager, ontology, writer, new RDFXMLOntologyFormat());
 			renderer.render();
 			writer.println("-------------------------------------------------------------------");

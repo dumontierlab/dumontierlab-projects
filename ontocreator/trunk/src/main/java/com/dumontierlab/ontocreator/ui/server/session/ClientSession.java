@@ -1,5 +1,6 @@
 package com.dumontierlab.ontocreator.ui.server.session;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,26 +13,31 @@ import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeListener;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class ClientSession {
 
-	private volatile long lastOntologyChangeTime;
-	private final OWLOntologyManager ontologyManager;
-	private OWLReasoner reasoner;
+	private volatile long lastInputOntologyChangeTime;
+	private volatile long lastOutputOntologyChangeTime;
+	private final OWLOntologyManager inputOntologyManager;
+	private final OWLOntologyManager outputOntologyManager;
+	private OWLOntology outputOntology;
+	private OWLReasoner inputReasoner;
 
 	private ClientSession() {
-		ontologyManager = OWLManager.createOWLOntologyManager();
+		inputOntologyManager = OWLManager.createOWLOntologyManager();
+		outputOntologyManager = OWLManager.createOWLOntologyManager();
 	}
 
 	public static ClientSession newInstance() {
 		final ClientSession instance = new ClientSession();
-		instance.getOntologyManager().addOntologyChangeListener(new OWLOntologyChangeListener() {
+		instance.getInputOntologyManager().addOntologyChangeListener(new OWLOntologyChangeListener() {
 			public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
-				instance.lastOntologyChangeTime = System.currentTimeMillis();
+				instance.lastInputOntologyChangeTime = System.currentTimeMillis();
 				synchronized (instance) {
-					if (instance.reasoner != null) {
-						OWLReasoner reasoner = instance.reasoner;
+					if (instance.inputReasoner != null) {
+						OWLReasoner reasoner = instance.inputReasoner;
 						synchronized (reasoner) {
 							Set<OWLOntology> changedOntologies = new HashSet<OWLOntology>();
 							for (OWLOntologyChange change : changes) {
@@ -46,30 +52,55 @@ public class ClientSession {
 
 			}
 		});
+		instance.getOutputOntologyManager().addOntologyChangeListener(new OWLOntologyChangeListener() {
+			public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
+				instance.lastOutputOntologyChangeTime = System.currentTimeMillis();
+			}
+		});
 		return instance;
 	}
 
-	public OWLOntologyManager getOntologyManager() {
-		return ontologyManager;
+	public OWLOntologyManager getInputOntologyManager() {
+		return inputOntologyManager;
 	}
 
-	public Set<OWLOntology> getOntologies() {
-		return ontologyManager.getOntologies();
+	public OWLOntologyManager getOutputOntologyManager() {
+		return outputOntologyManager;
 	}
 
-	public long getLastOntologyChangeTime() {
-		return lastOntologyChangeTime;
+	public Set<OWLOntology> getInputOntologies() {
+		return inputOntologyManager.getOntologies();
 	}
 
-	public synchronized OWLReasoner getReasoner() throws OWLReasonerException {
-		if (reasoner == null) {
-			reasoner = new PelletReasonerFactory().createReasoner(ontologyManager);
-			synchronized (reasoner) {
-				reasoner.loadOntologies(getOntologies());
-				reasoner.classify();
+	public Set<OWLOntology> getOutputOntologies() {
+		return outputOntologyManager.getOntologies();
+	}
+
+	public long getLastInputOntologyChangeTime() {
+		return lastInputOntologyChangeTime;
+	}
+
+	public long getLastOutputOntologyChangeTime() {
+		return lastOutputOntologyChangeTime;
+	}
+
+	public synchronized OWLReasoner getInputReasoner() throws OWLReasonerException {
+		if (inputReasoner == null) {
+			inputReasoner = new PelletReasonerFactory().createReasoner(inputOntologyManager);
+			synchronized (inputReasoner) {
+				inputReasoner.loadOntologies(getInputOntologies());
+				inputReasoner.classify();
 			}
 		}
-		return reasoner;
+		return inputReasoner;
+	}
+
+	public void createOutputOntology(URI uri) throws OWLOntologyCreationException {
+		outputOntology = outputOntologyManager.createOntology(uri);
+	}
+
+	public OWLOntology getOuputOntology() {
+		return outputOntology;
 	}
 
 }

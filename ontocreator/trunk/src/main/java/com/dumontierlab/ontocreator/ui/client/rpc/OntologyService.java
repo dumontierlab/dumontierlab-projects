@@ -17,6 +17,10 @@ public interface OntologyService extends RemoteService {
 
 	Set<String> getLoadedOntologies() throws RetryException;
 
+	void createOutputOntology(String uri);
+
+	String getOutputOntology() throws RetryException;
+
 	TreeNode<OWLClassBean> getClassHierarchy();
 
 	TreeNode<OWLPropertyBean> getPropertyHierarchy();
