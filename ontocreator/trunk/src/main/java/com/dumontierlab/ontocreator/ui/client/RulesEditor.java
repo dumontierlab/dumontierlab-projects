@@ -12,4 +12,8 @@ public class RulesEditor extends Composite {
 		initWidget(view);
 	}
 
+	public void newRule() {
+		RuleContainer rule = new RuleContainer();
+		view.add(rule);
+	}
 }

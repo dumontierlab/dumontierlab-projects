@@ -24,8 +24,9 @@ public class OntologyBrowserView extends Composite {
 		notePanel.add(new Label("Sorry, this feature is not implemented in this release."));
 		notePanel.setHeight(150);
 		notePanel.setWidth(150);
-		notePanel.setShadow(Shadow.DROP);
 		notePanel.setShadow(true);
+		notePanel.setShadow(Shadow.DROP);
+		notePanel.setShadowOffset(2);
 		container.add(notePanel);
 
 		container.setSize("100%", "100%");

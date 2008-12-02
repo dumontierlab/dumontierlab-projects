@@ -38,10 +38,13 @@ public class OntoCreatorUi implements EntryPoint {
 		TabPanel tabs = new TabPanel();
 		tabs.setResizeTabs(true);
 		tabs.setTabWidth(90);
+		tabs.setHeight("100%");
 
 		Panel rulesEditorPanel = new Panel("Rules Editor");
+		rulesEditorPanel.setAutoScroll(true);
 		rulesEditorPanel.setLayout(new FitLayout());
-		rulesEditorPanel.add(new RulesEditor());
+		RulesEditor ruleEditor = new RulesEditor();
+		rulesEditorPanel.add(ruleEditor);
 		tabs.add(rulesEditorPanel);
 
 		Panel ontologyBrowserPanel = new Panel("Browser");
