@@ -16,4 +16,7 @@ public class ToLowerCaseFunction implements Function {
 		return results;
 	}
 
+	public String toString(String arg) {
+		return "toLowerCase(" + arg + ")";
+	}
 }

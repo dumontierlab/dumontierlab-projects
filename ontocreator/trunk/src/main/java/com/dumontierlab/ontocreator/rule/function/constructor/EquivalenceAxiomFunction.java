@@ -34,4 +34,8 @@ public class EquivalenceAxiomFunction extends AbstractAxiomFunction {
 
 	}
 
+	public String toString(String arg) {
+		return "EquivalentClass(" + arg + ", " + conceptDescription + ")";
+	}
+
 }

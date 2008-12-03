@@ -17,4 +17,7 @@ public class URLEncodeFunction implements Function {
 		return results;
 	}
 
+	public String toString(String arg) {
+		return "UrlEcode(" + arg + ")";
+	}
 }

@@ -32,4 +32,8 @@ public class ClassAssertionAxiomFunction extends AbstractAxiomFunction {
 		}
 	}
 
+	public String toString(String arg) {
+		return concept.toString() + "(" + arg + ")";
+	}
+
 }

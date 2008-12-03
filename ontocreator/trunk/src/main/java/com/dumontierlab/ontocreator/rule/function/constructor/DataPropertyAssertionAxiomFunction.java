@@ -35,4 +35,7 @@ public class DataPropertyAssertionAxiomFunction extends AbstractAxiomFunction {
 		}
 	}
 
+	public String toString(String arg) {
+		return property.toString() + "(" + arg + ", " + value + ")";
+	}
 }

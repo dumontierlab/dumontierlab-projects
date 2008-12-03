@@ -34,4 +34,7 @@ public class AboxQueryFilter implements Function {
 		}
 	}
 
+	public String toString(String arg) {
+		return "IF(" + arg + ", instanceOf, " + expression + ")";
+	}
 }

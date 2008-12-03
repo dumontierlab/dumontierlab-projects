@@ -32,4 +32,8 @@ public class InclusionAxiomFunction extends AbstractAxiomFunction {
 		}
 	}
 
+	public String toString(String arg) {
+		return "SubClassOf(" + arg + ", " + superClass + ")";
+	}
+
 }

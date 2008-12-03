@@ -27,4 +27,12 @@ public class Rule {
 		functions.remove(function);
 	}
 
+	@Override
+	public String toString() {
+		String arg = "X";
+		for (Function f : functions) {
+			arg = f.toString(arg);
+		}
+		return arg;
+	}
 }

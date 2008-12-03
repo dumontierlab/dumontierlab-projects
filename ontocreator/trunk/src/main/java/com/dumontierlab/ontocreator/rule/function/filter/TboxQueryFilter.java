@@ -15,7 +15,19 @@ import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
 public class TboxQueryFilter implements Function {
 
 	public enum QueryType {
-		SUBCLASS, SUPERCLASS, EQUIVALENT_CLASS
+		SUBCLASS("SubClassOf"), SUPERCLASS("SuperClassOf"), EQUIVALENT_CLASS("EquivalentClassOf");
+
+		private final String label;
+
+		private QueryType(String label) {
+			this.label = label;
+		}
+
+		@Override
+		public String toString() {
+			return label;
+		}
+
 	}
 
 	private final OWLDescription expression;
@@ -49,5 +61,9 @@ public class TboxQueryFilter implements Function {
 		} catch (Exception e) {
 			throw new RuntimeFunctionException("Tbox query failed", e);
 		}
+	}
+
+	public String toString(String arg) {
+		return "IF(" + arg + ", " + type + ", " + expression + ")";
 	}
 }

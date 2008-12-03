@@ -44,4 +44,8 @@ public class DataPropertySyntaxQueryFilter implements Function {
 			throw new RuntimeFunctionException("Unable to query dataproperty " + property.getURI(), e);
 		}
 	}
+
+	public String toString(String arg) {
+		return "IF(" + arg + ", matches, " + property + "(" + regex + "))";
+	}
 }

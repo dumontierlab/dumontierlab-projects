@@ -32,4 +32,12 @@ public class ConcatenateFunction implements Function {
 		return resutls;
 	}
 
+	public String toString(String arg) {
+		if (position == ConcatenatePosition.BEGINING) {
+			return "concatenate(" + arg + ", " + string + ")";
+		} else {
+			return "concatenate(" + string + ", " + arg + ")";
+		}
+	}
+
 }

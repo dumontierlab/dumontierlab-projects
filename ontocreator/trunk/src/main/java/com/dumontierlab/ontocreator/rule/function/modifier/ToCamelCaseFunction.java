@@ -25,4 +25,8 @@ public class ToCamelCaseFunction implements Function {
 		}
 		return result;
 	}
+
+	public String toString(String arg) {
+		return "toCamelCase(" + arg + ")";
+	}
 }

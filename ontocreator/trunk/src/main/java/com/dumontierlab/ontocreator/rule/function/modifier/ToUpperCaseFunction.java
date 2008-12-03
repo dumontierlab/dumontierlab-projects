@@ -16,4 +16,7 @@ public class ToUpperCaseFunction implements Function {
 		return results;
 	}
 
+	public String toString(String arg) {
+		return "toUpperCase(" + arg + ")";
+	}
 }

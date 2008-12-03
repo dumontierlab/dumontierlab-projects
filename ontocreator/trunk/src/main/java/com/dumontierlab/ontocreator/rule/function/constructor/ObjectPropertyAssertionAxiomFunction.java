@@ -34,4 +34,8 @@ public class ObjectPropertyAssertionAxiomFunction extends AbstractAxiomFunction 
 					+ property.getURI() + " " + filler.getURI(), e);
 		}
 	}
+
+	public String toString(String arg) {
+		return property + "(" + arg + ", " + filler + ")";
+	}
 }
