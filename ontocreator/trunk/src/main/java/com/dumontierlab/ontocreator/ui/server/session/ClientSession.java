@@ -3,7 +3,9 @@ package com.dumontierlab.ontocreator.ui.server.session;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -15,6 +17,10 @@ import org.semanticweb.owl.model.OWLOntologyChange;
 import org.semanticweb.owl.model.OWLOntologyChangeListener;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
+import org.semanticweb.owl.util.BidirectionalShortFormProvider;
+
+import com.dumontierlab.ontocreator.rule.Rule;
+import com.dumontierlab.ontocreator.util.OntoCreatorBidirectionalShortFormProvider;
 
 public class ClientSession {
 
@@ -22,12 +28,16 @@ public class ClientSession {
 	private volatile long lastOutputOntologyChangeTime;
 	private final OWLOntologyManager inputOntologyManager;
 	private final OWLOntologyManager outputOntologyManager;
+	private final OntoCreatorBidirectionalShortFormProvider shortFormProvider;
 	private OWLOntology outputOntology;
 	private OWLReasoner inputReasoner;
+	private final Map<String, Rule> rules;
 
 	private ClientSession() {
+		rules = new ConcurrentHashMap<String, Rule>();
 		inputOntologyManager = OWLManager.createOWLOntologyManager();
 		outputOntologyManager = OWLManager.createOWLOntologyManager();
+		shortFormProvider = new OntoCreatorBidirectionalShortFormProvider(inputOntologyManager);
 	}
 
 	public static ClientSession newInstance() {
@@ -49,7 +59,6 @@ public class ClientSession {
 						}
 					}
 				}
-
 			}
 		});
 		instance.getOutputOntologyManager().addOntologyChangeListener(new OWLOntologyChangeListener() {
@@ -66,6 +75,10 @@ public class ClientSession {
 
 	public OWLOntologyManager getOutputOntologyManager() {
 		return outputOntologyManager;
+	}
+
+	public BidirectionalShortFormProvider getBidirectionalShortFormProvider() {
+		return shortFormProvider;
 	}
 
 	public Set<OWLOntology> getInputOntologies() {
@@ -101,6 +114,26 @@ public class ClientSession {
 
 	public OWLOntology getOuputOntology() {
 		return outputOntology;
+	}
+
+	public void addRule(Rule rule) {
+		rules.put(rule.getName(), rule);
+	}
+
+	public void removeRule(String name) {
+		rules.remove(name);
+	}
+
+	public Rule getRule(String name) {
+		return rules.get(name);
+	}
+
+	public Set<Rule> getRules() {
+		return new HashSet<Rule>(rules.values());
+	}
+
+	public boolean containsRule(String ruleName) {
+		return rules.containsKey(ruleName);
 	}
 
 }

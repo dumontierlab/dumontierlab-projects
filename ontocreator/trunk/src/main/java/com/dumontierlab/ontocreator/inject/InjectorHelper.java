@@ -8,14 +8,18 @@ public class InjectorHelper {
 	private static Injector injector;
 
 	public static void inject(Object obj) {
-		if (injector == null) {
-			initialize();
-		}
-		injector.injectMembers(obj);
+		getInjector().injectMembers(obj);
 	}
 
-	private static void initialize() {
-		injector = Guice.createInjector(new OntoCreatorModule());
+	public static <E> E getInstance(Class<E> c) {
+		return getInjector().getInstance(c);
+	}
+
+	private static Injector getInjector() {
+		if (injector == null) {
+			injector = Guice.createInjector(new OntoCreatorModule());
+		}
+		return injector;
 	}
 
 }

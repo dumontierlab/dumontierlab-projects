@@ -14,6 +14,7 @@
 <!--    <entry-point class="com.dumontierlab.ontocreator.ui.client.test.TestEntryPoint"/>-->
     
     <servlet path="/OntologyService" class="com.dumontierlab.ontocreator.ui.server.rpc.OntologyServiceImpl"/>
+    <servlet path="/RuleService" class="com.dumontierlab.ontocreator.ui.server.rpc.RuleServiceImpl"/>
     
     <servlet path="/diag" class="com.dumontierlab.ontocreator.diagnostic.DiagnosticServlet"/>
     <servlet path="/fileUpload" class="com.dumontierlab.ontocreator.ui.server.fileupload.FileUploadServlet"/>

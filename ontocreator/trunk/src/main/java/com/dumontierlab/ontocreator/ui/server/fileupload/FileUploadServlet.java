@@ -20,6 +20,7 @@ import com.dumontierlab.ontocreator.inject.InjectorHelper;
 import com.dumontierlab.ontocreator.io.TabFileInputReaderImpl;
 import com.dumontierlab.ontocreator.model.RecordSet;
 import com.dumontierlab.ontocreator.ui.client.util.Constants;
+import com.dumontierlab.ontocreator.ui.server.session.ClientSession;
 import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
 import com.google.inject.Inject;
 
@@ -49,7 +50,8 @@ public class FileUploadServlet extends HttpServlet {
 				reader = new TabFileInputReaderImpl("\t");
 				RecordSet rset = reader.read(in, true);
 				try {
-					engine.buildInitialOnthology(rset, SessionHelper.getClientSession(request).getInputOntologyManager());
+					ClientSession session = SessionHelper.getClientSession(request);
+					engine.buildInitialOnthology(rset, session.getInputOntologyManager());
 				} catch (Exception e) {
 					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while creating ontology: "
 							+ e.getMessage());

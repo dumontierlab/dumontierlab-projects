@@ -6,7 +6,7 @@ import com.gwtext.client.widgets.MessageBox;
 public class UserMessage {
 
 	public static void serverError(String message, Throwable caught) {
-		MessageBox.alert(message);
+		MessageBox.alert("Server Error", message);
 		GWT.log(message, caught);
 	}
 
