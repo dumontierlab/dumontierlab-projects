@@ -28,7 +28,7 @@ public class FileChooserDialog extends DialogBox {
 		final FormPanel form = new FormPanel();
 		form.setEncoding(FormPanel.ENCODING_MULTIPART);
 		form.setMethod(FormPanel.METHOD_POST);
-		form.setAction(GWT.getModuleBaseURL() + "fileUpload?" + Constants.FILE_TYPE_PARAMETER + "=" + URL.encode(type));
+		form.setAction(GWT.getModuleBaseURL() + "upload?" + Constants.FILE_TYPE_PARAMETER + "=" + URL.encode(type));
 
 		VerticalPanel panel = new VerticalPanel();
 		form.setWidget(panel);

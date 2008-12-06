@@ -3,6 +3,8 @@ package com.dumontierlab.ontocreator.ui.client;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
 import com.dumontierlab.ontocreator.ui.client.util.Constants;
 import com.dumontierlab.ontocreator.ui.client.view.OntoCreatorMenuView;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.gwtext.client.widgets.MessageBox;
@@ -47,8 +49,7 @@ public class OntoCreatorMenu extends Composite {
 	}
 
 	public void saveOutput() {
-		// TODO Auto-generated method stub
-
+		Window.open(GWT.getModuleBaseURL() + "download", "Output Ontology", null);
 	}
 
 }

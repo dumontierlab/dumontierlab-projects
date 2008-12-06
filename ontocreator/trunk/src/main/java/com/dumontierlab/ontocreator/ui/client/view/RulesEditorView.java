@@ -109,7 +109,7 @@ public class RulesEditorView extends Composite {
 		toolbar.addButton(filtersButton);
 
 		Menu modifiersMenu = new Menu();
-		ToolbarMenuButton modifiersButton = new ToolbarMenuButton("Modifiers", filtersMenu);
+		ToolbarMenuButton modifiersButton = new ToolbarMenuButton("Modifiers", modifiersMenu);
 
 		Item concatButton = new Item("Concatenate");
 		modifiersMenu.addItem(concatButton);
@@ -129,7 +129,7 @@ public class RulesEditorView extends Composite {
 		toolbar.addButton(modifiersButton);
 
 		Menu constructorsMenu = new Menu();
-		ToolbarMenuButton constructorsButton = new ToolbarMenuButton("Constructors", filtersMenu);
+		ToolbarMenuButton constructorsButton = new ToolbarMenuButton("Constructors", constructorsMenu);
 
 		Item classAssertionAxiomButton = new Item("Class Assertion Axiom");
 		classAssertionAxiomButton.addListener(new BaseItemListenerAdapter() {
