@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dumontierlab.ontocreator.rule.function.Function;
+import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
 
 public class Rule {
 
@@ -25,6 +26,13 @@ public class Rule {
 
 	public void remove(Function function) {
 		functions.remove(function);
+	}
+
+	public void apply() throws RuntimeFunctionException {
+		List<String> result = null;
+		for (Function f : functions) {
+			result = f.apply(result);
+		}
 	}
 
 	@Override

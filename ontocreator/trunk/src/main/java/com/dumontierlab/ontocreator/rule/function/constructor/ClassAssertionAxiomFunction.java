@@ -3,8 +3,8 @@ package com.dumontierlab.ontocreator.rule.function.constructor;
 import java.net.URI;
 
 import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -13,9 +13,9 @@ import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
 
 public class ClassAssertionAxiomFunction extends AbstractAxiomFunction {
 
-	private final OWLClass concept;
+	private final OWLDescription concept;
 
-	public ClassAssertionAxiomFunction(OWLOntologyManager manager, OWLOntology outputOntology, OWLClass concept) {
+	public ClassAssertionAxiomFunction(OWLOntologyManager manager, OWLOntology outputOntology, OWLDescription concept) {
 		super(manager, outputOntology);
 		this.concept = concept;
 	}
@@ -28,7 +28,7 @@ public class ClassAssertionAxiomFunction extends AbstractAxiomFunction {
 			return factory.getOWLClassAssertionAxiom(individual, concept);
 		} catch (Exception e) {
 			throw new RuntimeFunctionException("Failed to create class assertion axiom for individual " + input
-					+ " and class" + concept.getURI(), e);
+					+ " and class" + concept, e);
 		}
 	}
 

@@ -128,10 +128,40 @@ public class RulesEditorView extends Composite {
 
 		toolbar.addButton(modifiersButton);
 
-		Menu constructors = new Menu();
+		Menu constructorsMenu = new Menu();
 		ToolbarMenuButton constructorsButton = new ToolbarMenuButton("Constructors", filtersMenu);
 
+		Item classAssertionAxiomButton = new Item("Class Assertion Axiom");
+		classAssertionAxiomButton.addListener(new BaseItemListenerAdapter() {
+			@Override
+			public void onClick(BaseItem item, EventObject e) {
+				controller.addClassAssertionAxiom();
+			}
+		});
+		constructorsMenu.addItem(classAssertionAxiomButton);
+
+		Item DataPropertyAssertionAxiomButton = new Item("Data Property Assertion Axiom");
+		constructorsMenu.addItem(DataPropertyAssertionAxiomButton);
+
+		Item ObjectPropertyAssertionAxiomButton = new Item("Object Property Assertion Axiom");
+		constructorsMenu.addItem(ObjectPropertyAssertionAxiomButton);
+
+		Item inclusionAxiomButton = new Item("Inclusion Axiom");
+		constructorsMenu.addItem(inclusionAxiomButton);
+
+		Item equivalenceAxiomButton = new Item("Equivalence Axiom");
+		constructorsMenu.addItem(equivalenceAxiomButton);
+
 		toolbar.addButton(constructorsButton);
+
+		ToolbarButton applyButton = new ToolbarButton("Apply");
+		applyButton.addListener(new ButtonListenerAdapter() {
+			@Override
+			public void onClick(Button button, EventObject e) {
+				controller.applyRule();
+			}
+		});
+		toolbar.addButton(applyButton);
 
 		return toolbar;
 	}

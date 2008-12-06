@@ -1,4 +1,4 @@
-package com.dumontierlab.ontocreator.ui.server.fileupload;
+package com.dumontierlab.ontocreator.ui.server.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
