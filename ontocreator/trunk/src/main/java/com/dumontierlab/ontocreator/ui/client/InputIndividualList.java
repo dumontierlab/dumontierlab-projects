@@ -21,12 +21,12 @@ public class InputIndividualList extends IndividualList implements UiEventHandle
 		rpcCommand = new OnRequestRpcCommand<List<OWLIndividualBean>>() {
 			@Override
 			protected void rpcCall(AsyncCallback<List<OWLIndividualBean>> callback) {
-				OntologyService.Util.getInstace().getIndividuals(callback);
+				OntologyService.Util.getInstace().getInputIndividuals(callback);
 			}
 
 			@Override
 			protected void rpcFail(Throwable caught) {
-				UserMessage.serverError("Unable to get properties hierarchy for input ontologies", caught);
+				UserMessage.serverError("Unable to get individuals for input ontologies", caught);
 			}
 
 			@Override

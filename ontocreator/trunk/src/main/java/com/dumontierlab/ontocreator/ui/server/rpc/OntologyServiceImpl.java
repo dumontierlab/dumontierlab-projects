@@ -66,7 +66,7 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		return session.getOuputOntology() == null ? null : session.getOuputOntology().getURI().toString();
 	}
 
-	public TreeNode<OWLClassBean> getClassHierarchy() {
+	public TreeNode<OWLClassBean> getInputClassHierarchy() {
 		ClientSession session = getClientSession();
 		TreeNode<OWLClassBean> tree = null;
 		try {
@@ -80,7 +80,7 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		return tree;
 	}
 
-	public TreeNode<OWLPropertyBean> getPropertyHierarchy() {
+	public TreeNode<OWLPropertyBean> getInputPropertyHierarchy() {
 		ClientSession session = getClientSession();
 
 		TreeNode<OWLPropertyBean> root = new TreeNode<OWLPropertyBean>(null);
@@ -98,7 +98,7 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		return root;
 	}
 
-	public List<OWLIndividualBean> getIndividuals() {
+	public List<OWLIndividualBean> getInputIndividuals() {
 		ClientSession session = getClientSession();
 		List<OWLIndividualBean> results = new ArrayList<OWLIndividualBean>();
 
@@ -110,6 +110,60 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 			}
 		}
 		return results;
+	}
+
+	public TreeNode<OWLClassBean> getOutputClassHierarchy() {
+		ClientSession session = getClientSession();
+		if (session.getOuputOntology() == null) {
+			return null;
+		}
+		TreeNode<OWLClassBean> tree = null;
+		try {
+			OWLReasoner reasoner = session.getOutputReasoner();
+			synchronized (reasoner) {
+				tree = createTaxonomyTree(OWL.Thing, reasoner);
+			}
+		} catch (OWLReasonerException e) {
+			throw new RuntimeException("Ontology classification failed.", e);
+		}
+		return tree;
+	}
+
+	public List<OWLIndividualBean> getOutputIndividuals() {
+		ClientSession session = getClientSession();
+		OWLOntology ontology = session.getOuputOntology();
+		if (ontology == null) {
+			return null;
+		}
+
+		List<OWLIndividualBean> results = new ArrayList<OWLIndividualBean>();
+		for (OWLIndividual individual : ontology.getReferencedIndividuals()) {
+			if (!results.contains(individual)) {
+				results.add(createOWLIndividualBean(getShortForm(session, individual), individual, ontology));
+			}
+		}
+
+		return results;
+	}
+
+	public TreeNode<OWLPropertyBean> getOutputPropertyHierarchy() {
+		ClientSession session = getClientSession();
+		OWLOntology ontology = session.getOuputOntology();
+		if (ontology == null) {
+			return null;
+		}
+
+		TreeNode<OWLPropertyBean> root = new TreeNode<OWLPropertyBean>(null);
+		for (OWLObjectProperty objectProperty : ontology.getReferencedObjectProperties()) {
+			root.addChild(new TreeNode<OWLPropertyBean>(createOWLPropertyBean(getShortForm(session, objectProperty),
+					objectProperty, ontology)));
+		}
+		for (OWLDataProperty dataProperty : ontology.getReferencedDataProperties()) {
+			root.addChild(new TreeNode<OWLPropertyBean>(createOWLPropertyBean(getShortForm(session, dataProperty),
+					dataProperty, ontology)));
+		}
+
+		return root;
 	}
 
 	private OWLPropertyBean createOWLPropertyBean(String shortForm, OWLProperty<?, ?> property, OWLOntology ontology) {

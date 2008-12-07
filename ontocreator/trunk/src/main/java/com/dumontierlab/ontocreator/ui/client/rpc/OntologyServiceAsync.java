@@ -17,10 +17,16 @@ public interface OntologyServiceAsync {
 
 	void getOutputOntology(AsyncCallback<String> callback);
 
-	void getClassHierarchy(AsyncCallback<TreeNode<OWLClassBean>> callback);
+	void getInputClassHierarchy(AsyncCallback<TreeNode<OWLClassBean>> callback);
 
-	void getPropertyHierarchy(AsyncCallback<TreeNode<OWLPropertyBean>> callback);
+	void getInputPropertyHierarchy(AsyncCallback<TreeNode<OWLPropertyBean>> callback);
 
-	void getIndividuals(AsyncCallback<List<OWLIndividualBean>> callback);
+	void getInputIndividuals(AsyncCallback<List<OWLIndividualBean>> callback);
+
+	void getOutputClassHierarchy(AsyncCallback<TreeNode<OWLClassBean>> callback);
+
+	void getOutputPropertyHierarchy(AsyncCallback<TreeNode<OWLPropertyBean>> callback);
+
+	void getOutputIndividuals(AsyncCallback<List<OWLIndividualBean>> callback);
 
 }

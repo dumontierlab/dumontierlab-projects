@@ -21,11 +21,17 @@ public interface OntologyService extends RemoteService {
 
 	String getOutputOntology() throws RetryException;
 
-	TreeNode<OWLClassBean> getClassHierarchy();
+	TreeNode<OWLClassBean> getInputClassHierarchy();
 
-	TreeNode<OWLPropertyBean> getPropertyHierarchy();
+	TreeNode<OWLPropertyBean> getInputPropertyHierarchy();
 
-	List<OWLIndividualBean> getIndividuals();
+	List<OWLIndividualBean> getInputIndividuals();
+
+	TreeNode<OWLClassBean> getOutputClassHierarchy();
+
+	TreeNode<OWLPropertyBean> getOutputPropertyHierarchy();
+
+	List<OWLIndividualBean> getOutputIndividuals();
 
 	class Util {
 

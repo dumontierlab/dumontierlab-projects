@@ -31,6 +31,7 @@ public class ClientSession {
 	private final OntoCreatorBidirectionalShortFormProvider shortFormProvider;
 	private OWLOntology outputOntology;
 	private OWLReasoner inputReasoner;
+	private OWLReasoner outputReasoner;
 	private final Map<String, Rule> rules;
 
 	private ClientSession() {
@@ -64,6 +65,20 @@ public class ClientSession {
 		instance.getOutputOntologyManager().addOntologyChangeListener(new OWLOntologyChangeListener() {
 			public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
 				instance.lastOutputOntologyChangeTime = System.currentTimeMillis();
+				synchronized (instance) {
+					if (instance.outputReasoner != null) {
+						OWLReasoner reasoner = instance.outputReasoner;
+						synchronized (reasoner) {
+							Set<OWLOntology> changedOntologies = new HashSet<OWLOntology>();
+							for (OWLOntologyChange change : changes) {
+								changedOntologies.add(change.getOntology());
+							}
+							reasoner.unloadOntologies(changedOntologies);
+							reasoner.loadOntologies(changedOntologies);
+							reasoner.classify();
+						}
+					}
+				}
 			}
 		});
 		return instance;
@@ -106,6 +121,17 @@ public class ClientSession {
 			}
 		}
 		return inputReasoner;
+	}
+
+	public synchronized OWLReasoner getOutputReasoner() throws OWLReasonerException {
+		if (outputReasoner == null) {
+			outputReasoner = new PelletReasonerFactory().createReasoner(outputOntologyManager);
+			synchronized (outputReasoner) {
+				outputReasoner.loadOntologies(getOutputOntologies());
+				outputReasoner.classify();
+			}
+		}
+		return outputReasoner;
 	}
 
 	public void createOutputOntology(URI uri) throws OWLOntologyCreationException {

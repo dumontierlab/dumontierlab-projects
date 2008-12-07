@@ -49,13 +49,14 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	public String addClassAssertion(String ruleName, String description) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
+		assertOutputOntologyIsCreated(session);
 		Rule rule = getRule(session, ruleName);
 		ManchesterOWLSyntaxDescriptionParser parser = new ManchesterOWLSyntaxDescriptionParser(session
 				.getInputOntologyManager().getOWLDataFactory(), new ShortFormEntityChecker(session
 				.getBidirectionalShortFormProvider()));
 		try {
 			OWLDescription owlDescription = parser.parse(description);
-			rule.add(new ClassAssertionAxiomFunction(session.getInputOntologyManager(), session.getOuputOntology(),
+			rule.add(new ClassAssertionAxiomFunction(session.getOutputOntologyManager(), session.getOuputOntology(),
 					owlDescription));
 			return rule.toString();
 		} catch (ParserException e) {
@@ -66,6 +67,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	public void apply(String ruleName) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
+		assertOutputOntologyIsCreated(session);
 		Rule rule = getRule(session, ruleName);
 		try {
 			rule.apply();
@@ -77,7 +79,8 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 	/* ---------------------------- helper methods -- */
 	private void assertOutputOntologyIsCreated(ClientSession session) throws NoOutputOntologyException {
 		if (session.getOuputOntology() == null) {
-			throw new NoOutputOntologyException();
+			throw new NoOutputOntologyException(
+					"You need to create an output ontology. You can do so from the File menu.");
 		}
 	}
 

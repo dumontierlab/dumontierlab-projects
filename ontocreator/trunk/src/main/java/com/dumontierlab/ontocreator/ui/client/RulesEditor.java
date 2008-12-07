@@ -3,7 +3,6 @@ package com.dumontierlab.ontocreator.ui.client;
 import com.dumontierlab.ontocreator.ui.client.rpc.RuleService;
 import com.dumontierlab.ontocreator.ui.client.rpc.RuleServiceAsync;
 import com.dumontierlab.ontocreator.ui.client.view.RulesEditorView;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.gwtext.client.widgets.MessageBox;
@@ -69,7 +68,7 @@ public class RulesEditor extends Composite {
 			}
 
 			public void onSuccess(Void result) {
-				Window.alert("rule applied");
+				MessageBox.alert("Rules Applied", "All rules were applied successfully.");
 			}
 		});
 	}
@@ -80,7 +79,7 @@ public class RulesEditor extends Composite {
 					public void execute(String btnID, String text) {
 						if (MessageBox.OK.getID().equalsIgnoreCase(btnID)) {
 							final String currentActiveRule = new String(activeRule);
-							service.addABoxQueryFilter(currentActiveRule, text, new AsyncCallback<String>() {
+							service.addClassAssertion(currentActiveRule, text, new AsyncCallback<String>() {
 								public void onFailure(Throwable caught) {
 									UserMessage.serverError(caught.getMessage(), caught);
 								}

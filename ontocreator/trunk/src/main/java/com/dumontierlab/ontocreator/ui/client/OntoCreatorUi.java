@@ -101,8 +101,7 @@ public class OntoCreatorUi implements EntryPoint {
 		Panel panel = new Panel("OUTPUT");
 		panel.setLayout(new FitLayout());
 		panel.setCollapsible(true);
-		panel.add(new EntitiesTabs(new ClassTree(), new Spacer(), new Spacer()));
-
+		panel.add(new EntitiesTabs(new OutputClassTree(), new OutputPropertyTree(), new OutputIndividualList()));
 		return panel;
 	}
 }

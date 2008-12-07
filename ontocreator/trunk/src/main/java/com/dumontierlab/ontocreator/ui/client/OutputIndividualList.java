@@ -1,37 +1,37 @@
 package com.dumontierlab.ontocreator.ui.client;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.dumontierlab.ontocreator.ui.client.event.InputOntologiesChangedEvent;
 import com.dumontierlab.ontocreator.ui.client.event.UiEvent;
 import com.dumontierlab.ontocreator.ui.client.event.UiEventBroker;
 import com.dumontierlab.ontocreator.ui.client.event.UiEventHandler;
-import com.dumontierlab.ontocreator.ui.client.model.OWLPropertyBean;
-import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
+import com.dumontierlab.ontocreator.ui.client.model.OWLIndividualBean;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
 import com.dumontierlab.ontocreator.ui.client.util.OnRequestRpcCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class InputPropertyTree extends PropertyTree implements UiEventHandler {
+public class OutputIndividualList extends IndividualList implements UiEventHandler {
 
-	private final OnRequestRpcCommand<TreeNode<OWLPropertyBean>> rpcCommand;
+	private final OnRequestRpcCommand<List<OWLIndividualBean>> rpcCommand;
 
-	public InputPropertyTree() {
-		rpcCommand = new OnRequestRpcCommand<TreeNode<OWLPropertyBean>>() {
+	public OutputIndividualList() {
+		rpcCommand = new OnRequestRpcCommand<List<OWLIndividualBean>>() {
 			@Override
-			protected void rpcCall(AsyncCallback<TreeNode<OWLPropertyBean>> callback) {
-				OntologyService.Util.getInstace().getInputPropertyHierarchy(callback);
+			protected void rpcCall(AsyncCallback<List<OWLIndividualBean>> callback) {
+				OntologyService.Util.getInstace().getOutputIndividuals(callback);
 			}
 
 			@Override
 			protected void rpcFail(Throwable caught) {
-				UserMessage.serverError("Unable to get properties hierarchy for input ontologies", caught);
+				UserMessage.serverError("Unable to get individuals for output ontology", caught);
 			}
 
 			@Override
-			protected void rpcReturn(TreeNode<OWLPropertyBean> result) {
-				setTreeModel(result);
+			protected void rpcReturn(List<OWLIndividualBean> result) {
+				setIndividuals(result);
 			}
 		};
 		UiEventBroker.getInstance().registerEventHandler(this);

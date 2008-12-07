@@ -21,7 +21,7 @@ public class InputClassTree extends ClassTree implements UiEventHandler {
 		rpcCommand = new OnRequestRpcCommand<TreeNode<OWLClassBean>>() {
 			@Override
 			protected void rpcCall(AsyncCallback<TreeNode<OWLClassBean>> callback) {
-				OntologyService.Util.getInstace().getClassHierarchy(callback);
+				OntologyService.Util.getInstace().getInputClassHierarchy(callback);
 			}
 
 			@Override
