@@ -33,6 +33,10 @@ public interface OntologyService extends RemoteService {
 
 	List<OWLIndividualBean> getOutputIndividuals();
 
+	List<OWLPropertyBean> getInputObjectProperties();
+
+	List<OWLPropertyBean> getInputDataProperties();
+
 	class Util {
 
 		private static OntologyServiceAsync instance;

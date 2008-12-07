@@ -12,6 +12,10 @@ public interface RuleService extends RemoteService {
 
 	String addABoxQueryFilter(String ruleName, String query) throws RuleServiceException;
 
+	String addTBoxQueryFilter(String ruleName, String queryType, String query) throws RuleServiceException;
+
+	String addDataPropertyRegex(String ruleName, String propertyUri, String regex) throws RuleServiceException;
+
 	String addClassAssertion(String ruleName, String description) throws RuleServiceException;
 
 	void apply(String ruleName) throws RuleServiceException;

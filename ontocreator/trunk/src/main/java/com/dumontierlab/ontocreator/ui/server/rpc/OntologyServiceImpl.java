@@ -98,6 +98,30 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		return root;
 	}
 
+	public List<OWLPropertyBean> getInputObjectProperties() {
+		ClientSession session = getClientSession();
+
+		List<OWLPropertyBean> result = new ArrayList<OWLPropertyBean>();
+		for (OWLOntology ontology : session.getInputOntologies()) {
+			for (OWLObjectProperty objectProperty : ontology.getReferencedObjectProperties()) {
+				result.add(createOWLPropertyBean(getShortForm(session, objectProperty), objectProperty, ontology));
+			}
+		}
+		return result;
+	}
+
+	public List<OWLPropertyBean> getInputDataProperties() {
+		ClientSession session = getClientSession();
+
+		List<OWLPropertyBean> result = new ArrayList<OWLPropertyBean>();
+		for (OWLOntology ontology : session.getInputOntologies()) {
+			for (OWLDataProperty dataProperty : ontology.getReferencedDataProperties()) {
+				result.add(createOWLPropertyBean(getShortForm(session, dataProperty), dataProperty, ontology));
+			}
+		}
+		return result;
+	}
+
 	public List<OWLIndividualBean> getInputIndividuals() {
 		ClientSession session = getClientSession();
 		List<OWLIndividualBean> results = new ArrayList<OWLIndividualBean>();

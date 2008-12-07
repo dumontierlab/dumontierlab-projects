@@ -18,10 +18,18 @@ import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
 
 public class DataPropertySyntaxQueryFilter implements Function {
 
-	private Pattern regex;
-	private OWLOntologyManager manager;
-	private OWLReasoner reasoner;
-	private OWLDataProperty property;
+	private final Pattern regex;
+	private final OWLOntologyManager manager;
+	private final OWLReasoner reasoner;
+	private final OWLDataProperty property;
+
+	public DataPropertySyntaxQueryFilter(OWLOntologyManager manager, OWLReasoner reasoner, OWLDataProperty property,
+			Pattern regex) {
+		this.manager = manager;
+		this.reasoner = reasoner;
+		this.property = property;
+		this.regex = regex;
+	}
 
 	public List<String> apply(List<String> input) throws RuntimeFunctionException {
 		try {

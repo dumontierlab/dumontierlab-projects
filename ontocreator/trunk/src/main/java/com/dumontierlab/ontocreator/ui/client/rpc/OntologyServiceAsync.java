@@ -29,4 +29,8 @@ public interface OntologyServiceAsync {
 
 	void getOutputIndividuals(AsyncCallback<List<OWLIndividualBean>> callback);
 
+	void getInputObjectProperties(AsyncCallback<List<OWLPropertyBean>> callback);
+
+	void getInputDataProperties(AsyncCallback<List<OWLPropertyBean>> callback);
+
 }

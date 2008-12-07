@@ -98,12 +98,22 @@ public class RulesEditorView extends Composite {
 		});
 		filtersMenu.addItem(aBoxQueryButton);
 
-		Item tBoxQueryButton = new Item("TBox Query");
+		Item tBoxQueryButton = new Item("TBox Query", new BaseItemListenerAdapter() {
+			@Override
+			public void onClick(BaseItem item, EventObject e) {
+				controller.addTBoxQuery();
+			}
+		});
 		filtersMenu.addItem(tBoxQueryButton);
 
 		filtersMenu.addSeparator();
 
-		Item dataPropertyRegexButton = new Item("DataProperty Regex");
+		Item dataPropertyRegexButton = new Item("DataProperty Regex", new BaseItemListenerAdapter() {
+			@Override
+			public void onClick(BaseItem item, EventObject e) {
+				controller.addDataPropertyRegex();
+			}
+		});
 		filtersMenu.addItem(dataPropertyRegexButton);
 
 		toolbar.addButton(filtersButton);
