@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.dumontierlab.ontocreator.ui.client.event.InputOntologiesChangedEvent;
+import com.dumontierlab.ontocreator.ui.client.event.OutputOntologyChangedEvent;
 import com.dumontierlab.ontocreator.ui.client.event.UiEvent;
 import com.dumontierlab.ontocreator.ui.client.event.UiEventBroker;
 import com.dumontierlab.ontocreator.ui.client.event.UiEventHandler;
@@ -38,11 +38,11 @@ public class OutputIndividualList extends IndividualList implements UiEventHandl
 	}
 
 	public Set<String> getEventOfInterest() {
-		return Collections.singleton(InputOntologiesChangedEvent.EVENT_NAME);
+		return Collections.singleton(OutputOntologyChangedEvent.EVENT_NAME);
 	}
 
 	public void handleEvent(UiEvent event) {
-		if (event.getEventName().equals(InputOntologiesChangedEvent.EVENT_NAME)) {
+		if (event.getEventName().equals(OutputOntologyChangedEvent.EVENT_NAME)) {
 			rpcCommand.call();
 		}
 	}
