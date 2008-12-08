@@ -8,6 +8,7 @@ import java.util.List;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
+import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
@@ -20,6 +21,7 @@ import com.dumontierlab.ontocreator.model.Field;
 import com.dumontierlab.ontocreator.model.Record;
 import com.dumontierlab.ontocreator.model.RecordSet;
 import com.dumontierlab.ontocreator.util.Constants;
+import com.dumontierlab.ontocreator.util.Vocabulary;
 import com.google.inject.Singleton;
 
 @Singleton
@@ -28,7 +30,7 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 	public OWLOntology buildInitialOnthology(RecordSet records, OWLOntologyManager ontologyManager)
 			throws OWLOntologyCreationException, OWLOntologyChangeException {
 
-		URI ontologyURI = URI.create(Constants.BASE_URI + records.getId());
+		URI ontologyURI = URI.create(Vocabulary.ONTOCREATOR_NAMESPACE + records.getId()+"/");
 		URI physicalURI = URI.create("file:/./" + Constants.OUTPUT_DIRECTORY + records.getId() + ".owl");
 
 		SimpleURIMapper mapper = new SimpleURIMapper(ontologyURI, physicalURI);
@@ -38,18 +40,19 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 		List<AddAxiom> changes = new LinkedList<AddAxiom>();
 
 		OWLDataFactory factory = ontologyManager.getOWLDataFactory();
-		OWLClass clsRow = factory.getOWLClass(URI.create(ontologyURI + "#Row"));
-		OWLObjectProperty propertyHasColumn = factory.getOWLObjectProperty(URI.create(ontologyURI + "#hasColumn"));
+		OWLClass clsRow = factory.getOWLClass(Vocabulary.ROW.uri());
+		OWLObjectProperty propertyHasPart = factory.getOWLObjectProperty(Vocabulary.HAS_PART.uri());
+		OWLDataProperty propertyValue = factory.getOWLDataProperty(Vocabulary.VALUE.uri());
 
 		// add labels for Row class and hasColumn property
 		changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(clsRow, factory
 				.getOWLLabelAnnotation("Row"))));
-		changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(propertyHasColumn, factory
-				.getOWLLabelAnnotation("hasColumn"))));
+		changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(propertyHasPart, factory
+				.getOWLLabelAnnotation("hasPart"))));
 
 		OWLClass clsColumn;
 		OWLClass clsFieldName;
-		OWLIndividual column;
+		OWLIndividual cell;
 		OWLIndividual row;
 
 		int rowCounter = 0;
@@ -61,7 +64,7 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 		while (recordIterator.hasNext()) {
 			rowCounter++;
 			Record r = recordIterator.next();
-			row = factory.getOWLIndividual(URI.create(ontologyURI + "#row" + rowCounter));
+			row = factory.getOWLIndividual(URI.create(ontologyURI + "row_" + rowCounter));
 			changes.add(new AddAxiom(ontology, factory.getOWLClassAssertionAxiom(row, clsRow)));
 
 			columnCounter = 0;
@@ -71,20 +74,21 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 
 				Field<?> field = fieldIterator.next();
 
-				clsColumn = factory.getOWLClass(URI.create(ontologyURI + "#Column" + columnCounter));
-				column = factory.getOWLIndividual(URI.create(ontologyURI + "#" + field.getValue()));
-				changes.add(new AddAxiom(ontology, factory.getOWLClassAssertionAxiom(column, clsColumn)));
+				clsColumn = factory.getOWLClass(URI.create(ontologyURI + "Column_" + columnCounter));
+				cell = factory.getOWLIndividual(URI.create(ontologyURI + "Cell_"+rowCounter+"_"+columnCounter));
+				changes.add(new AddAxiom(ontology, factory.getOWLDataPropertyAssertionAxiom(cell, propertyValue, factory.getOWLTypedConstant(field.getValue().toString()))));
+				changes.add(new AddAxiom(ontology, factory.getOWLClassAssertionAxiom(cell, clsColumn)));
 				changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(clsColumn, factory
 						.getOWLLabelAnnotation("Column" + columnCounter))));
 
-				clsFieldName = factory.getOWLClass(URI.create(ontologyURI + "#" + field.getName()));
+				clsFieldName = factory.getOWLClass(URI.create(ontologyURI + field.getName()));
 				changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(clsFieldName, factory
 						.getOWLLabelAnnotation(field.getName()))));
 
 				changes.add(new AddAxiom(ontology, factory.getOWLSubClassAxiom(clsColumn, clsFieldName)));
 
-				changes.add(new AddAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(row, propertyHasColumn,
-						column)));
+				changes.add(new AddAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(row, propertyHasPart,
+						cell)));
 			}
 
 		}

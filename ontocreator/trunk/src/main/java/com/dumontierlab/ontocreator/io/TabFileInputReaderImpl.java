@@ -33,6 +33,10 @@ public class TabFileInputReaderImpl implements InputReader {
 				newLine = breader.readLine();
 			}
 			while (newLine != null) {
+				//ignore comment lines
+				if(newLine.startsWith("#")){
+					continue;
+				}
 				recordFields = newLine.split(delimeter);
 
 				newRecord = new RecordImpl(recordFields[0]);

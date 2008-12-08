@@ -36,8 +36,8 @@ public class IndividualListView extends Composite {
 	}
 
 	private TreeNode createTreeNode(OWLIndividualBean individual) {
-		TreeNode root = new TreeNode(individual.getLabel());
-		return root;
+		TreeNode node = new TreeNode(individual.getLabel());
+		return node;
 	}
 
 }

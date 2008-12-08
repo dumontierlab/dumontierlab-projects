@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.log4j.Logger;
 import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
 import org.semanticweb.owl.expression.ParserException;
 import org.semanticweb.owl.expression.ShortFormEntityChecker;
@@ -28,6 +29,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class RuleServiceImpl extends RemoteServiceServlet implements RuleService {
 
+	private static final Logger LOG = Logger.getLogger(RuleServiceImpl.class);
+
 	public void createRule(String name) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		if (session.getRule(name) != null) {
@@ -47,13 +50,13 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		try {
 			OWLDescription description = parser.parse(query);
 			rule.add(new AboxQueryFilter(session.getInputReasoner(), description));
-			return rule.toString();
 		} catch (ParserException e) {
-			throw new RuleServiceException("Invalid expression: " + query
+			error("Invalid expression: " + query
 					+ ". Expecting expression in Manchester OWL Syntax", e);
 		} catch (OWLReasonerException e) {
-			throw new RuleServiceException("Reasoner exception: " + e.getMessage(), e);
+			error("Reasoner exception: " + e.getMessage(), e);
 		}
+		return rule.toString();
 	}
 
 	public String addTBoxQueryFilter(String ruleName, String queryType, String query) throws RuleServiceException {
@@ -69,13 +72,14 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		try {
 			OWLDescription description = parser.parse(query);
 			rule.add(new TboxQueryFilter(session.getInputReasoner(), description, queryTypeValue));
-			return rule.toString();
+
 		} catch (ParserException e) {
-			throw new RuleServiceException("Invalid expression: " + query
+			error("Invalid expression: " + query
 					+ ". Expecting expression in Manchester OWL Syntax", e);
 		} catch (OWLReasonerException e) {
-			throw new RuleServiceException("Reasoner exception: " + e.getMessage(), e);
+			error("Reasoner exception: " + e.getMessage(), e);
 		}
+		return rule.toString();
 	}
 
 	public String addDataPropertyRegex(String ruleName, String propertyUri, String regex) throws RuleServiceException {
@@ -88,15 +92,15 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 			OWLOntologyManager manager = session.getInputOntologyManager();
 			OWLDataProperty property = manager.getOWLDataFactory().getOWLDataProperty(uri);
 			rule.add(new DataPropertySyntaxQueryFilter(manager, session.getInputReasoner(), property, regexPattern));
-			return rule.toString();
 
 		} catch (PatternSyntaxException e) {
-			throw new RuleServiceException("Invalid regular expression (" + regex + ")");
+			error("Invalid regular expression (" + regex + ")", e);
 		} catch (IllegalArgumentException e) {
-			throw new RuleServiceException("Invalid data property URI (" + propertyUri + ")");
+			error("Invalid data property URI (" + propertyUri + ")", e);
 		} catch (OWLReasonerException e) {
-			throw new RuleServiceException("Reasoner exception: " + e.getMessage(), e);
+			error("Reasoner exception: " + e.getMessage(), e);
 		}
+		return rule.toString();
 
 	}
 
@@ -111,11 +115,12 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 			OWLDescription owlDescription = parser.parse(description);
 			rule.add(new ClassAssertionAxiomFunction(session.getOutputOntologyManager(), session.getOuputOntology(),
 					owlDescription));
-			return rule.toString();
+
 		} catch (ParserException e) {
-			throw new RuleServiceException("Invalid expression: " + description
+			error("Invalid expression: " + description
 					+ ". Expecting expression in Manchester OWL Syntax", e);
 		}
+		return rule.toString();
 	}
 
 	public void apply(String ruleName) throws RuleServiceException {
@@ -125,7 +130,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		try {
 			rule.apply();
 		} catch (RuntimeFunctionException e) {
-			throw new RuleServiceException("Failed to apply rule (" + ruleName + "): " + e.getMessage(), e);
+			error("Failed to apply rule (" + ruleName + "): " + e.getMessage(), e);
 		}
 	}
 
@@ -143,6 +148,11 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 			throw new RuleServiceException("Rule " + ruleName + " does not exists on this session");
 		}
 		return rule;
+	}
+
+	private void error(String message, Throwable cause) throws RuleServiceException{
+		LOG.error(message, cause);
+		throw new RuleServiceException(message);
 	}
 
 }
