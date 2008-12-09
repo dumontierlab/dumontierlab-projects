@@ -28,7 +28,7 @@ public class RulesEditor extends Composite {
 
 	public void newRule() {
 		final String ruleName = "Rule " + counter++;
-		service.createRule(ruleName, new AsyncCallback<Void>() {
+		service.createInstanceMapping(ruleName, new AsyncCallback<Void>() {
 			public void onFailure(Throwable caught) {
 				UserMessage.serverError(caught.getMessage(), caught);
 				counter--;

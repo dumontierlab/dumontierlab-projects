@@ -1,4 +1,4 @@
-package com.dumontierlab.ontocreator.rule.function.constructor;
+package com.dumontierlab.ontocreator.mapping.function.constructor;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-import com.dumontierlab.ontocreator.rule.function.Function;
-import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
+import com.dumontierlab.ontocreator.mapping.function.Function;
+import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
 
 public abstract class AbstractAxiomFunction implements Function {
 

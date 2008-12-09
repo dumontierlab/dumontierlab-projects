@@ -13,13 +13,15 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-import com.dumontierlab.ontocreator.rule.Rule;
-import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
-import com.dumontierlab.ontocreator.rule.function.constructor.ClassAssertionAxiomFunction;
-import com.dumontierlab.ontocreator.rule.function.filter.AboxQueryFilter;
-import com.dumontierlab.ontocreator.rule.function.filter.DataPropertySyntaxQueryFilter;
-import com.dumontierlab.ontocreator.rule.function.filter.TboxQueryFilter;
-import com.dumontierlab.ontocreator.rule.function.filter.TboxQueryFilter.QueryType;
+import com.dumontierlab.ontocreator.mapping.BoundMapping;
+import com.dumontierlab.ontocreator.mapping.InstanceMapping;
+import com.dumontierlab.ontocreator.mapping.Mapping;
+import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
+import com.dumontierlab.ontocreator.mapping.function.constructor.ClassAssertionAxiomFunction;
+import com.dumontierlab.ontocreator.mapping.function.filter.AboxQueryFilter;
+import com.dumontierlab.ontocreator.mapping.function.filter.DataPropertySyntaxQueryFilter;
+import com.dumontierlab.ontocreator.mapping.function.filter.TboxQueryFilter;
+import com.dumontierlab.ontocreator.mapping.function.filter.TboxQueryFilter.QueryType;
 import com.dumontierlab.ontocreator.ui.client.rpc.RuleService;
 import com.dumontierlab.ontocreator.ui.client.rpc.exception.NoOutputOntologyException;
 import com.dumontierlab.ontocreator.ui.client.rpc.exception.RuleServiceException;
@@ -31,28 +33,41 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	private static final Logger LOG = Logger.getLogger(RuleServiceImpl.class);
 
-	public void createRule(String name) throws RuleServiceException {
+	public void createInstanceMapping(String name) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
-		if (session.getRule(name) != null) {
+		if (session.getMapping(name) != null) {
 			throw new RuleServiceException("A rule with this name [" + name + "] already exists on this session.");
 		}
-		Rule rule = new Rule(name);
-		session.addRule(rule);
+		Mapping mapping = new InstanceMapping(name, session.getInputOntologyManager());
+		session.addMapping(mapping);
+	}
+
+	public void createBoundMapping(String name, String uri) throws RuleServiceException {
+		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
+		if (session.getMapping(name) != null) {
+			throw new RuleServiceException("A rule with this name [" + name + "] already exists on this session.");
+		}
+		Mapping mapping = new BoundMapping(name, uri);
+		session.addMapping(mapping);
+	}
+
+	public void createClassMapping(String name) throws RuleServiceException {
+
 	}
 
 	public String addABoxQueryFilter(String ruleName, String query) throws NoOutputOntologyException,
 			RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
-		Rule rule = getRule(session, ruleName);
+		Mapping rule = getRule(session, ruleName);
 		ManchesterOWLSyntaxDescriptionParser parser = new ManchesterOWLSyntaxDescriptionParser(session
 				.getInputOntologyManager().getOWLDataFactory(), new ShortFormEntityChecker(session
 				.getBidirectionalShortFormProvider()));
 		try {
 			OWLDescription description = parser.parse(query);
-			rule.add(new AboxQueryFilter(session.getInputReasoner(), description));
+			rule.add(new AboxQueryFilter(session.getInputReasoner(), session.getInputOntologyManager()
+					.getOWLDataFactory(), description));
 		} catch (ParserException e) {
-			error("Invalid expression: " + query
-					+ ". Expecting expression in Manchester OWL Syntax", e);
+			error("Invalid expression: " + query + ". Expecting expression in Manchester OWL Syntax", e);
 		} catch (OWLReasonerException e) {
 			error("Reasoner exception: " + e.getMessage(), e);
 		}
@@ -61,7 +76,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	public String addTBoxQueryFilter(String ruleName, String queryType, String query) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
-		Rule rule = getRule(session, ruleName);
+		Mapping rule = getRule(session, ruleName);
 		QueryType queryTypeValue = QueryType.valueOf(QueryType.class, queryType);
 		if (queryType == null) {
 			throw new RuleServiceException("Invalid query type (" + queryType + ")");
@@ -71,11 +86,11 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 				.getBidirectionalShortFormProvider()));
 		try {
 			OWLDescription description = parser.parse(query);
-			rule.add(new TboxQueryFilter(session.getInputReasoner(), description, queryTypeValue));
+			rule.add(new TboxQueryFilter(session.getInputReasoner(), session.getInputOntologyManager()
+					.getOWLDataFactory(), description, queryTypeValue));
 
 		} catch (ParserException e) {
-			error("Invalid expression: " + query
-					+ ". Expecting expression in Manchester OWL Syntax", e);
+			error("Invalid expression: " + query + ". Expecting expression in Manchester OWL Syntax", e);
 		} catch (OWLReasonerException e) {
 			error("Reasoner exception: " + e.getMessage(), e);
 		}
@@ -84,7 +99,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	public String addDataPropertyRegex(String ruleName, String propertyUri, String regex) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
-		Rule rule = getRule(session, ruleName);
+		Mapping rule = getRule(session, ruleName);
 
 		try {
 			Pattern regexPattern = Pattern.compile(regex);
@@ -107,7 +122,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 	public String addClassAssertion(String ruleName, String description) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		assertOutputOntologyIsCreated(session);
-		Rule rule = getRule(session, ruleName);
+		Mapping rule = getRule(session, ruleName);
 		ManchesterOWLSyntaxDescriptionParser parser = new ManchesterOWLSyntaxDescriptionParser(session
 				.getInputOntologyManager().getOWLDataFactory(), new ShortFormEntityChecker(session
 				.getBidirectionalShortFormProvider()));
@@ -117,8 +132,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 					owlDescription));
 
 		} catch (ParserException e) {
-			error("Invalid expression: " + description
-					+ ". Expecting expression in Manchester OWL Syntax", e);
+			error("Invalid expression: " + description + ". Expecting expression in Manchester OWL Syntax", e);
 		}
 		return rule.toString();
 	}
@@ -126,7 +140,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 	public void apply(String ruleName) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		assertOutputOntologyIsCreated(session);
-		Rule rule = getRule(session, ruleName);
+		Mapping rule = getRule(session, ruleName);
 		try {
 			rule.apply();
 		} catch (RuntimeFunctionException e) {
@@ -142,15 +156,15 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		}
 	}
 
-	private Rule getRule(ClientSession session, String ruleName) throws RuleServiceException {
-		Rule rule = session.getRule(ruleName);
+	private Mapping getRule(ClientSession session, String ruleName) throws RuleServiceException {
+		Mapping rule = session.getMapping(ruleName);
 		if (rule == null) {
 			throw new RuleServiceException("Rule " + ruleName + " does not exists on this session");
 		}
 		return rule;
 	}
 
-	private void error(String message, Throwable cause) throws RuleServiceException{
+	private void error(String message, Throwable cause) throws RuleServiceException {
 		LOG.error(message, cause);
 		throw new RuleServiceException(message);
 	}

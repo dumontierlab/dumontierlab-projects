@@ -1,5 +1,6 @@
-package com.dumontierlab.ontocreator.rule.function.filter;
+package com.dumontierlab.ontocreator.mapping.function.filter;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -7,10 +8,11 @@ import java.util.Set;
 
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 
-import com.dumontierlab.ontocreator.rule.function.Function;
-import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
+import com.dumontierlab.ontocreator.mapping.function.Function;
+import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
 
 public class TboxQueryFilter implements Function {
 
@@ -33,9 +35,11 @@ public class TboxQueryFilter implements Function {
 	private final OWLDescription expression;
 	private final QueryType type;
 	private final OWLReasoner reasoner;
+	private final OWLDataFactory factory;
 
-	public TboxQueryFilter(OWLReasoner reasoner, OWLDescription expression, QueryType type) {
+	public TboxQueryFilter(OWLReasoner reasoner, OWLDataFactory factory, OWLDescription expression, QueryType type) {
 		this.reasoner = reasoner;
+		this.factory = factory;
 		this.expression = expression;
 		this.type = type;
 	}
@@ -52,9 +56,13 @@ public class TboxQueryFilter implements Function {
 				classes = new HashSet<Set<OWLClass>>();
 				classes.add(reasoner.getEquivalentClasses(expression));
 			}
-			for (Set<OWLClass> equivalentGroup : classes) {
-				for (OWLClass clazz : equivalentGroup) {
-					results.add(clazz.getURI().toString());
+			for (String uri : input) {
+				OWLClass inputClass = factory.getOWLClass(URI.create(uri));
+				for (Set<OWLClass> equivalentGroup : classes) {
+					if (equivalentGroup.contains(inputClass)) {
+						results.add(uri);
+						break;
+					}
 				}
 			}
 			return new ArrayList<String>(results);

@@ -19,7 +19,7 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.util.BidirectionalShortFormProvider;
 
-import com.dumontierlab.ontocreator.rule.Rule;
+import com.dumontierlab.ontocreator.mapping.Mapping;
 import com.dumontierlab.ontocreator.util.OntoCreatorBidirectionalShortFormProvider;
 
 public class ClientSession {
@@ -32,10 +32,10 @@ public class ClientSession {
 	private OWLOntology outputOntology;
 	private OWLReasoner inputReasoner;
 	private OWLReasoner outputReasoner;
-	private final Map<String, Rule> rules;
+	private final Map<String, Mapping> mappings;
 
 	private ClientSession() {
-		rules = new ConcurrentHashMap<String, Rule>();
+		mappings = new ConcurrentHashMap<String, Mapping>();
 		inputOntologyManager = OWLManager.createOWLOntologyManager();
 		outputOntologyManager = OWLManager.createOWLOntologyManager();
 		shortFormProvider = new OntoCreatorBidirectionalShortFormProvider(inputOntologyManager);
@@ -142,24 +142,24 @@ public class ClientSession {
 		return outputOntology;
 	}
 
-	public void addRule(Rule rule) {
-		rules.put(rule.getName(), rule);
+	public void addMapping(Mapping rule) {
+		mappings.put(rule.getName(), rule);
 	}
 
-	public void removeRule(String name) {
-		rules.remove(name);
+	public void removeMapping(String name) {
+		mappings.remove(name);
 	}
 
-	public Rule getRule(String name) {
-		return rules.get(name);
+	public Mapping getMapping(String name) {
+		return mappings.get(name);
 	}
 
-	public Set<Rule> getRules() {
-		return new HashSet<Rule>(rules.values());
+	public Set<Mapping> getMappings() {
+		return new HashSet<Mapping>(mappings.values());
 	}
 
-	public boolean containsRule(String ruleName) {
-		return rules.containsKey(ruleName);
+	public boolean containsMaping(String mappingName) {
+		return mappings.containsKey(mappingName);
 	}
 
 }

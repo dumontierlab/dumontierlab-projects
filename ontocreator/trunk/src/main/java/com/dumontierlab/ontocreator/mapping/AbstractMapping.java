@@ -1,17 +1,17 @@
-package com.dumontierlab.ontocreator.rule;
+package com.dumontierlab.ontocreator.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dumontierlab.ontocreator.rule.function.Function;
-import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
+import com.dumontierlab.ontocreator.mapping.function.Function;
+import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
 
-public class Rule {
+public abstract class AbstractMapping implements Mapping {
 
 	private final String name;
 	private final List<Function> functions;
 
-	public Rule(String name) {
+	public AbstractMapping(String name) {
 		this.name = name;
 		functions = new ArrayList<Function>();
 	}
@@ -28,10 +28,9 @@ public class Rule {
 		functions.remove(function);
 	}
 
-	public void apply() throws RuntimeFunctionException {
-		List<String> result = null;
+	protected void apply(List<String> input) throws RuntimeFunctionException {
 		for (Function f : functions) {
-			result = f.apply(result);
+			input = f.apply(input);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.dumontierlab.ontocreator.rule.function.filter;
+package com.dumontierlab.ontocreator.mapping.function.filter;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-import com.dumontierlab.ontocreator.rule.function.Function;
-import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
+import com.dumontierlab.ontocreator.mapping.function.Function;
+import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
 
 public class DataPropertySyntaxQueryFilter implements Function {
 

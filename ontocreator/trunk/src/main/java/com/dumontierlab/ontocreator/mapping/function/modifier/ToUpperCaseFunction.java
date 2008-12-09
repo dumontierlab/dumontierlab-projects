@@ -1,10 +1,10 @@
-package com.dumontierlab.ontocreator.rule.function.modifier;
+package com.dumontierlab.ontocreator.mapping.function.modifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dumontierlab.ontocreator.rule.function.Function;
-import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
+import com.dumontierlab.ontocreator.mapping.function.Function;
+import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
 
 public class ToUpperCaseFunction implements Function {
 

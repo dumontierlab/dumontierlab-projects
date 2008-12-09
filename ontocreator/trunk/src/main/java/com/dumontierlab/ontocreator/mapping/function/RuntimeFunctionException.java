@@ -1,4 +1,4 @@
-package com.dumontierlab.ontocreator.rule.function;
+package com.dumontierlab.ontocreator.mapping.function;
 
 public class RuntimeFunctionException extends Exception{
 

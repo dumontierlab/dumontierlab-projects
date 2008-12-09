@@ -8,7 +8,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("RuleService")
 public interface RuleService extends RemoteService {
 
-	void createRule(String name) throws RuleServiceException;
+	void createInstanceMapping(String name) throws RuleServiceException;
+
+	void createClassMapping(String name) throws RuleServiceException;
+
+	void createBoundMapping(String name, String uri) throws RuleServiceException;
 
 	String addABoxQueryFilter(String ruleName, String query) throws RuleServiceException;
 

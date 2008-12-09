@@ -1,4 +1,4 @@
-package com.dumontierlab.ontocreator.rule.function.constructor;
+package com.dumontierlab.ontocreator.mapping.function.constructor;
 
 import java.net.URI;
 
@@ -9,7 +9,7 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
-import com.dumontierlab.ontocreator.rule.function.RuntimeFunctionException;
+import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
 
 public class ClassAssertionAxiomFunction extends AbstractAxiomFunction {
 
