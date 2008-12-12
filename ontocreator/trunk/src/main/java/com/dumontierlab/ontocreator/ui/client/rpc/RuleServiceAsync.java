@@ -4,11 +4,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface RuleServiceAsync {
 
-	void createInstanceMapping(String name, AsyncCallback<Void> callback);
+	void createInstanceMapping(AsyncCallback<String> callback);
 
-	void createClassMapping(String name, AsyncCallback<Void> callback);
+	void createClassMapping(AsyncCallback<String> callback);
 
-	void createBoundMapping(String name, String uri, AsyncCallback<Void> callback);
+	void createBoundMapping(String uri, AsyncCallback<String> callback);
 
 	void addABoxQueryFilter(String ruleName, String query, AsyncCallback<String> callback);
 

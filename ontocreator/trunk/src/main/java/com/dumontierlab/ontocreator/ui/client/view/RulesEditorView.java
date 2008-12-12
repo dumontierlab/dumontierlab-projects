@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.dumontierlab.ontocreator.ui.client.RulesEditor;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -16,7 +15,6 @@ import com.gwtext.client.widgets.Toolbar;
 import com.gwtext.client.widgets.ToolbarButton;
 import com.gwtext.client.widgets.ToolbarMenuButton;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
-import com.gwtext.client.widgets.event.PanelListenerAdapter;
 import com.gwtext.client.widgets.layout.AccordionLayout;
 import com.gwtext.client.widgets.menu.BaseItem;
 import com.gwtext.client.widgets.menu.Item;
@@ -42,13 +40,6 @@ public class RulesEditorView extends Composite {
 		Panel rulePanel = new Panel(ruleName);
 		rulePanel.setHeight(100);
 		rulePanel.add(ruleLabel);
-		rulePanel.addListener(new PanelListenerAdapter() {
-			@Override
-			public void onExpand(Panel panel) {
-				Window.alert("expanded");
-				controller.setActiveRule(ruleName);
-			}
-		});
 
 		panel.add(rulePanel);
 		panel.doLayout();
@@ -78,11 +69,37 @@ public class RulesEditorView extends Composite {
 	private Toolbar createToolBar() {
 		Toolbar toolbar = new Toolbar();
 
-		ToolbarButton newRuleButton = new ToolbarButton("New rule");
+		Menu mappingsMenu = new Menu();
+		ToolbarMenuButton newRuleButton = new ToolbarMenuButton("New Mapping", mappingsMenu);
+
+		Item instanceMappingButton = new Item("Instance Mapping", new BaseItemListenerAdapter() {
+			@Override
+			public void onClick(BaseItem item, EventObject e) {
+				controller.newInstanceMapping();
+			}
+		});
+		mappingsMenu.addItem(instanceMappingButton);
+
+		Item classMappingButton = new Item("Class Mapping", new BaseItemListenerAdapter() {
+			@Override
+			public void onClick(BaseItem item, EventObject e) {
+				controller.newClassMapping();
+			}
+		});
+		mappingsMenu.addItem(classMappingButton);
+
+		Item boundMappingButton = new Item("Bound Mapping", new BaseItemListenerAdapter() {
+			@Override
+			public void onClick(BaseItem item, EventObject e) {
+				controller.newBoundMapping();
+			}
+		});
+		mappingsMenu.addItem(boundMappingButton);
+
 		newRuleButton.addListener(new ButtonListenerAdapter() {
 			@Override
 			public void onClick(Button button, EventObject e) {
-				controller.newRule();
+
 			}
 		});
 		toolbar.addButton(newRuleButton);

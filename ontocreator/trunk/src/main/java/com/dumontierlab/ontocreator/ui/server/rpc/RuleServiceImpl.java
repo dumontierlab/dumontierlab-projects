@@ -14,7 +14,6 @@ import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 import com.dumontierlab.ontocreator.mapping.BoundMapping;
-import com.dumontierlab.ontocreator.mapping.InstanceMapping;
 import com.dumontierlab.ontocreator.mapping.Mapping;
 import com.dumontierlab.ontocreator.mapping.function.RuntimeFunctionException;
 import com.dumontierlab.ontocreator.mapping.function.constructor.ClassAssertionAxiomFunction;
@@ -33,26 +32,25 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	private static final Logger LOG = Logger.getLogger(RuleServiceImpl.class);
 
-	public void createInstanceMapping(String name) throws RuleServiceException {
+	public String createInstanceMapping() throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
-		if (session.getMapping(name) != null) {
-			throw new RuleServiceException("A rule with this name [" + name + "] already exists on this session.");
-		}
-		Mapping mapping = new InstanceMapping(name, session.getInputOntologyManager());
+		Mapping mapping = session.createInstanceMapping();
 		session.addMapping(mapping);
+		return mapping.getName();
 	}
 
-	public void createBoundMapping(String name, String uri) throws RuleServiceException {
+	public String createBoundMapping(String uri) throws RuleServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
-		if (session.getMapping(name) != null) {
-			throw new RuleServiceException("A rule with this name [" + name + "] already exists on this session.");
-		}
-		Mapping mapping = new BoundMapping(name, uri);
+		BoundMapping mapping = session.createBoundMapping(uri);
 		session.addMapping(mapping);
+		return mapping.getName();
 	}
 
-	public void createClassMapping(String name) throws RuleServiceException {
-
+	public String createClassMapping() throws RuleServiceException {
+		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
+		Mapping mapping = session.createClassMapping();
+		session.addMapping(mapping);
+		return mapping.getName();
 	}
 
 	public String addABoxQueryFilter(String ruleName, String query) throws NoOutputOntologyException,

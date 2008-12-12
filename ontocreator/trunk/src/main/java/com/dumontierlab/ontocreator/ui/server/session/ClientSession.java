@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -19,11 +20,16 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.util.BidirectionalShortFormProvider;
 
+import com.dumontierlab.ontocreator.mapping.BoundMapping;
+import com.dumontierlab.ontocreator.mapping.ClassMapping;
+import com.dumontierlab.ontocreator.mapping.InstanceMapping;
 import com.dumontierlab.ontocreator.mapping.Mapping;
+import com.dumontierlab.ontocreator.mapping.MappingFactory;
 import com.dumontierlab.ontocreator.util.OntoCreatorBidirectionalShortFormProvider;
 
-public class ClientSession {
+public class ClientSession implements MappingFactory {
 
+	private final AtomicInteger mappingNameCounter;
 	private volatile long lastInputOntologyChangeTime;
 	private volatile long lastOutputOntologyChangeTime;
 	private final OWLOntologyManager inputOntologyManager;
@@ -35,6 +41,7 @@ public class ClientSession {
 	private final Map<String, Mapping> mappings;
 
 	private ClientSession() {
+		mappingNameCounter = new AtomicInteger(0);
 		mappings = new ConcurrentHashMap<String, Mapping>();
 		inputOntologyManager = OWLManager.createOWLOntologyManager();
 		outputOntologyManager = OWLManager.createOWLOntologyManager();
@@ -160,6 +167,22 @@ public class ClientSession {
 
 	public boolean containsMaping(String mappingName) {
 		return mappings.containsKey(mappingName);
+	}
+
+	public BoundMapping createBoundMapping(String uri) {
+		return new BoundMapping(generateMappingName(), uri);
+	}
+
+	public ClassMapping createClassMapping() {
+		return new ClassMapping(generateMappingName(), inputOntologyManager);
+	}
+
+	public InstanceMapping createInstanceMapping() {
+		return new InstanceMapping(generateMappingName(), inputOntologyManager);
+	}
+
+	private String generateMappingName() {
+		return "Mapping " + mappingNameCounter.addAndGet(1);
 	}
 
 }

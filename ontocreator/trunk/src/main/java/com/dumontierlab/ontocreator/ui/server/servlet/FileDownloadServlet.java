@@ -48,8 +48,7 @@ public class FileDownloadServlet extends HttpServlet {
 
 	private void sendOntology(OWLOntologyManager ontologyManager, OWLOntology ontology, HttpServletResponse resp)
 			throws IOException {
-		// TODO resp.setContentType("application/rdf+xml");
-		resp.setContentType("text/plain");
+		resp.setContentType("application/rdf+xml");
 		Writer writer = resp.getWriter();
 		RDFXMLRenderer renderer = new RDFXMLRenderer(ontologyManager, ontology, writer, new RDFXMLOntologyFormat());
 		renderer.render();

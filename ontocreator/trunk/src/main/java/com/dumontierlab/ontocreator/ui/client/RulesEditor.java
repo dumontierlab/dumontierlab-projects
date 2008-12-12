@@ -11,7 +11,6 @@ import com.gwtext.client.widgets.MessageBox;
 
 public class RulesEditor extends Composite {
 
-	private int counter = 1;
 	private final RulesEditorView view;
 	private final RuleServiceAsync service;
 	private String activeRule;
@@ -26,18 +25,33 @@ public class RulesEditor extends Composite {
 		activeRule = ruleName;
 	}
 
-	public void newRule() {
-		final String ruleName = "Rule " + counter++;
-		service.createInstanceMapping(ruleName, new AsyncCallback<Void>() {
+	public void newInstanceMapping() {
+		service.createInstanceMapping(new AsyncCallback<String>() {
 			public void onFailure(Throwable caught) {
 				UserMessage.serverError(caught.getMessage(), caught);
-				counter--;
 			}
 
-			public void onSuccess(Void result) {
+			public void onSuccess(String ruleName) {
 				view.addRule(ruleName);
 			};
 		});
+
+	}
+
+	public void newClassMapping() {
+		service.createClassMapping(new AsyncCallback<String>() {
+			public void onFailure(Throwable caught) {
+				UserMessage.serverError(caught.getMessage(), caught);
+			}
+
+			public void onSuccess(String ruleName) {
+				view.addRule(ruleName);
+			};
+		});
+	}
+
+	public void newBoundMapping() {
+		// TODO Auto-generated method stub
 
 	}
 
