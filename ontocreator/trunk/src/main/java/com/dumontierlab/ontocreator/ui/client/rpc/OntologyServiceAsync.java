@@ -11,6 +11,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface OntologyServiceAsync {
 
+	void loadOntology(String physicalUri, AsyncCallback<Set<Void>> callback);
+
 	void getLoadedOntologies(AsyncCallback<Set<String>> callback);
 
 	void createOutputOntology(String uri, AsyncCallback<Void> callback);

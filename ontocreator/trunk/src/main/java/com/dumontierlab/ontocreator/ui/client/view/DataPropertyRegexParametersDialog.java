@@ -17,7 +17,6 @@ import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.form.TextArea;
 import com.gwtext.client.widgets.layout.AnchorLayout;
 import com.gwtext.client.widgets.layout.AnchorLayoutData;
-import com.gwtext.client.widgets.layout.FitLayout;
 
 public class DataPropertyRegexParametersDialog extends Window {
 
@@ -31,7 +30,6 @@ public class DataPropertyRegexParametersDialog extends Window {
 		regexTextArea = new TextArea();
 		propertiesList = new ListBox();
 		initPropertiesList();
-		setLayout(new FitLayout());
 		createUi();
 		setClosable(true);
 		setPaddings(8);

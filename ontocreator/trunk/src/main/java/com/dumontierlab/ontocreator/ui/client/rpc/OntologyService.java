@@ -7,6 +7,7 @@ import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.dumontierlab.ontocreator.ui.client.model.OWLIndividualBean;
 import com.dumontierlab.ontocreator.ui.client.model.OWLPropertyBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
+import com.dumontierlab.ontocreator.ui.client.rpc.exception.ServiceException;
 import com.dumontierlab.ontocreator.ui.client.util.RetryException;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -14,6 +15,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("OntologyService")
 public interface OntologyService extends RemoteService {
+
+	void loadOntology(String physicalUri) throws ServiceException;
 
 	Set<String> getLoadedOntologies() throws RetryException;
 

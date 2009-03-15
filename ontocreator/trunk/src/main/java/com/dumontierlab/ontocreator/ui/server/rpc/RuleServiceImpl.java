@@ -23,7 +23,7 @@ import com.dumontierlab.ontocreator.mapping.function.filter.TboxQueryFilter;
 import com.dumontierlab.ontocreator.mapping.function.filter.TboxQueryFilter.QueryType;
 import com.dumontierlab.ontocreator.ui.client.rpc.RuleService;
 import com.dumontierlab.ontocreator.ui.client.rpc.exception.NoOutputOntologyException;
-import com.dumontierlab.ontocreator.ui.client.rpc.exception.RuleServiceException;
+import com.dumontierlab.ontocreator.ui.client.rpc.exception.ServiceException;
 import com.dumontierlab.ontocreator.ui.server.session.ClientSession;
 import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -32,21 +32,21 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	private static final Logger LOG = Logger.getLogger(RuleServiceImpl.class);
 
-	public String createInstanceMapping() throws RuleServiceException {
+	public String createInstanceMapping() throws ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		Mapping mapping = session.createInstanceMapping();
 		session.addMapping(mapping);
 		return mapping.getName();
 	}
 
-	public String createBoundMapping(String uri) throws RuleServiceException {
+	public String createBoundMapping(String uri) throws ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		BoundMapping mapping = session.createBoundMapping(uri);
 		session.addMapping(mapping);
 		return mapping.getName();
 	}
 
-	public String createClassMapping() throws RuleServiceException {
+	public String createClassMapping() throws ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		Mapping mapping = session.createClassMapping();
 		session.addMapping(mapping);
@@ -54,7 +54,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 	}
 
 	public String addABoxQueryFilter(String ruleName, String query) throws NoOutputOntologyException,
-			RuleServiceException {
+			ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		Mapping rule = getRule(session, ruleName);
 		ManchesterOWLSyntaxDescriptionParser parser = new ManchesterOWLSyntaxDescriptionParser(session
@@ -72,12 +72,12 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		return rule.toString();
 	}
 
-	public String addTBoxQueryFilter(String ruleName, String queryType, String query) throws RuleServiceException {
+	public String addTBoxQueryFilter(String ruleName, String queryType, String query) throws ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		Mapping rule = getRule(session, ruleName);
 		QueryType queryTypeValue = QueryType.valueOf(QueryType.class, queryType);
 		if (queryType == null) {
-			throw new RuleServiceException("Invalid query type (" + queryType + ")");
+			throw new ServiceException("Invalid query type (" + queryType + ")");
 		}
 		ManchesterOWLSyntaxDescriptionParser parser = new ManchesterOWLSyntaxDescriptionParser(session
 				.getInputOntologyManager().getOWLDataFactory(), new ShortFormEntityChecker(session
@@ -95,7 +95,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		return rule.toString();
 	}
 
-	public String addDataPropertyRegex(String ruleName, String propertyUri, String regex) throws RuleServiceException {
+	public String addDataPropertyRegex(String ruleName, String propertyUri, String regex) throws ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		Mapping rule = getRule(session, ruleName);
 
@@ -117,7 +117,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 
 	}
 
-	public String addClassAssertion(String ruleName, String description) throws RuleServiceException {
+	public String addClassAssertion(String ruleName, String description) throws ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		assertOutputOntologyIsCreated(session);
 		Mapping rule = getRule(session, ruleName);
@@ -135,7 +135,7 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		return rule.toString();
 	}
 
-	public void apply(String ruleName) throws RuleServiceException {
+	public void apply(String ruleName) throws ServiceException {
 		ClientSession session = SessionHelper.getClientSession(getThreadLocalRequest());
 		assertOutputOntologyIsCreated(session);
 		Mapping rule = getRule(session, ruleName);
@@ -154,17 +154,17 @@ public class RuleServiceImpl extends RemoteServiceServlet implements RuleService
 		}
 	}
 
-	private Mapping getRule(ClientSession session, String ruleName) throws RuleServiceException {
+	private Mapping getRule(ClientSession session, String ruleName) throws ServiceException {
 		Mapping rule = session.getMapping(ruleName);
 		if (rule == null) {
-			throw new RuleServiceException("Rule " + ruleName + " does not exists on this session");
+			throw new ServiceException("Rule " + ruleName + " does not exists on this session");
 		}
 		return rule;
 	}
 
-	private void error(String message, Throwable cause) throws RuleServiceException {
+	private void error(String message, Throwable cause) throws ServiceException {
 		LOG.error(message, cause);
-		throw new RuleServiceException(message);
+		throw new ServiceException(message);
 	}
 
 }

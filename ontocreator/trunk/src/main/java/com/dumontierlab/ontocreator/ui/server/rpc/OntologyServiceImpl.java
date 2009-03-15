@@ -16,6 +16,7 @@ import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLProperty;
 
 import com.clarkparsia.owlapi.OWL;
@@ -24,6 +25,7 @@ import com.dumontierlab.ontocreator.ui.client.model.OWLIndividualBean;
 import com.dumontierlab.ontocreator.ui.client.model.OWLPropertyBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
+import com.dumontierlab.ontocreator.ui.client.rpc.exception.ServiceException;
 import com.dumontierlab.ontocreator.ui.client.util.RetryException;
 import com.dumontierlab.ontocreator.ui.server.rpc.util.ContinousRpcServlet;
 import com.dumontierlab.ontocreator.ui.server.session.ClientSession;
@@ -32,6 +34,17 @@ import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
 public class OntologyServiceImpl extends ContinousRpcServlet implements OntologyService {
 
 	private static final int RETRY_TIME = 3000;
+
+	public void loadOntology(String physicalUri) throws ServiceException {
+		try {
+			URI uri = URI.create(physicalUri);
+			getClientSession().getInputOntologyManager().loadOntologyFromPhysicalURI(uri);
+		} catch (IllegalArgumentException e) {
+			throw new ServiceException("This URI is invald (" + physicalUri + ")", e);
+		} catch (OWLOntologyCreationException e) {
+			throw new ServiceException("Unable o load ontology: " + e.getMessage(), e);
+		}
+	}
 
 	public Set<String> getLoadedOntologies() throws RetryException {
 		ClientSession session = getClientSession();
