@@ -2,8 +2,6 @@ package com.dumontierlab.ontocreator.ui.server.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.net.URI;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -16,7 +14,8 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.semanticweb.owl.io.OWLOntologyInputSource;
+import org.semanticweb.owl.io.StreamInputSource;
+import org.semanticweb.owl.model.OWLOntology;
 
 import com.dumontierlab.ontocreator.engine.OntoCreatorEngine;
 import com.dumontierlab.ontocreator.inject.InjectorHelper;
@@ -63,27 +62,8 @@ public class FileUploadServlet extends HttpServlet {
 			} else if (Constants.ONTOLOGY_FILE_TYPE.equals(type)) {
 				try {
 					ClientSession session = SessionHelper.getClientSession(request);
-					session.getInputOntologyManager().loadOntology(new OWLOntologyInputSource() {
-						public InputStream getInputStream() {
-							return in;
-						}
-
-						public boolean isInputStreamAvailable() {
-							return true;
-						}
-
-						public URI getPhysicalURI() {
-							return null;
-						}
-
-						public Reader getReader() {
-							return null;
-						}
-
-						public boolean isReaderAvailable() {
-							return false;
-						}
-					});
+					OWLOntology ontology = session.getInputOntologyManager().loadOntology(new StreamInputSource(in));
+					session.addInputOntology(ontology);
 				} catch (Exception e) {
 					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while creating ontology: "
 							+ e.getMessage());

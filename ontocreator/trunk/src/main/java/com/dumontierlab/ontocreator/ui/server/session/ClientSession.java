@@ -1,6 +1,7 @@
 package com.dumontierlab.ontocreator.ui.server.session;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChange;
@@ -139,6 +141,17 @@ public class ClientSession implements MappingFactory {
 			}
 		}
 		return outputReasoner;
+	}
+
+	public void addInputOntology(OWLOntology ontology) throws OWLReasonerException {
+		getInputOntologies().add(ontology);
+		getInputReasoner().loadOntologies(Collections.singleton(ontology));
+		for (OWLOntology o : inputOntologyManager.getImportsClosure(ontology)) {
+			for (OWLEntity entity : o.getReferencedEntities()) {
+				shortFormProvider.add(entity);
+			}
+		}
+		lastInputOntologyChangeTime = System.currentTimeMillis();
 	}
 
 	public void createOutputOntology(URI uri) throws OWLOntologyCreationException {

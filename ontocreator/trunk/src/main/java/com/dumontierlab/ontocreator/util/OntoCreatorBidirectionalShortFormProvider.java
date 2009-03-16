@@ -34,7 +34,7 @@ public class OntoCreatorBidirectionalShortFormProvider extends CachingBidirectio
 	protected String generateShortForm(OWLEntity entity) {
 		for (OWLOntology ontology : ontologyManager.getOntologies()) {
 			String label = getLabel(entity, ontology);
-			if (label != null) {
+			if (label != null && label.length() != 0) {
 				return label;
 			}
 		}

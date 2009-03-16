@@ -1,10 +1,5 @@
 package com.dumontierlab.ontocreator.ui.client;
 
-import java.util.Set;
-
-import com.dumontierlab.ontocreator.ui.client.event.UiEvent;
-import com.dumontierlab.ontocreator.ui.client.event.UiEventBroker;
-import com.dumontierlab.ontocreator.ui.client.event.UiEventHandler;
 import com.gwtext.client.core.EventObject;
 import com.gwtext.client.core.Position;
 import com.gwtext.client.widgets.Button;
@@ -14,7 +9,7 @@ import com.gwtext.client.widgets.Window;
 import com.gwtext.client.widgets.event.ButtonListenerAdapter;
 import com.gwtext.client.widgets.layout.FitLayout;
 
-public class FileUploadDialog extends Window implements UiEventHandler {
+public class FileUploadDialog extends Window {
 
 	private final FileUploadWidget fileUpload;
 	private MessageBoxConfig waitConfig;
@@ -22,6 +17,11 @@ public class FileUploadDialog extends Window implements UiEventHandler {
 	public FileUploadDialog(String title, String type) {
 		super(title, true, false);
 		fileUpload = new FileUploadWidget(type);
+		fileUpload.addFileUploadListener(new FileUploadWidget.FileUploadListener() {
+			public void onFileUpload() {
+				close();
+			}
+		});
 		createUi();
 		setClosable(true);
 		setPaddings(8);
@@ -40,8 +40,7 @@ public class FileUploadDialog extends Window implements UiEventHandler {
 				if (fileName == null || fileName.length() == 0) {
 					return;
 				}
-				createWaitCongig(button);
-				UiEventBroker.getInstance().registerEventHandler(self());
+				// createWaitCongig(button);
 				fileUpload.upload();
 			}
 		}));
@@ -75,13 +74,4 @@ public class FileUploadDialog extends Window implements UiEventHandler {
 		};
 	}
 
-	public Set<String> getEventOfInterest() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void handleEvent(UiEvent event) {
-		// TODO Auto-generated method stub
-
-	}
 }

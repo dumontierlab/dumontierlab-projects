@@ -11,7 +11,7 @@ public class RenderingHelper {
 		}
 		String uriString = uri.toString();
 		if (uriString.endsWith("/")) {
-			uriString = uriString.substring(0, uriString.length() - 1);
+			uriString = uriString.substring(0, uriString.length() - 2);
 		}
 		int i = uriString.lastIndexOf("/");
 		if (i != -1) {

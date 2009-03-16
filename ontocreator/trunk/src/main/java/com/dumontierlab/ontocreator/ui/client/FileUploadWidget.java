@@ -5,7 +5,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormHandler;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormSubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormSubmitEvent;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -28,6 +31,19 @@ public class FileUploadWidget extends Composite {
 
 	public void upload() {
 		form.submit();
+	}
+
+	public void addFileUploadListener(final FileUploadListener listener) {
+		FormHandler handler = new FormHandler() {
+			public void onSubmit(FormSubmitEvent event) {
+				// empty;
+			}
+
+			public void onSubmitComplete(FormSubmitCompleteEvent event) {
+				listener.onFileUpload();
+			};
+		};
+		form.addFormHandler(handler);
 	}
 
 	public void clear() {
@@ -53,4 +69,7 @@ public class FileUploadWidget extends Composite {
 		return container;
 	}
 
+	public interface FileUploadListener {
+		void onFileUpload();
+	}
 }
