@@ -27,11 +27,13 @@ import com.dumontierlab.ontocreator.mapping.ClassMapping;
 import com.dumontierlab.ontocreator.mapping.InstanceMapping;
 import com.dumontierlab.ontocreator.mapping.Mapping;
 import com.dumontierlab.ontocreator.mapping.MappingFactory;
+import com.dumontierlab.ontocreator.model.TabFile;
 import com.dumontierlab.ontocreator.util.OntoCreatorBidirectionalShortFormProvider;
 
 public class ClientSession implements MappingFactory {
 
 	private final AtomicInteger mappingNameCounter;
+	private volatile TabFile tabFile;
 	private volatile long lastInputOntologyChangeTime;
 	private volatile long lastOutputOntologyChangeTime;
 	private final OWLOntologyManager inputOntologyManager;
@@ -48,6 +50,14 @@ public class ClientSession implements MappingFactory {
 		inputOntologyManager = OWLManager.createOWLOntologyManager();
 		outputOntologyManager = OWLManager.createOWLOntologyManager();
 		shortFormProvider = new OntoCreatorBidirectionalShortFormProvider(inputOntologyManager);
+	}
+
+	public void setTabFile(TabFile tabFile) {
+		this.tabFile = tabFile;
+	}
+
+	public TabFile getTabFile() {
+		return tabFile;
 	}
 
 	public static ClientSession newInstance() {

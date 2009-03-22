@@ -1,7 +1,7 @@
 package com.dumontierlab.ontocreator.ui.server.servlet;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -14,55 +14,41 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.semanticweb.owl.io.StreamInputSource;
 import org.semanticweb.owl.model.OWLOntology;
 
-import com.dumontierlab.ontocreator.engine.OntoCreatorEngine;
-import com.dumontierlab.ontocreator.inject.InjectorHelper;
-import com.dumontierlab.ontocreator.io.TabFileInputReaderImpl;
-import com.dumontierlab.ontocreator.model.RecordSet;
+import com.dumontierlab.ontocreator.model.TabFile;
 import com.dumontierlab.ontocreator.ui.client.util.Constants;
 import com.dumontierlab.ontocreator.ui.server.session.ClientSession;
 import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
-import com.google.inject.Inject;
 
 public class FileUploadServlet extends HttpServlet {
 
-	private OntoCreatorEngine engine;
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		InjectorHelper.inject(this);
-	}
-
-	@Inject
-	public void setEngine(OntoCreatorEngine _engine) {
-		engine = _engine;
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String type = request.getParameter(Constants.FILE_TYPE_PARAMETER);
-		final InputStream in = getUploadFile(request);
-		TabFileInputReaderImpl reader;
+		File uploadedFile = getUploadFile(request);
 
-		if (in != null) {
+		if (uploadedFile != null) {
 			if (Constants.TAB_FILE_TYPE.equals(type)) {
-				reader = new TabFileInputReaderImpl("\t");
-				RecordSet rset = reader.read(in, true);
 				try {
 					ClientSession session = SessionHelper.getClientSession(request);
-					engine.buildInitialOnthology(rset, session.getInputOntologyManager());
+					session.setTabFile(new TabFile(uploadedFile.toURL(), "\t"));
 				} catch (Exception e) {
-					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while creating ontology: "
+					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while reading tabFile: "
 							+ e.getMessage());
 				}
 
 			} else if (Constants.ONTOLOGY_FILE_TYPE.equals(type)) {
 				try {
 					ClientSession session = SessionHelper.getClientSession(request);
-					OWLOntology ontology = session.getInputOntologyManager().loadOntology(new StreamInputSource(in));
+					OWLOntology ontology = session.getInputOntologyManager().loadOntology(uploadedFile.toURI());
 					session.addInputOntology(ontology);
 				} catch (Exception e) {
 					response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while creating ontology: "
@@ -72,7 +58,11 @@ public class FileUploadServlet extends HttpServlet {
 		}
 	}
 
-	private InputStream getUploadFile(HttpServletRequest request) throws IOException {
+	@SuppressWarnings("unchecked")
+	private File getUploadFile(HttpServletRequest request) throws IOException {
+
+		File tmpFile = File.createTempFile("ontolocreator-tabFile", ".tab");
+		tmpFile.deleteOnExit();
 
 		FileItemFactory factory = new DiskFileItemFactory();
 		ServletFileUpload upload = new ServletFileUpload(factory);
@@ -82,8 +72,12 @@ public class FileUploadServlet extends HttpServlet {
 			if (items.isEmpty()) {
 				return null;
 			}
-
-			return items.get(0).getInputStream();
+			try {
+				items.get(0).write(tmpFile);
+			} catch (Exception e) {
+				throw new IOException("Error while writing uploaded file to tempporary file on disk.");
+			}
+			return tmpFile;
 
 		} catch (FileUploadException e) {
 			// TODO
