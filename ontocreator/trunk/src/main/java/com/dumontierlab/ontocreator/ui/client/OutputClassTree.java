@@ -10,7 +10,8 @@ import com.dumontierlab.ontocreator.ui.client.event.UiEventHandler;
 import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
-import com.dumontierlab.ontocreator.ui.client.util.ContinousRpcCommand;
+import com.dumontierlab.ontocreator.ui.client.util.ContinuousRpcCommand;
+import com.dumontierlab.ontocreator.ui.client.util.DatedResponse;
 import com.dumontierlab.ontocreator.ui.client.util.OnRequestRpcCommand;
 import com.dumontierlab.ontocreator.ui.client.util.RpcCommandPool;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -64,10 +65,13 @@ public class OutputClassTree extends ClassTree implements UiEventHandler {
 			}
 		};
 
-		rpcPool.addRpcCommand(new ContinousRpcCommand<String>() {
+		rpcPool.addRpcCommand(new ContinuousRpcCommand<DatedResponse<String>>() {
+
+			private long lastUpdate;
+
 			@Override
-			protected void rpcCall(AsyncCallback<String> callback) {
-				OntologyService.Util.getInstace().getOutputOntology(callback);
+			protected void rpcCall(AsyncCallback<DatedResponse<String>> callback) {
+				OntologyService.Util.getInstace().getOutputOntology(lastUpdate, callback);
 			}
 
 			@Override
@@ -76,9 +80,11 @@ public class OutputClassTree extends ClassTree implements UiEventHandler {
 			}
 
 			@Override
-			protected void rpcReturn(String result) {
+			protected void rpcReturn(DatedResponse<String> result) {
+				lastUpdate = result.getTimestamp();
+				String ouputOntologyUri = result.getValue();
 				if (result != null) {
-					UiEventBroker.getInstance().publish(new OutputOntologyChangedEvent(result));
+					UiEventBroker.getInstance().publish(new OutputOntologyChangedEvent(ouputOntologyUri));
 				}
 			}
 		});

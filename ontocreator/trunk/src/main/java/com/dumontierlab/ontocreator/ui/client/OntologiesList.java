@@ -6,7 +6,8 @@ import com.dumontierlab.ontocreator.ui.client.event.InputOntologiesChangedEvent;
 import com.dumontierlab.ontocreator.ui.client.event.UiEventBroker;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyServiceAsync;
-import com.dumontierlab.ontocreator.ui.client.util.PersistentContinousRpcCommand;
+import com.dumontierlab.ontocreator.ui.client.util.DatedResponse;
+import com.dumontierlab.ontocreator.ui.client.util.PersistentContinuousRpcCommand;
 import com.dumontierlab.ontocreator.ui.client.util.RpcCommandPool;
 import com.dumontierlab.ontocreator.ui.client.view.OntologiesListView;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -39,13 +40,14 @@ public class OntologiesList extends Composite {
 	}
 
 	private void initRpc() {
-		rpcPool.addRpcCommand(new PersistentContinousRpcCommand<Set<String>>() {
+		rpcPool.addRpcCommand(new PersistentContinuousRpcCommand<DatedResponse<Set<String>>>() {
 
 			private final OntologyServiceAsync service = OntologyService.Util.getInstace();
+			private long lastUpdate;
 
 			@Override
-			protected void rpcCall(AsyncCallback<Set<String>> callback) {
-				service.getLoadedOntologies(callback);
+			protected void rpcCall(AsyncCallback<DatedResponse<Set<String>>> callback) {
+				service.getLoadedOntologies(lastUpdate, callback);
 			}
 
 			@Override
@@ -54,12 +56,14 @@ public class OntologiesList extends Composite {
 			}
 
 			@Override
-			protected void rpcReturn(Set<String> result) {
-				DataProxy proxy = new MemoryProxy(new Object[][] { result.toArray() });
+			protected void rpcReturn(DatedResponse<Set<String>> result) {
+				lastUpdate = result.getTimestamp();
+				Set<String> ontologies = result.getValue();
+				DataProxy proxy = new MemoryProxy(new Object[][] { ontologies.toArray() });
 				store.setDataProxy(proxy);
 				store.reload();
 				UiEventBroker.getInstance().publish(
-						new InputOntologiesChangedEvent(result.toArray(new String[result.size()])));
+						new InputOntologiesChangedEvent(ontologies.toArray(new String[ontologies.size()])));
 			}
 		});
 	}

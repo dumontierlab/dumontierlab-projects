@@ -7,17 +7,18 @@ import com.dumontierlab.ontocreator.ui.client.model.OWLClassBean;
 import com.dumontierlab.ontocreator.ui.client.model.OWLIndividualBean;
 import com.dumontierlab.ontocreator.ui.client.model.OWLPropertyBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
+import com.dumontierlab.ontocreator.ui.client.util.DatedResponse;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface OntologyServiceAsync {
 
 	void loadOntology(String physicalUri, AsyncCallback<Set<Void>> callback);
 
-	void getLoadedOntologies(AsyncCallback<Set<String>> callback);
+	void getLoadedOntologies(long lastUpdate, AsyncCallback<DatedResponse<Set<String>>> callback);
 
 	void createOutputOntology(String uri, AsyncCallback<Void> callback);
 
-	void getOutputOntology(AsyncCallback<String> callback);
+	void getOutputOntology(long lastUpdate, AsyncCallback<DatedResponse<String>> callback);
 
 	void getInputClassHierarchy(AsyncCallback<TreeNode<OWLClassBean>> callback);
 

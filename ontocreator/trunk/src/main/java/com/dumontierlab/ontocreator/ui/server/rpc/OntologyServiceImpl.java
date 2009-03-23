@@ -26,13 +26,16 @@ import com.dumontierlab.ontocreator.ui.client.model.OWLPropertyBean;
 import com.dumontierlab.ontocreator.ui.client.model.TreeNode;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
 import com.dumontierlab.ontocreator.ui.client.rpc.exception.ServiceException;
+import com.dumontierlab.ontocreator.ui.client.util.DatedResponse;
 import com.dumontierlab.ontocreator.ui.client.util.RetryException;
-import com.dumontierlab.ontocreator.ui.server.rpc.util.ContinousRpcServlet;
+import com.dumontierlab.ontocreator.ui.server.rpc.util.ContinuousRpcHelper;
 import com.dumontierlab.ontocreator.ui.server.session.ClientSession;
 import com.dumontierlab.ontocreator.ui.server.session.SessionHelper;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class OntologyServiceImpl extends ContinousRpcServlet implements OntologyService {
+public class OntologyServiceImpl extends RemoteServiceServlet implements OntologyService {
 
+	private static final long serialVersionUID = 1L;
 	private static final int RETRY_TIME = 3000;
 
 	public void loadOntology(String physicalUri) throws ServiceException {
@@ -46,11 +49,11 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		}
 	}
 
-	public Set<String> getLoadedOntologies() throws RetryException {
+	public DatedResponse<Set<String>> getLoadedOntologies(long lastUpdate) throws RetryException {
 		ClientSession session = getClientSession();
 
-		if (getLastResponseTimestamp() >= session.getLastInputOntologyChangeTime()) {
-			continueLater(RETRY_TIME);
+		if (lastUpdate >= session.getLastInputOntologyChangeTime()) {
+			ContinuousRpcHelper.continueLater(RETRY_TIME);
 		}
 
 		Set<String> ontologyUris = new HashSet<String>();
@@ -58,7 +61,7 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 			ontologyUris.add(ontology.getURI().toString());
 		}
 
-		return ontologyUris;
+		return new DatedResponse<Set<String>>(ontologyUris);
 	}
 
 	public void createOutputOntology(String uri) {
@@ -69,14 +72,16 @@ public class OntologyServiceImpl extends ContinousRpcServlet implements Ontology
 		}
 	}
 
-	public String getOutputOntology() throws RetryException {
+	public DatedResponse<String> getOutputOntology(long lastUpdate) throws RetryException {
 		ClientSession session = getClientSession();
 
-		if (getLastResponseTimestamp() >= session.getLastOutputOntologyChangeTime()) {
-			continueLater(RETRY_TIME);
+		if (lastUpdate >= session.getLastOutputOntologyChangeTime()) {
+			ContinuousRpcHelper.continueLater(RETRY_TIME);
 		}
 
-		return session.getOuputOntology() == null ? null : session.getOuputOntology().getURI().toString();
+		DatedResponse<String> response = new DatedResponse<String>(session.getOuputOntology() == null ? null : session
+				.getOuputOntology().getURI().toString());
+		return response;
 	}
 
 	public TreeNode<OWLClassBean> getInputClassHierarchy() {

@@ -3,15 +3,15 @@ package com.dumontierlab.ontocreator.ui.client.util;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public abstract class ContinousRpcCommand<E> extends AbstractRpcCommand<E> {
+public abstract class ContinuousRpcCommand<E> extends AbstractRpcCommand<E> {
 
 	private final Timer retryTimer;
 
-	public ContinousRpcCommand() {
+	public ContinuousRpcCommand() {
 		this(false);
 	}
 
-	public ContinousRpcCommand(boolean runInBackground) {
+	public ContinuousRpcCommand(boolean runInBackground) {
 		super(runInBackground);
 		retryTimer = new Timer() {
 			@Override

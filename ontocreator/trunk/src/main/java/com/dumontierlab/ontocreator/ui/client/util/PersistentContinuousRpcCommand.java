@@ -2,13 +2,13 @@ package com.dumontierlab.ontocreator.ui.client.util;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public abstract class PersistentContinousRpcCommand<E> extends ContinousRpcCommand<E> {
+public abstract class PersistentContinuousRpcCommand<E> extends ContinuousRpcCommand<E> {
 
-	public PersistentContinousRpcCommand() {
+	public PersistentContinuousRpcCommand() {
 		super();
 	}
 
-	public PersistentContinousRpcCommand(boolean runInBackground) {
+	public PersistentContinuousRpcCommand(boolean runInBackground) {
 		super(runInBackground);
 	}
 
