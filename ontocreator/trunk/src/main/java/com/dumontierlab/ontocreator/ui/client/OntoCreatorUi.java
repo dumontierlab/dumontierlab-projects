@@ -37,13 +37,13 @@ public class OntoCreatorUi implements EntryPoint {
 
 		TabPanel tabs = new TabPanel();
 		tabs.setResizeTabs(true);
-		tabs.setTabWidth(90);
+		tabs.setTabWidth(120);
 		tabs.setHeight("100%");
 
-		Panel rulesEditorPanel = new Panel("Rules Editor");
+		Panel rulesEditorPanel = new Panel("TabFile 2 OWL");
 		rulesEditorPanel.setAutoScroll(true);
 		rulesEditorPanel.setLayout(new FitLayout());
-		RulesEditor ruleEditor = new RulesEditor();
+		TabFileWizard ruleEditor = new TabFileWizard();
 		rulesEditorPanel.add(ruleEditor);
 		tabs.add(rulesEditorPanel);
 

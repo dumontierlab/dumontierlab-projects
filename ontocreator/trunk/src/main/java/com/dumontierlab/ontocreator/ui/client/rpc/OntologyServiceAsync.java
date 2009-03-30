@@ -36,4 +36,5 @@ public interface OntologyServiceAsync {
 
 	void getInputDataProperties(AsyncCallback<List<OWLPropertyBean>> callback);
 
+	void getInputClasses(AsyncCallback<List<OWLClassBean>> callback);
 }

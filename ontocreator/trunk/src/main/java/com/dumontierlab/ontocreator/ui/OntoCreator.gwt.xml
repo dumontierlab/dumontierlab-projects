@@ -15,6 +15,7 @@
     
     <servlet path="/OntologyService" class="com.dumontierlab.ontocreator.ui.server.rpc.OntologyServiceImpl"/>
     <servlet path="/RuleService" class="com.dumontierlab.ontocreator.ui.server.rpc.RuleServiceImpl"/>
+    <servlet path="/DataService" class="com.dumontierlab.ontocreator.ui.server.rpc.DataServiceImpl"/>
     
     <servlet path="/diag" class="com.dumontierlab.ontocreator.diagnostic.DiagnosticServlet"/>
     <servlet path="/upload" class="com.dumontierlab.ontocreator.ui.server.servlet.FileUploadServlet"/>

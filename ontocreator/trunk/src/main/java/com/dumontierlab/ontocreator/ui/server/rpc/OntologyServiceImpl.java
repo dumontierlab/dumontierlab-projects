@@ -208,6 +208,26 @@ public class OntologyServiceImpl extends RemoteServiceServlet implements Ontolog
 		return root;
 	}
 
+	public List<OWLClassBean> getInputClasses() {
+		ClientSession session = getClientSession();
+		List<OWLClassBean> results = new ArrayList<OWLClassBean>();
+
+		for (OWLOntology ontology : session.getInputOntologies()) {
+			for (OWLClass concept : ontology.getReferencedClasses()) {
+				if (!results.contains(concept)) {
+					try {
+						results.add(createOWLClassBean(getShortForm(session, concept), concept, session
+								.getInputReasoner()));
+					} catch (OWLReasonerException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return results;
+	}
+
 	private OWLPropertyBean createOWLPropertyBean(String shortForm, OWLProperty<?, ?> property, OWLOntology ontology) {
 		OWLPropertyBean prop = new OWLPropertyBean();
 		prop.setUri(property.getURI().toString());
