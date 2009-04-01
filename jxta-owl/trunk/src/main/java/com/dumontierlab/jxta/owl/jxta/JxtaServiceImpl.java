@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +45,10 @@ public class JxtaServiceImpl implements JxtaService {
 		this.seedsUris = seedsUris;
 		this.jxtaHome = jxtaHome;
 		startJxta();
+	}
+
+	public PeerGroup getPeerGroup() {
+		return netPeerGroup;
 	}
 
 	public void advertiseSoapService(ServiceDescriptor serviceDescriptor) {
@@ -130,14 +132,4 @@ public class JxtaServiceImpl implements JxtaService {
 
 	}
 
-	// TODO: this is just to test the connection
-	public static void main(String[] args) {
-		Set<URI> seeds = Collections.singleton(URI.create("http://dsg.ce.unipr.it/research/SP2A/rdvlist.txt"));
-		try {
-			new JxtaServiceImpl("testPeer", seeds, ".jxta");
-		} catch (JxtaBootstrapException e) {
-			LOG.log(Level.SEVERE, e.getMessage(), e);
-			System.exit(1);
-		}
-	}
 }
