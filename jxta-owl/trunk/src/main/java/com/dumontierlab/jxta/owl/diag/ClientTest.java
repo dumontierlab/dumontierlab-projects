@@ -48,7 +48,7 @@ public class ClientTest {
 		Object tempAdv;
 		Vector<ModuleSpecAdvertisement> serviceAdvs = new Vector<ModuleSpecAdvertisement>();
 
-		System.out.println("Searching for 'HelloService'");
+		System.out.println("Searching for " + serviceName);
 		// Initialize Discovery Service
 		DiscoveryService discoverySvc = jxta.getPeerGroup().getDiscoveryService();
 		long startSVCsearch = System.nanoTime();
@@ -100,7 +100,6 @@ public class ClientTest {
 	 * extracting WSDL service description
 	 */
 	private static void findService(JxtaService jxta, String serviceName) {
-		System.out.println("\n### Find remote HelloService ###");
 
 		// Look for service advertisements
 		ModuleSpecAdvertisement msadv = discoverServices(jxta, serviceName);

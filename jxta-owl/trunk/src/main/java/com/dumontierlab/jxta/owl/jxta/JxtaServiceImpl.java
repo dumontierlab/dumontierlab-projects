@@ -14,9 +14,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
+import net.jxta.document.XMLDocument;
+import net.jxta.document.XMLElement;
 import net.jxta.exception.PeerGroupException;
-import net.jxta.impl.document.DOMXMLDocument;
-import net.jxta.impl.document.DOMXMLElement;
 import net.jxta.peergroup.NetPeerGroupFactory;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.NetworkConfigurator;
@@ -56,11 +56,11 @@ public class JxtaServiceImpl implements JxtaService {
 		SOAPService service = new SOAPService();
 
 		// Build the ModuleSpecAdv 'Param' section
-		DOMXMLDocument param = (DOMXMLDocument) StructuredDocumentFactory.newStructuredDocument(new MimeMediaType(
-				"text/xml"), "Parm");
+		XMLDocument param = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(new MimeMediaType("text/xml"),
+				"Parm");
 
 		// *************** 1. Add the service WSDL description *****************
-		DOMXMLElement wsdlElem;
+		XMLElement wsdlElem;
 		try {
 			wsdlElem = param.createElement("WSDL", generateWSDL(serviceDescriptor));
 			param.appendChild(wsdlElem);
@@ -70,7 +70,7 @@ public class JxtaServiceImpl implements JxtaService {
 
 		// ********************* 2. Add secure pipe tag ************************
 		String secure = (serviceDescriptor.isSecure()) ? "true" : "false";
-		DOMXMLElement secureElem = param.createElement("secure", secure);
+		XMLElement secureElem = param.createElement("secure", secure);
 		param.appendChild(secureElem);
 
 		// Set the context object, with init parameters
@@ -81,9 +81,9 @@ public class JxtaServiceImpl implements JxtaService {
 	}
 
 	private String generateWSDL(ServiceDescriptor descriptor) throws IOException, WSDLException, SAXException,
-			ParserConfigurationException {
+			ParserConfigurationException, ClassNotFoundException {
 		Emitter emitter = new Emitter();
-		emitter.setImplCls(descriptor.getClassname());
+		emitter.setCls(descriptor.getClassname());
 		return emitter.emitToString(Emitter.MODE_INTERFACE);
 	}
 
