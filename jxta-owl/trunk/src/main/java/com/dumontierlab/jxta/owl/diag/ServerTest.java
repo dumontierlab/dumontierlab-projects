@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import com.dumontierlab.jxta.owl.jxta.JxtaService;
 import com.dumontierlab.jxta.owl.jxta.JxtaServiceImpl;
-import com.dumontierlab.jxta.owl.jxta.exception.JxtaBootstrapException;
+import com.dumontierlab.jxta.owl.jxta.exception.JxtaException;
 import com.dumontierlab.jxta.owl.service.impl.OWLReasonerServiceImpl;
 
 public class ServerTest {
@@ -22,7 +22,7 @@ public class ServerTest {
 			JxtaService jxta = new JxtaServiceImpl("testPeer-server", seeds, ".jxta");
 			jxta.advertiseSoapService(OWLReasonerServiceImpl.DESCRIPTOR);
 
-		} catch (JxtaBootstrapException e) {
+		} catch (JxtaException e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);
 			System.exit(1);
 		}

@@ -10,10 +10,10 @@ public class OWLReasonerServiceImpl implements OWLReasonerService {
 
 	public static final ServiceDescriptor DESCRIPTOR = new ServiceDescriptor(
 			"com.dumontierlab.jxta.owl.service.impl.OWLReasonerServiceImpl", // class
-			"OWLReasonerService", // name
+			"OWLReasonerServiceImpl", // name
 			"0.1", // version
 			"Dumontierlab", // creator
-			"jxta:/dumontierlab.com/jxta-owl/service/OWLReasonerService", // specURI
+			"jxta:/dumontierlab.com/jxta-owl/service/OWLReasonerServiceImpl", // specURI
 			"The simple hello service example", // description
 			"urn:jxta:jxta-NetGroup", // peergroup ID
 			"JXTA NetPeerGroup", // PeerGroup name

@@ -1,7 +1,9 @@
 package com.dumontierlab.jxta.owl.diag;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -10,16 +12,21 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.namespace.QName;
+
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.StructuredTextDocument;
 import net.jxta.document.TextElement;
 import net.jxta.protocol.ModuleSpecAdvertisement;
+import net.jxta.soap.CallFactory;
+import net.jxta.soap.ServiceDescriptor;
+import net.jxta.soap.deploy.SOAPTransportDeployer;
 
+import org.apache.axis.client.Call;
 import org.bouncycastle.util.encoders.UrlBase64;
 
 import com.dumontierlab.jxta.owl.jxta.JxtaService;
 import com.dumontierlab.jxta.owl.jxta.JxtaServiceImpl;
-import com.dumontierlab.jxta.owl.jxta.exception.JxtaBootstrapException;
 import com.dumontierlab.jxta.owl.service.impl.OWLReasonerServiceImpl;
 
 public class ClientTest {
@@ -31,12 +38,73 @@ public class ClientTest {
 		Set<URI> seeds = Collections.singleton(URI.create("http://dsg.ce.unipr.it/research/SP2A/rdvlist.txt"));
 		try {
 			JxtaService jxta = new JxtaServiceImpl("testPeer-client", seeds, ".jxta");
-			findService(jxta, OWLReasonerServiceImpl.DESCRIPTOR.getName());
+			ModuleSpecAdvertisement msadv = discoverServices(jxta, OWLReasonerServiceImpl.DESCRIPTOR.getName());
+			interactWithService(msadv, OWLReasonerServiceImpl.DESCRIPTOR, jxta);
 
-		} catch (JxtaBootstrapException e) {
+		} catch (Exception e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);
 			System.exit(1);
 		}
+	}
+
+	private static void interactWithService(ModuleSpecAdvertisement msadv, ServiceDescriptor descriptor, JxtaService jxta)
+			throws Exception {
+		// Deploy SOAPTransport
+		String wsdl = getWsdl(msadv);
+		System.out.println(wsdl);
+
+		new SOAPTransportDeployer().deploy();
+
+		InputStream wsdlInputStream = new ByteArrayInputStream(wsdl.getBytes());
+
+		// create call
+		Call call = CallFactory.getInstance().createCall(descriptor, msadv.getPipeAdvertisement(), jxta.getPeerGroup(),
+				wsdlInputStream, new QName("http://impl.service.owl.jxta.dumontierlab.com", "OWLReasonerServiceImpl"), // servicename
+				new QName("http://impl.service.owl.jxta.dumontierlab.com", "OWLReasonerServiceImpl")); // portname
+
+		call.setOperationName("test");
+		call.setTimeout(new Integer(20000));
+		for (int i = 0; i < 20; i++) {
+			System.out.println("calling service");
+			call.invoke(new Object[] {});
+		}
+
+	}
+
+	private static String getWsdl(ModuleSpecAdvertisement msadv) {
+		String wsdlBuffer = null;
+		String decodedWSDL = null;
+		// Print out the params of the service advertisement we found
+		try {
+			StructuredTextDocument param = (StructuredTextDocument) msadv.getParam();
+
+			try {
+				System.out.println("\nSaving to file service param fields...");
+				param.sendToStream(new FileOutputStream("ServiceParm.xml"));
+			} catch (Exception e) {
+				System.out.println("Exception in saving service params section!");
+				e.printStackTrace();
+			}
+
+			// Now get all fields
+			Enumeration params = param.getChildren();
+			TextElement elem;
+			String testtext = new String();
+			while (params != null && params.hasMoreElements()) {
+				elem = (TextElement) params.nextElement();
+				// Check for WSDL service description
+				if (elem.getName().equals("WSDL")) {
+					wsdlBuffer = new String(elem.getTextValue());
+					decodedWSDL = new String(UrlBase64.decode(wsdlBuffer.getBytes()));
+
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Error extracting service advertisement");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return decodedWSDL;
 	}
 
 	/**
@@ -93,61 +161,6 @@ public class ClientTest {
 		}
 
 		return serviceAdvs.firstElement();
-	}
-
-	/**
-	 * Discovering the specified service module spec adv (by Name) and
-	 * extracting WSDL service description
-	 */
-	private static void findService(JxtaService jxta, String serviceName) {
-
-		// Look for service advertisements
-		ModuleSpecAdvertisement msadv = discoverServices(jxta, serviceName);
-
-		String WSDLbuffer = null;
-		String decodedWSDL = null;
-		// Print out the params of the service advertisement we found
-		try {
-			StructuredTextDocument param = (StructuredTextDocument) msadv.getParam();
-
-			try {
-				System.out.println("\nSaving to file service param fields...");
-				param.sendToStream(new FileOutputStream("ServiceParm.xml"));
-			} catch (Exception e) {
-				System.out.println("Exception in saving service params section!");
-				e.printStackTrace();
-			}
-
-			// Now get all fields
-			Enumeration params = param.getChildren();
-			TextElement elem;
-			String testtext = new String();
-			while (params != null && params.hasMoreElements()) {
-				elem = (TextElement) params.nextElement();
-				// Check for WSDL service description
-				if (elem.getName().equals("WSDL")) {
-					WSDLbuffer = new String(elem.getTextValue());
-					try {
-						decodedWSDL = new String(UrlBase64.decode(WSDLbuffer.getBytes()));
-					} catch (Exception ce) {
-						ce.printStackTrace();
-						System.exit(1);
-					}
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("Error extracting service advertisement");
-			e.printStackTrace();
-			System.exit(1);
-		}
-
-		System.out.println("Print out decoded WSDL content:");
-		System.out.println(decodedWSDL);
-
-		System.out.println("\nCheck service invocation policy");
-		System.out.println("=========================================");
-		System.out.println("-> Setting unsecure service invocation...");
-		System.out.println("=========================================");
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.dumontierlab.jxta.owl.jxta;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
@@ -22,12 +23,15 @@ import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.rendezvous.RendezVousService;
 import net.jxta.soap.SOAPService;
+import net.jxta.soap.SOAPServiceThread;
 import net.jxta.soap.ServiceDescriptor;
 
 import org.apache.axis.wsdl.fromJava.Emitter;
+import org.bouncycastle.util.encoders.UrlBase64;
 import org.xml.sax.SAXException;
 
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaBootstrapException;
+import com.dumontierlab.jxta.owl.jxta.exception.JxtaException;
 
 public class JxtaServiceImpl implements JxtaService {
 
@@ -51,7 +55,7 @@ public class JxtaServiceImpl implements JxtaService {
 		return netPeerGroup;
 	}
 
-	public void advertiseSoapService(ServiceDescriptor serviceDescriptor) {
+	public void advertiseSoapService(ServiceDescriptor serviceDescriptor) throws JxtaException {
 		// TODO: make lifetime and expiration a parameter for this method.
 		SOAPService service = new SOAPService();
 
@@ -62,7 +66,8 @@ public class JxtaServiceImpl implements JxtaService {
 		// *************** 1. Add the service WSDL description *****************
 		XMLElement wsdlElem;
 		try {
-			wsdlElem = param.createElement("WSDL", generateWSDL(serviceDescriptor));
+			wsdlElem = param.createElement("WSDL", new String(UrlBase64.encode(generateWSDL(serviceDescriptor)
+					.getBytes())));
 			param.appendChild(wsdlElem);
 		} catch (Exception e) {
 			LOG.log(Level.WARNING, "Unable to generate WSDL for service: " + serviceDescriptor.getName(), e);
@@ -78,13 +83,32 @@ public class JxtaServiceImpl implements JxtaService {
 		parameters.put("serviceName", serviceDescriptor.getName());
 		service.setContext(parameters);
 
+		// Initialize the service
+		try {
+			service.init(netPeerGroup, serviceDescriptor, param, null);
+		} catch (Exception e) {
+			throw new JxtaException("Unable to initialize service: " + serviceDescriptor.getName(), e);
+		}
+		// saving msadv
+		try {
+			param.sendToStream(new FileOutputStream("ServiceParm.xml"));
+		} catch (Exception e) {
+			throw new JxtaException("Exception in saving service params section", e);
+		}
+
+		// Start a new ServiceThread running this service
+		new SOAPServiceThread(service).start();
+
 	}
 
 	private String generateWSDL(ServiceDescriptor descriptor) throws IOException, WSDLException, SAXException,
 			ParserConfigurationException, ClassNotFoundException {
+
 		Emitter emitter = new Emitter();
 		emitter.setCls(descriptor.getClassname());
-		return emitter.emitToString(Emitter.MODE_INTERFACE);
+		emitter.setServiceElementName(descriptor.getName());
+		emitter.setLocationUrl("http://localhost:8080/axis/services/" + descriptor.getName());
+		return emitter.emitToString(Emitter.MODE_ALL);
 	}
 
 	protected void startJxta() throws JxtaBootstrapException {
