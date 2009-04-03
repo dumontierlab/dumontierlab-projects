@@ -1,4 +1,4 @@
-package com.dumontierlab.jxta.owl.diag;
+package com.dumontierlab.jxta.owl.jxta.diag;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
