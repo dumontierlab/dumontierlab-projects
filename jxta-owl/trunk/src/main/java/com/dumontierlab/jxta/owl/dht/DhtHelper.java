@@ -4,20 +4,46 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.WeakHashMap;
 
+import aterm.ATerm;
+
 public class DhtHelper {
 
-	private static final WeakHashMap<String, BigInteger> FLY_WEIGHT = new WeakHashMap<String, BigInteger>();
+	private static final WeakHashMap<Object, BigInteger> FLY_WEIGHT = new WeakHashMap<Object, BigInteger>();
 
-	public static String getClosest(String key, String... toCompare) {
-		BigInteger[] numericHashes = new BigInteger[toCompare.length];
-		for (int i = 0; i < toCompare.length; i++) {
-			numericHashes[i] = hash(toCompare[i]);
+	public static BigInteger hash(ATerm term) {
+		BigInteger hash = FLY_WEIGHT.get(term);
+		if (hash != null) {
+			return hash;
 		}
-		int closest = getClosest(hash(key), numericHashes);
-		if (closest == -1) {
+		hash = hash(term.toString());
+		FLY_WEIGHT.put(term, hash);
+		return hash;
+	}
+
+	public static BigInteger hash(String text) {
+		return hash(text, false);
+	}
+
+	public static BigInteger hash(String text, boolean useFlyWeight) {
+		BigInteger hash = null;
+		if (useFlyWeight && (hash = FLY_WEIGHT.get(text)) != null) {
+			return hash;
+		}
+		try {
+			MessageDigest md;
+			md = MessageDigest.getInstance("SHA-1");
+			byte[] sha1hash = new byte[40];
+			md.update(text.getBytes("iso-8859-1"), 0, text.length());
+			sha1hash = md.digest();
+			hash = new BigInteger(convertToHex(sha1hash), 16);
+			if (useFlyWeight) {
+				FLY_WEIGHT.put(text, hash);
+			}
+			return hash;
+		} catch (Exception e) {
+			assert false : e.getMessage();
 			return null;
 		}
-		return toCompare[closest];
 	}
 
 	public static int getClosest(BigInteger key, BigInteger... toCompare) {
@@ -34,21 +60,6 @@ public class DhtHelper {
 			}
 		}
 		return closest;
-	}
-
-	public static BigInteger hash(String text) {
-		BigInteger hash = FLY_WEIGHT.get(text);
-		try {
-			MessageDigest md;
-			md = MessageDigest.getInstance("SHA-1");
-			byte[] sha1hash = new byte[40];
-			md.update(text.getBytes("iso-8859-1"), 0, text.length());
-			sha1hash = md.digest();
-			hash = new BigInteger(convertToHex(sha1hash), 16);
-		} catch (Exception e) {
-			assert false : e.getMessage();
-		}
-		return hash;
 	}
 
 	private static String convertToHex(byte[] data) {
