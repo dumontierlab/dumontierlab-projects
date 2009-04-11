@@ -10,6 +10,8 @@ import com.dumontierlab.ontocreator.ui.client.model.ColumnMappingBean.ColumnMapp
 import com.dumontierlab.ontocreator.ui.client.model.ColumnMappingRelationshipBean.ColumnMappingRelationshipType;
 import com.dumontierlab.ontocreator.ui.client.rpc.DataService;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.Composite;
@@ -62,6 +64,8 @@ public class ColumnRelationships extends Composite implements WizardTab {
 			}
 
 			public void onSuccess(Void result) {
+				Window.open("http://pellet.owldl.com/owlsight/?ontology=" + GWT.getModuleBaseURL() + "download",
+						"Output Ontology", null);
 				callback.onSuccess(true);
 			}
 

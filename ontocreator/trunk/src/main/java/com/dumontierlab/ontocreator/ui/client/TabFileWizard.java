@@ -53,7 +53,7 @@ public class TabFileWizard extends Composite {
 					if (index == 0) {
 						nextButton.setText("Next");
 						previousButton.setVisible(false);
-					} else if (index == tabs.length - 1) {
+					} else if (index == (tabs.length - 1)) {
 						nextButton.setText("Done");
 						previousButton.setVisible(true);
 					} else {
