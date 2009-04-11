@@ -1,3 +1,8 @@
+html, body, div, td{
+	font-family: sans-serif;
+	font-size: 11px;	
+}
+
 .bold{
 	font-weight: bold;
 }
@@ -17,4 +22,36 @@
 .uriTextbox{
 	width: 50em;
 	background-color: #ffffcc;
+}
+
+.tabFileWizard .gwt-TabPanel{
+	border: none;
+}
+
+.tabFileWizard .gwt-TabPanelBottom{
+	border-top: 3px solid #bbddff;
+	border-right: none;
+	border-bottom: none;
+	border-left: none;
+}
+
+.tabFileWizard .gwt-TabBar .gwt-TabBarItem{
+	background: #ddeeff;
+	border-top: 1px solid #bbddff;
+	border-right: 1px solid #bbddff;
+	border-left: 1px solid #bbddff;	
+	font-weight: normal;
+	
+}
+
+.tabFileWizard .gwt-TabBar .gwt-TabBarItem-selected{
+	font-weight: bold;
+} 
+
+.tabFileWizard .gwt-TabBar .gwt-TabBarItem div{
+	font-size: 14px;
+}
+
+.greyCell{
+	background-color: #b6b6b6;
 }

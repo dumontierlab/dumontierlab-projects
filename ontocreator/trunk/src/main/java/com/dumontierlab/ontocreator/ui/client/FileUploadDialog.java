@@ -17,7 +17,7 @@ public class FileUploadDialog extends Window {
 	public FileUploadDialog(String title, String type) {
 		super(title, true, false);
 		fileUpload = new FileUploadWidget(type);
-		fileUpload.addFileUploadListener(new FileUploadWidget.FileUploadListener() {
+		fileUpload.setFileUploadListener(new FileUploadWidget.FileUploadListener() {
 			public void onFileUpload() {
 				close();
 			}

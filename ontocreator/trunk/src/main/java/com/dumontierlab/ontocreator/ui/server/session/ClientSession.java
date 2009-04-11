@@ -4,10 +4,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mindswap.pellet.owlapi.PelletReasonerFactory;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -22,17 +19,11 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.util.BidirectionalShortFormProvider;
 
-import com.dumontierlab.ontocreator.mapping.BoundMapping;
-import com.dumontierlab.ontocreator.mapping.ClassMapping;
-import com.dumontierlab.ontocreator.mapping.InstanceMapping;
-import com.dumontierlab.ontocreator.mapping.Mapping;
-import com.dumontierlab.ontocreator.mapping.MappingFactory;
 import com.dumontierlab.ontocreator.model.TabFile;
 import com.dumontierlab.ontocreator.util.OntoCreatorBidirectionalShortFormProvider;
 
-public class ClientSession implements MappingFactory {
+public class ClientSession {
 
-	private final AtomicInteger mappingNameCounter;
 	private volatile TabFile tabFile;
 	private volatile long lastInputOntologyChangeTime;
 	private volatile long lastOutputOntologyChangeTime;
@@ -42,11 +33,11 @@ public class ClientSession implements MappingFactory {
 	private OWLOntology outputOntology;
 	private OWLReasoner inputReasoner;
 	private OWLReasoner outputReasoner;
-	private final Map<String, Mapping> mappings;
+
+	private final Set<URI> imports;
 
 	private ClientSession() {
-		mappingNameCounter = new AtomicInteger(0);
-		mappings = new ConcurrentHashMap<String, Mapping>();
+		imports = new HashSet<URI>();
 		inputOntologyManager = OWLManager.createOWLOntologyManager();
 		outputOntologyManager = OWLManager.createOWLOntologyManager();
 		shortFormProvider = new OntoCreatorBidirectionalShortFormProvider(inputOntologyManager);
@@ -154,6 +145,7 @@ public class ClientSession implements MappingFactory {
 	}
 
 	public void addInputOntology(OWLOntology ontology) throws OWLReasonerException {
+		imports.add(ontology.getURI());
 		getInputOntologies().add(ontology);
 		getInputReasoner().loadOntologies(Collections.singleton(ontology));
 		for (OWLOntology o : inputOntologyManager.getImportsClosure(ontology)) {
@@ -172,40 +164,8 @@ public class ClientSession implements MappingFactory {
 		return outputOntology;
 	}
 
-	public void addMapping(Mapping rule) {
-		mappings.put(rule.getName(), rule);
-	}
-
-	public void removeMapping(String name) {
-		mappings.remove(name);
-	}
-
-	public Mapping getMapping(String name) {
-		return mappings.get(name);
-	}
-
-	public Set<Mapping> getMappings() {
-		return new HashSet<Mapping>(mappings.values());
-	}
-
-	public boolean containsMaping(String mappingName) {
-		return mappings.containsKey(mappingName);
-	}
-
-	public BoundMapping createBoundMapping(String uri) {
-		return new BoundMapping(generateMappingName(), uri);
-	}
-
-	public ClassMapping createClassMapping() {
-		return new ClassMapping(generateMappingName(), inputOntologyManager);
-	}
-
-	public InstanceMapping createInstanceMapping() {
-		return new InstanceMapping(generateMappingName(), inputOntologyManager);
-	}
-
-	private String generateMappingName() {
-		return "Mapping " + mappingNameCounter.addAndGet(1);
+	public Set<URI> getImports() {
+		return imports;
 	}
 
 }

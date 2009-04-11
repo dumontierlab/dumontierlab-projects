@@ -50,6 +50,9 @@ public class TabFile {
 
 	public String[] readRow(BufferedReader buffer) throws IOException {
 		String line = buffer.readLine();
+		if (line == null) {
+			return null;
+		}
 		return line.split(delimeter);
 	}
 

@@ -1,24 +1,24 @@
-<module>
+<?xml version="1.0" encoding="UTF-8"?><module>
     <inherits name="com.google.gwt.user.User"/>
     <inherits name="com.google.gwt.user.theme.chrome.Chrome"/>
     <inherits name="com.gwtext.GwtExt"/>
     
-    <stylesheet src="js/ext/resources/css/ext-all.css" />
+    <stylesheet src="js/ext/resources/css/ext-all.css"/>
     <stylesheet src="js/ext/resources/css/xtheme-gray.css"/>
-	<script src="js/ext/adapter/ext/ext-base.js" />
-	<script src="js/ext/ext-all.js" />
+	<script src="js/ext/adapter/ext/ext-base.js"/>
+	<script src="js/ext/ext-all.js"/>
     
    
     <entry-point class="com.dumontierlab.ontocreator.ui.client.OntoCreatorUi"/>
     
 <!--    <entry-point class="com.dumontierlab.ontocreator.ui.client.test.TestEntryPoint"/>-->
     
-    <servlet path="/OntologyService" class="com.dumontierlab.ontocreator.ui.server.rpc.OntologyServiceImpl"/>
-    <servlet path="/RuleService" class="com.dumontierlab.ontocreator.ui.server.rpc.RuleServiceImpl"/>
-    <servlet path="/DataService" class="com.dumontierlab.ontocreator.ui.server.rpc.DataServiceImpl"/>
+    <servlet class="com.dumontierlab.ontocreator.ui.server.rpc.OntologyServiceImpl" path="/OntologyService"/>
     
-    <servlet path="/diag" class="com.dumontierlab.ontocreator.diagnostic.DiagnosticServlet"/>
-    <servlet path="/upload" class="com.dumontierlab.ontocreator.ui.server.servlet.FileUploadServlet"/>
-    <servlet path="/download" class="com.dumontierlab.ontocreator.ui.server.servlet.FileDownloadServlet"/>
+    <servlet class="com.dumontierlab.ontocreator.ui.server.rpc.DataServiceImpl" path="/DataService"/>
+    
+    <servlet class="com.dumontierlab.ontocreator.diagnostic.DiagnosticServlet" path="/diag"/>
+    <servlet class="com.dumontierlab.ontocreator.ui.server.servlet.FileUploadServlet" path="/upload"/>
+    <servlet class="com.dumontierlab.ontocreator.ui.server.servlet.FileDownloadServlet" path="/download"/>
     
  </module>

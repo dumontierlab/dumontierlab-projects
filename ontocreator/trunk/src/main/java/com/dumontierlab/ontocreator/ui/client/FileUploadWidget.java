@@ -17,6 +17,7 @@ public class FileUploadWidget extends Composite {
 	private final FormPanel form;
 	private final FileUpload fileUpload;
 	private final String type;
+	private FormHandler handler;
 
 	public FileUploadWidget(String type) {
 		this.type = type;
@@ -33,8 +34,11 @@ public class FileUploadWidget extends Composite {
 		form.submit();
 	}
 
-	public void addFileUploadListener(final FileUploadListener listener) {
-		FormHandler handler = new FormHandler() {
+	public void setFileUploadListener(final FileUploadListener listener) {
+		if (handler != null) {
+			form.removeFormHandler(handler);
+		}
+		handler = new FormHandler() {
 			public void onSubmit(FormSubmitEvent event) {
 				// empty;
 			}

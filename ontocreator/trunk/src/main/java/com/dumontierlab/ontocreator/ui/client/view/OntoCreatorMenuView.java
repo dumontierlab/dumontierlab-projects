@@ -30,13 +30,6 @@ public class OntoCreatorMenuView extends Composite {
 	private ToolbarMenuButton createFileMenu() {
 		Menu fileMenu = new Menu();
 
-		Item loadTabFileItem = new Item("Tab File", new BaseItemListenerAdapter() {
-			@Override
-			public void onClick(BaseItem item, EventObject e) {
-				controller.loadTabFile();
-			}
-		});
-
 		Item loadOntologyItem = new Item("Ontology", new BaseItemListenerAdapter() {
 			@Override
 			public void onClick(BaseItem item, EventObject e) {
@@ -46,17 +39,9 @@ public class OntoCreatorMenuView extends Composite {
 		});
 
 		Menu loadMenu = new Menu();
-		loadMenu.addItem(loadTabFileItem);
 		loadMenu.addItem(loadOntologyItem);
 
 		MenuItem loadSubmenu = new MenuItem("Load", loadMenu);
-
-		Item newOutputOntology = new Item("New Output Ontology", new BaseItemListenerAdapter() {
-			@Override
-			public void onClick(BaseItem item, EventObject e) {
-				controller.newOutputOntology();
-			}
-		});
 
 		Item save = new Item("Save Output", new BaseItemListenerAdapter() {
 			@Override
@@ -66,7 +51,6 @@ public class OntoCreatorMenuView extends Composite {
 		});
 
 		fileMenu.addItem(loadSubmenu);
-		fileMenu.addItem(newOutputOntology);
 		fileMenu.addItem(save);
 
 		return new ToolbarMenuButton("File", fileMenu);

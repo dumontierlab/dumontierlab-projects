@@ -3,7 +3,6 @@ package com.dumontierlab.ontocreator.ui.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.gwtext.client.core.RegionPosition;
 import com.gwtext.client.widgets.Panel;
-import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.Viewport;
 import com.gwtext.client.widgets.layout.BorderLayout;
 import com.gwtext.client.widgets.layout.BorderLayoutData;
@@ -26,7 +25,7 @@ public class OntoCreatorUi implements EntryPoint {
 		borderPanel.add(menuPanel, new BorderLayoutData(RegionPosition.NORTH));
 
 		Panel inputPanel = createInputPanel();
-		inputPanel.setWidth("25%");
+		inputPanel.setWidth("300px");
 
 		BorderLayoutData westLayoutData = new BorderLayoutData(RegionPosition.WEST);
 		westLayoutData.setMinSize(100);
@@ -35,34 +34,19 @@ public class OntoCreatorUi implements EntryPoint {
 
 		borderPanel.add(inputPanel, westLayoutData);
 
-		TabPanel tabs = new TabPanel();
-		tabs.setResizeTabs(true);
-		tabs.setTabWidth(120);
-		tabs.setHeight("100%");
+		Panel wizardPanel = new Panel();
+		wizardPanel.setLayout(new FitLayout());
 
-		Panel rulesEditorPanel = new Panel("TabFile 2 OWL");
-		rulesEditorPanel.setAutoScroll(true);
-		rulesEditorPanel.setLayout(new FitLayout());
-		TabFileWizard ruleEditor = new TabFileWizard();
-		rulesEditorPanel.add(ruleEditor);
-		tabs.add(rulesEditorPanel);
+		TabFileWizard wizard = new TabFileWizard();
+		wizard.setSize("100%", "100%");
+		wizardPanel.add(wizard);
 
-		Panel ontologyBrowserPanel = new Panel("Browser");
-		ontologyBrowserPanel.setLayout(new FitLayout());
-		ontologyBrowserPanel.add(new OntologyBrowser());
-		tabs.add(ontologyBrowserPanel);
-
-		borderPanel.add(tabs, new BorderLayoutData(RegionPosition.CENTER));
-
-		Panel outputPanel = createOutputPanel();
-		outputPanel.setWidth("25%");
+		borderPanel.add(wizardPanel, new BorderLayoutData(RegionPosition.CENTER));
 
 		BorderLayoutData eastLayoutData = new BorderLayoutData(RegionPosition.EAST);
 		eastLayoutData.setMinSize(100);
 		eastLayoutData.setMaxSize(600);
 		eastLayoutData.setSplit(true);
-
-		borderPanel.add(outputPanel, eastLayoutData);
 
 		mainPanel.add(borderPanel);
 
@@ -97,11 +81,4 @@ public class OntoCreatorUi implements EntryPoint {
 		return panel;
 	}
 
-	private Panel createOutputPanel() {
-		Panel panel = new Panel("OUTPUT");
-		panel.setLayout(new FitLayout());
-		panel.setCollapsible(true);
-		panel.add(new EntitiesTabs(new OutputClassTree(), new OutputPropertyTree(), new OutputIndividualList()));
-		return panel;
-	}
 }

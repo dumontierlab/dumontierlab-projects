@@ -1,9 +1,12 @@
 package com.dumontierlab.ontocreator.ui.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.dumontierlab.ontocreator.ui.client.model.ColumnMappingBean;
 import com.dumontierlab.ontocreator.ui.client.rpc.DataService;
 import com.dumontierlab.ontocreator.ui.client.util.OnRequestRpcCommand;
 import com.dumontierlab.ontocreator.ui.client.util.RpcCommand;
@@ -24,17 +27,22 @@ public class ColumnsDefinitions extends Composite implements WizardTab {
 	private final Menu columnsMenu;
 	private final RpcCommand getColumnsNamesCommand;
 	private final Map<String, ColumnItem> columnItems;
+	private final List<ColumnDefition> definitions;
 
-	public ColumnsDefinitions() {
+	private final Set<ColumnMappingBean> mappings;
+
+	public ColumnsDefinitions(Set<ColumnMappingBean> mappings) {
+		this.mappings = mappings;
 		columnItems = new HashMap<String, ColumnItem>();
+		definitions = new ArrayList<ColumnDefition>();
 		defintionsPanel = new VerticalPanel();
 		columnsMenu = new Menu();
-		getColumnsNamesCommand = createCommand();
+		getColumnsNamesCommand = createGetColumnNamesCommand();
 		initWidget(createUi());
 	}
 
 	public String getTabName() {
-		return "Step 2: Column defintions";
+		return "Step 2: Column definitions";
 	}
 
 	public String getTabCaption() {
@@ -53,30 +61,25 @@ public class ColumnsDefinitions extends Composite implements WizardTab {
 		getColumnsNamesCommand.call();
 	}
 
-	private RpcCommand createCommand() {
-		RpcCommand command = new OnRequestRpcCommand<List<String>>() {
-			@Override
-			protected void rpcCall(AsyncCallback<List<String>> callback) {
-				DataService.Util.getInstance().getColumns(callback);
+	public void complete(final AsyncCallback<Boolean> callback) {
+		for (ColumnDefition definition : definitions) {
+			ColumnMappingBean bean = definition.getColumnMappingBean();
+			if (bean == null) {
+				callback.onSuccess(false);
+				return;
 			}
+			mappings.add(bean);
+		}
+		callback.onSuccess(true);
 
-			@Override
-			protected void rpcFail(Throwable caught) {
-				UserMessage.serverError(caught.getMessage(), caught);
-			}
+	}
 
-			@Override
-			protected void rpcReturn(List<String> result) {
-				int index = 0;
-				for (String column : result) {
-					ColumnItem columnItem = new ColumnItem(index++, column);
-					Item item = new Item(column);
-					columnItems.put(item.getItemId(), columnItem);
-					columnsMenu.addItem(item);
-				}
-			}
-		};
-		return command;
+	protected void onComlumnItemSelected(ColumnItem columnItem) {
+		ColumnDefition definition = new ColumnDefition(columnItem.getColumnIndex(), columnItem.getColumnName(),
+				columnItem.incrementMappingCounter());
+		definition.setWidth("100%");
+		defintionsPanel.add(definition);
+		definitions.add(definition);
 	}
 
 	private Widget createUi() {
@@ -100,11 +103,30 @@ public class ColumnsDefinitions extends Composite implements WizardTab {
 		return defintionsPanel;
 	}
 
-	protected void onComlumnItemSelected(ColumnItem columnItem) {
-		ColumnDefition definition = new ColumnDefition(columnItem.getColumnIndex(), columnItem.getColumnName(),
-				columnItem.incrementMappingCounter());
-		definition.setWidth("100%");
-		defintionsPanel.add(definition);
+	private RpcCommand createGetColumnNamesCommand() {
+		RpcCommand command = new OnRequestRpcCommand<List<String>>() {
+			@Override
+			protected void rpcCall(AsyncCallback<List<String>> callback) {
+				DataService.Util.getInstance().getColumns(callback);
+			}
+
+			@Override
+			protected void rpcFail(Throwable caught) {
+				UserMessage.serverError(caught.getMessage(), caught);
+			}
+
+			@Override
+			protected void rpcReturn(List<String> result) {
+				int index = 0;
+				for (String column : result) {
+					ColumnItem columnItem = new ColumnItem(index++, column);
+					Item item = new Item(column);
+					columnItems.put(item.getItemId(), columnItem);
+					columnsMenu.addItem(item);
+				}
+			}
+		};
+		return command;
 	}
 
 	private static class ColumnItem {
