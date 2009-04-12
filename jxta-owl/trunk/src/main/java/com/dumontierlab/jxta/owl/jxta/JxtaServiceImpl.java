@@ -4,15 +4,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.wsdl.WSDLException;
-import javax.xml.parsers.ParserConfigurationException;
-
+import net.jxta.discovery.DiscoveryService;
+import net.jxta.document.Advertisement;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.XMLDocument;
@@ -21,14 +24,12 @@ import net.jxta.exception.PeerGroupException;
 import net.jxta.peergroup.NetPeerGroupFactory;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.NetworkConfigurator;
-import net.jxta.rendezvous.RendezVousService;
+import net.jxta.protocol.ModuleSpecAdvertisement;
 import net.jxta.soap.SOAPService;
 import net.jxta.soap.SOAPServiceThread;
 import net.jxta.soap.ServiceDescriptor;
 
-import org.apache.axis.wsdl.fromJava.Emitter;
 import org.bouncycastle.util.encoders.UrlBase64;
-import org.xml.sax.SAXException;
 
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaBootstrapException;
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaException;
@@ -41,8 +42,7 @@ public class JxtaServiceImpl implements JxtaService {
 	private final String jxtaHome;
 	private final Collection<URI> seedsUris;
 
-	private RendezVousService rendezvous;
-	private PeerGroup netPeerGroup;
+	private volatile PeerGroup netPeerGroup;
 
 	public JxtaServiceImpl(String peerName, Collection<URI> seedsUris, String jxtaHome) throws JxtaBootstrapException {
 		this.peerName = peerName;
@@ -66,8 +66,7 @@ public class JxtaServiceImpl implements JxtaService {
 		// *************** 1. Add the service WSDL description *****************
 		XMLElement wsdlElem;
 		try {
-			wsdlElem = param.createElement("WSDL", new String(UrlBase64.encode(generateWSDL(serviceDescriptor)
-					.getBytes())));
+			wsdlElem = param.createElement("WSDL", new String(UrlBase64.encode(serviceDescriptor.getWsdl().getBytes())));
 			param.appendChild(wsdlElem);
 		} catch (Exception e) {
 			LOG.log(Level.WARNING, "Unable to generate WSDL for service: " + serviceDescriptor.getName(), e);
@@ -101,14 +100,54 @@ public class JxtaServiceImpl implements JxtaService {
 
 	}
 
-	private String generateWSDL(ServiceDescriptor descriptor) throws IOException, WSDLException, SAXException,
-			ParserConfigurationException, ClassNotFoundException {
+	@Override
+	public Collection<ModuleSpecAdvertisement> discoverService(String serviceName, long timeoutMillis)
+			throws InterruptedException, TimeoutException {
+		return discoverService(serviceName, timeoutMillis, Integer.MAX_VALUE);
+	}
 
-		Emitter emitter = new Emitter();
-		emitter.setCls(descriptor.getClassname());
-		emitter.setServiceElementName(descriptor.getName());
-		emitter.setLocationUrl("http://localhost:8080/axis/services/" + descriptor.getName());
-		return emitter.emitToString(Emitter.MODE_ALL);
+	@Override
+	public Collection<ModuleSpecAdvertisement> discoverService(String serviceName, long timeoutMillis, int max)
+			throws InterruptedException, TimeoutException {
+		long startTime = System.currentTimeMillis();
+		List<ModuleSpecAdvertisement> serviceAdvertisements = max < Integer.MAX_VALUE ? new ArrayList<ModuleSpecAdvertisement>(
+				max)
+				: new ArrayList<ModuleSpecAdvertisement>();
+		LOG.log(Level.FINE, "Searching for service:" + serviceName);
+
+		// Initialize Discovery Service
+		DiscoveryService discoverySvc = getPeerGroup().getDiscoveryService();
+		while (true) {
+			long timeElapsed = System.currentTimeMillis() - startTime;
+			if (timeElapsed > timeoutMillis) {
+				throw new TimeoutException("Discover service " + serviceName + " timeout after" + timeElapsed + " ms.");
+			}
+			try {
+				System.out.println("Looking for local advertisements...");
+				Enumeration<Advertisement> advs = discoverySvc.getLocalAdvertisements(DiscoveryService.ADV, "Name",
+						serviceName);
+				if (advs != null && advs.hasMoreElements()) {
+					while (advs.hasMoreElements()) {
+						// Make sure it is a ModuleSpecAdvertisement (we will
+						// also find ModuleClass and Pipe advertisements)
+						Advertisement tempAdv = advs.nextElement();
+						if (tempAdv instanceof ModuleSpecAdvertisement) {
+							LOG.log(Level.FINE, "Found advertisement for " + serviceName + " in cache.");
+							serviceAdvertisements.add((ModuleSpecAdvertisement) tempAdv);
+						}
+					}
+					if (serviceAdvertisements.size() == max) {
+						break;
+					}
+				}
+				LOG.log(Level.FINE, "Looking remotely for service advertisement: " + serviceName);
+				discoverySvc.getRemoteAdvertisements(null, DiscoveryService.ADV, "Name", serviceName, max, null);
+				Thread.sleep(500);
+			} catch (IOException e) {
+				LOG.log(Level.WARNING, "Found nothing! for:" + serviceName, e);
+			}
+		}
+		return serviceAdvertisements;
 	}
 
 	protected void startJxta() throws JxtaBootstrapException {
@@ -146,7 +185,6 @@ public class JxtaServiceImpl implements JxtaService {
 		try {
 			NetPeerGroupFactory factory = new NetPeerGroupFactory(configuration.getPlatformConfig(), home.toURI());
 			netPeerGroup = factory.getInterface();
-			rendezvous = netPeerGroup.getRendezVousService();
 
 			LOG.info("My JXTA PeerID is: " + netPeerGroup.getPeerID().getUniqueValue().toString());
 

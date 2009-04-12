@@ -1,4 +1,4 @@
-package com.dumontierlab.jxta.owl.jxta.diag;
+package com.dumontierlab.jxta.owl.diag;
 
 import java.net.URI;
 import java.util.Collections;
@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import com.dumontierlab.jxta.owl.jxta.JxtaService;
 import com.dumontierlab.jxta.owl.jxta.JxtaServiceImpl;
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaException;
-import com.dumontierlab.jxta.owl.service.impl.OWLReasonerServiceImpl;
 
 public class ServerTest {
 
@@ -20,7 +19,6 @@ public class ServerTest {
 		Set<URI> seeds = Collections.singleton(URI.create("http://dsg.ce.unipr.it/research/SP2A/rdvlist.txt"));
 		try {
 			JxtaService jxta = new JxtaServiceImpl("testPeer-server", seeds, ".jxta");
-			jxta.advertiseSoapService(OWLReasonerServiceImpl.DESCRIPTOR);
 
 		} catch (JxtaException e) {
 			LOG.log(Level.SEVERE, e.getMessage(), e);

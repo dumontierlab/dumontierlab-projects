@@ -1,6 +1,7 @@
 package com.dumontierlab.jxta.owl.reasoner;
 
 import java.math.BigInteger;
+import java.rmi.RemoteException;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -59,7 +60,13 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
 		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
-			peer.getService().addAsymmetricProperty(p);
+			try {
+				peer.getService().addAsymmetricProperty(p);
+			} catch (RemoteException e) {
+				// TODO: need to wrap exception inside a runtime since the
+				// method signature cannot change.
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -90,7 +97,8 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	@Override
 	public boolean addPropertyValue(ATermAppl p, ATermAppl s, ATermAppl o) {
 		WorkerPeer<DistributedKnowledgeBaseFragment> peer = getResponsiblePeer(s);
-		return peer.getService().addPropertyValue(p, s, o);
+		peer.getService().addPropertyValue(p, s, o);
+		return true;
 	}
 
 	@Override
@@ -104,9 +112,7 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
 		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
-			if (!peer.getService().addDatatypeProperty(p)) {
-				return false;
-			}
+			peer.getService().addDatatypeProperty(p);
 		}
 		return true;
 	};
