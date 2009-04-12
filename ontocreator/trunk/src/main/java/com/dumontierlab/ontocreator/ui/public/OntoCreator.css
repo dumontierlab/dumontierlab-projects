@@ -55,3 +55,38 @@ html, body, div, td{
 .greyCell{
 	background-color: #b6b6b6;
 }
+
+.loadingIndicator{
+	font-size: 7px;
+	color : #E4E4E4;
+}
+
+.waitDialog-icon {
+	height: 26px;
+	width: 26px;
+	background: transparent url(images/ajax-loader.gif) no-repeat;
+}
+
+.loadingMask{
+}
+
+.loadingMask-loading{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	z-index: 2;
+	background: #FDFDFD;
+	-moz-opacity: 0.75; 
+	filter: alpha(opacity=75); 
+	opacity: 0.75;
+}
+
+.loadingMask .nmx-loadingIndicator{
+	background: #ffffff;
+	border: 1px solid #9b9c9b;
+	color: #000000;
+	z-index: 3;
+	padding: 11px 11px 11px 11px;
+}

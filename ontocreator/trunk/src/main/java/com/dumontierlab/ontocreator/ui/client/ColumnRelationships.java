@@ -10,6 +10,7 @@ import com.dumontierlab.ontocreator.ui.client.model.ColumnMappingBean.ColumnMapp
 import com.dumontierlab.ontocreator.ui.client.model.ColumnMappingRelationshipBean.ColumnMappingRelationshipType;
 import com.dumontierlab.ontocreator.ui.client.rpc.DataService;
 import com.dumontierlab.ontocreator.ui.client.rpc.OntologyService;
+import com.dumontierlab.ontocreator.ui.client.util.Constants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -25,15 +26,13 @@ public class ColumnRelationships extends Composite implements WizardTab {
 	private final SimplePanel tableContainer;
 	private FlexTable table;
 	private final Set<ColumnMappingBean> mappings;
+	private final LoadingMask loadingMask;
 
 	public ColumnRelationships(Set<ColumnMappingBean> mappings) {
 		this.mappings = mappings;
 		tableContainer = new SimplePanel();
-		initWidget(createUi());
-	}
-
-	private Widget createUi() {
-		return tableContainer;
+		loadingMask = new LoadingMask(tableContainer);
+		initWidget(loadingMask);
 	}
 
 	public String getTabName() {
@@ -57,15 +56,16 @@ public class ColumnRelationships extends Composite implements WizardTab {
 	}
 
 	public void complete(final AsyncCallback<Boolean> callback) {
+		loadingMask.setLoading(true);
 		DataService.Util.getInstance().setColumnMappings(mappings, new AsyncCallback<Void>() {
 			public void onFailure(Throwable caught) {
 				callback.onFailure(caught);
-
+				loadingMask.setLoading(false);
 			}
 
 			public void onSuccess(Void result) {
-				Window.open("http://pellet.owldl.com/owlsight/?ontology=" + GWT.getModuleBaseURL() + "download",
-						"Output Ontology", null);
+				loadingMask.setLoading(false);
+				Window.open(GWT.getModuleBaseURL() + "download", "Output Ontology", null);
 				callback.onSuccess(true);
 			}
 
@@ -126,7 +126,8 @@ public class ColumnRelationships extends Composite implements WizardTab {
 					ColumnMappingRelationshipType.COMPLEMENT_OF));
 			list.addItem(ColumnMappingRelationshipType.DISJOINT_WITH.toString(), new ColumnMappingRelationshipBean(
 					ColumnMappingRelationshipType.DISJOINT_WITH));
-
+		} else if (sourceMappingType == ColumnMappingType.OWL_CLASS && targetMappingType == ColumnMappingType.LITERAL) {
+			addAnnotationProperties(list);
 		} else if (sourceMappingType == ColumnMappingType.OWL_INDIVIDUAL
 				&& targetMappingType == ColumnMappingType.OWL_INDIVIDUAL) {
 			list.addItem(ColumnMappingRelationshipType.SAME_AS.toString(), new ColumnMappingRelationshipBean(
@@ -134,6 +135,7 @@ public class ColumnRelationships extends Composite implements WizardTab {
 			loadObjectProperties(list, ColumnMappingRelationshipType.OBJECT_PROPERTY);
 		} else if (sourceMappingType == ColumnMappingType.OWL_INDIVIDUAL
 				&& targetMappingType == ColumnMappingType.LITERAL) {
+			addAnnotationProperties(list);
 			loadDataProperties(list, ColumnMappingRelationshipType.DATA_PROPERTY);
 		} else if (sourceMappingType == ColumnMappingType.OWL_INDIVIDUAL
 				&& targetMappingType == ColumnMappingType.OWL_CLASS) {
@@ -145,6 +147,17 @@ public class ColumnRelationships extends Composite implements WizardTab {
 
 		return list;
 
+	}
+
+	private void addAnnotationProperties(TypedListBox<ColumnMappingRelationshipBean> list) {
+		ColumnMappingRelationshipBean rdfsLabel = new ColumnMappingRelationshipBean(
+				ColumnMappingRelationshipType.ANNOTATION_PROPERTY);
+		rdfsLabel.setUri(Constants.RDFS_LABEL);
+		ColumnMappingRelationshipBean rdfsComment = new ColumnMappingRelationshipBean(
+				ColumnMappingRelationshipType.ANNOTATION_PROPERTY);
+		rdfsComment.setUri(Constants.RDFS_COMMENT);
+		list.addItem("rdfs:label", rdfsLabel);
+		list.addItem("rdfs:comment", rdfsComment);
 	}
 
 	private void loadObjectProperties(final TypedListBox<ColumnMappingRelationshipBean> list,

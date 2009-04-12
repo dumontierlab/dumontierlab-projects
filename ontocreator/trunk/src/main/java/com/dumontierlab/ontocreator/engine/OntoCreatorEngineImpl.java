@@ -97,6 +97,11 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 				sameIndividuals.add(indv);
 				sameIndividuals.add(other);
 				changes.add(new AddAxiom(ontology, factory.getOWLSameIndividualsAxiom(sameIndividuals)));
+			} else if (relationshipType == ColumnMappingRelationshipType.ANNOTATION_PROPERTY) {
+				OWLTypedConstant literal = (OWLTypedConstant) getOWLObject(targetMapping, row[targetMapping
+						.getColumnIndex()], ontology, factory);
+				changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(indv, URI.create(relationship
+						.getUri()), literal)));
 			}
 
 		}
@@ -144,6 +149,11 @@ public class OntoCreatorEngineImpl implements OntoCreatorEngine {
 				OWLClass targetC = (OWLClass) getOWLObject(targetMapping, row[targetMapping.getColumnIndex()], ontology,
 						factory);
 				changes.add(new AddAxiom(ontology, factory.getOWLSubClassAxiom(c, targetC)));
+			} else if (relationshipType == ColumnMappingRelationshipType.ANNOTATION_PROPERTY) {
+				OWLTypedConstant literal = (OWLTypedConstant) getOWLObject(targetMapping, row[targetMapping
+						.getColumnIndex()], ontology, factory);
+				changes.add(new AddAxiom(ontology, factory.getOWLEntityAnnotationAxiom(c, URI.create(relationship
+						.getUri()), literal)));
 			}
 
 		}

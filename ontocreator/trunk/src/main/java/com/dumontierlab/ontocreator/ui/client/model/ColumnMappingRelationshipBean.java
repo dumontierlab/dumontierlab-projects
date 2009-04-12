@@ -7,7 +7,7 @@ public class ColumnMappingRelationshipBean implements Serializable {
 	public static enum ColumnMappingRelationshipType {
 		SUBCLASS_OF("Subclass of"), EQUIVALENT_TO("Equivalen to"), COMPLEMENT_OF("Complement of"), DISJOINT_WITH(
 				"Disjoint with"), DATA_PROPERTY("Data property"), OBJECT_PROPERTY("Object property"), SAME_AS("Same as"), INSTANCE_OF(
-				"Instance of");
+				"Instance of"), ANNOTATION_PROPERTY("Annotation Property");
 
 		private final String label;
 
