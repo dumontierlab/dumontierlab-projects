@@ -2,7 +2,6 @@ package com.dumontierlab.jxta.owl.reasoner;
 
 import java.rmi.RemoteException;
 
-import aterm.ATerm;
 import aterm.ATermAppl;
 
 public interface DistributedKnowledgeBaseFragment {
@@ -13,16 +12,28 @@ public interface DistributedKnowledgeBaseFragment {
 
 	void addPropertyValue(ATermAppl p, ATermAppl s, ATermAppl o);
 
-	void addDatatypeProperty(ATerm p);
+	void addDatatypeProperty(ATermAppl p);
 
 	void addDifferent(ATermAppl i1, ATermAppl i2);
 
 	void addDisjointClass(ATermAppl c1, ATermAppl c2);
 
-	void addDomain(ATerm p, ATermAppl c);
+	void addDomain(ATermAppl p, ATermAppl c);
 
 	void addEquivalentClass(ATermAppl c1, ATermAppl c2);
 
-	void addRange(ATerm p, ATermAppl c);
+	void addRange(ATermAppl p, ATermAppl c);
+
+	void addIndividual(ATermAppl i);
+
+	void addType(ATermAppl i, ATermAppl c);
+
+	void addObjectProperty(ATermAppl p);
+
+	void addEquivalentProperty(ATermAppl p1, ATermAppl p2);
+
+	void addTransitiveProperty(ATermAppl p);
+
+	void addSame(ATermAppl i1, ATermAppl i2);
 
 }

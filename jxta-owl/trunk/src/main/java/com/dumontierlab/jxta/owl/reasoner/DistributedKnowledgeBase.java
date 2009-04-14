@@ -2,9 +2,13 @@ package com.dumontierlab.jxta.owl.reasoner;
 
 import java.math.BigInteger;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
+import org.mindswap.pellet.Individual;
 import org.mindswap.pellet.KnowledgeBase;
 import org.mindswap.pellet.exceptions.UnsupportedFeatureException;
 import org.mindswap.pellet.utils.ATermUtils;
@@ -18,10 +22,14 @@ import com.dumontierlab.jxta.owl.dht.WorkerPeer;
 
 public class DistributedKnowledgeBase extends KnowledgeBase {
 
-	private static final Logger LOG = Logger.getLogger(DistributedKnowledgeBase.class.getName());
+	private static final Logger LOG = Logger.getLogger(DistributedKnowledgeBase.class);
 
-	private WorkerPeer<DistributedKnowledgeBaseFragment>[] peers;
+	private final List<WorkerPeer<DistributedKnowledgeBaseFragment>> peers;
 	private BigInteger[] peersHashes;
+
+	public DistributedKnowledgeBase(Collection<WorkerPeer<DistributedKnowledgeBaseFragment>> peers) {
+		this.peers = new ArrayList<WorkerPeer<DistributedKnowledgeBaseFragment>>(peers);
+	}
 
 	@Override
 	public void addClass(ATermAppl c) {
@@ -30,6 +38,19 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		}
 		WorkerPeer<DistributedKnowledgeBaseFragment> peer = getResponsiblePeer(c);
 		peer.getService().addClass(c);
+	}
+
+	@Override
+	public Individual addIndividual(ATermAppl i) {
+		WorkerPeer<DistributedKnowledgeBaseFragment> peer = getResponsiblePeer(i);
+		peer.getService().addIndividual(i);
+		return null; // TODO: Why does this method have to return something?
+	}
+
+	@Override
+	public void addType(ATermAppl i, ATermAppl c) {
+		WorkerPeer<DistributedKnowledgeBaseFragment> peer = getResponsiblePeer(i);
+		peer.getService().addType(i, c);
 	}
 
 	@Override
@@ -108,11 +129,21 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	}
 
 	@Override
+	public boolean addObjectProperty(ATerm p) {
+		// TODO: Properties are not distributed therefore axioms about them are
+		// sent to every peer.
+		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
+			peer.getService().addObjectProperty((ATermAppl) p);
+		}
+		return true;
+	}
+
+	@Override
 	public boolean addDatatypeProperty(ATerm p) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
 		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
-			peer.getService().addDatatypeProperty(p);
+			peer.getService().addDatatypeProperty((ATermAppl) p);
 		}
 		return true;
 	};
@@ -146,7 +177,7 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
 		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
-			peer.getService().addDomain(p, c);
+			peer.getService().addDomain((ATermAppl) p, c);
 		}
 	}
 
@@ -157,12 +188,36 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	}
 
 	@Override
+	public void addEquivalentProperty(ATermAppl p1, ATermAppl p2) {
+		// TODO: Properties are not distributed therefore axioms about them are
+		// sent to every peer.
+		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
+			peer.getService().addEquivalentProperty(p1, p2);
+		}
+	}
+
+	@Override
 	public void addRange(ATerm p, ATermAppl c) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
 		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
-			peer.getService().addRange(p, c);
+			peer.getService().addRange((ATermAppl) p, c);
 		}
+	}
+
+	@Override
+	public void addTransitiveProperty(ATermAppl p) {
+		// TODO: Properties are not distributed therefore axioms about them are
+		// sent to every peer.
+		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
+			peer.getService().addTransitiveProperty(p);
+		}
+	}
+
+	@Override
+	public void addSame(ATermAppl i1, ATermAppl i2) {
+		WorkerPeer<DistributedKnowledgeBaseFragment> peer = getResponsiblePeer(i1);
+		peer.getService().addSame(i1, i2);
 	}
 
 	/* ------------- helper method --- */
@@ -170,12 +225,12 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		BigInteger hash = DhtHelper.hash(term);
 
 		int closest = DhtHelper.getClosest(hash, getPeersHashes());
-		return peers[closest];
+		return peers.get(closest);
 	}
 
 	private BigInteger[] getPeersHashes() {
 		if (peersHashes == null) {
-			peersHashes = new BigInteger[peers.length];
+			peersHashes = new BigInteger[peers.size()];
 			int i = 0;
 			for (WorkerPeer<?> peer : peers) {
 				peersHashes[i++] = DhtHelper.hash(peer.getPeerId(), true);

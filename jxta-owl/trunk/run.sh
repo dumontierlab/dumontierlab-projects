@@ -1,3 +1,4 @@
+#!/bin/sh
 CLASSPATH=""
 for i in $( ls lib/*.jar );
 do 

@@ -1,5 +1,6 @@
 package com.dumontierlab.jxta.owl.dht;
 
+
 public class WorkerPeer<E> {
 
 	private final String peerId;
@@ -17,4 +18,5 @@ public class WorkerPeer<E> {
 	public E getService() {
 		return service;
 	}
+
 }

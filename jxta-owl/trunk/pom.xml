@@ -31,6 +31,11 @@
 			<version>2.2.0</version>
 		</dependency>
 		<dependency>
+  			<groupId>owlapi</groupId>
+  			<artifactId>apibinding</artifactId>
+  			<version>2.2.0</version>
+  		</dependency>
+		<dependency>
 			<groupId>com.owldl.pellet</groupId>
 			<artifactId>pellet-core</artifactId>
 			<version>2.0.0-rc5</version>
@@ -40,6 +45,31 @@
 			<artifactId>pellet-owlapi</artifactId>
 			<version>2.0.0-rc5</version>
 		</dependency>
+		<dependency>
+			<groupId>com.owldl.pellet</groupId>
+			<artifactId>pellet-datatype</artifactId>
+			<version>2.0.0-rc5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.owldl.pellet</groupId>
+			<artifactId>pellet-rules</artifactId>
+			<version>2.0.0-rc5</version>
+		</dependency>
+		<dependency>
+  			<groupId>com.owldl.pellet</groupId>
+  			<artifactId>pellet-el</artifactId>
+  			<version>2.0.0-rc5</version>
+  		</dependency>
+  		<dependency>
+  			<groupId>com.sun</groupId>
+  			<artifactId>xsdlib</artifactId>
+  			<version>2.2.0</version>
+  		</dependency>
+  		<dependency>
+  			<groupId>com.sun</groupId>
+  			<artifactId>relaxngDatatype</artifactId>
+  			<version>2.2.0</version>
+  		</dependency>
 		<dependency>
 			<groupId>aterm</groupId>
 			<artifactId>aterm-java</artifactId>
@@ -58,22 +88,35 @@
 		<!--
 			Make sure our GWT module definition(s) and Java source code are also
 			included in JAR
-		-->
+		
 		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
 			<resource>
 				<directory>src/main/java</directory>
 			</resource>
-			<resource>
-				<directory>src/test/java</directory>
-			</resource>
-		</resources>
+		</resources>-->
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<outputDirectory>target/classes</outputDirectory>
+				</configuration>
+				<executions>
+          			<execution>
+            			<phase>compile</phase> <!-- append to the compile phase. -->
+          			</execution>
+        		</executions>
+			</plugin>
+		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 
@@ -85,7 +128,7 @@
           			</descriptors>
 				</configuration>
 				<executions>
-          <execution>
+          			<execution>
             			<id>make-assembly</id> <!-- this is used for inheritance merges -->
             			<phase>package</phase> <!-- append to the packaging phase. -->
             			<goals>

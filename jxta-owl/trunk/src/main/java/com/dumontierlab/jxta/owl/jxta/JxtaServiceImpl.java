@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
@@ -29,6 +29,7 @@ import net.jxta.soap.SOAPService;
 import net.jxta.soap.SOAPServiceThread;
 import net.jxta.soap.ServiceDescriptor;
 
+import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.UrlBase64;
 
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaBootstrapException;
@@ -36,7 +37,7 @@ import com.dumontierlab.jxta.owl.jxta.exception.JxtaException;
 
 public class JxtaServiceImpl implements JxtaService {
 
-	private static final Logger LOG = Logger.getLogger(JxtaServiceImpl.class.getName());
+	private static final Logger LOG = Logger.getLogger(JxtaServiceImpl.class);
 
 	private final String peerName;
 	private final String jxtaHome;
@@ -69,7 +70,7 @@ public class JxtaServiceImpl implements JxtaService {
 			wsdlElem = param.createElement("WSDL", new String(UrlBase64.encode(serviceDescriptor.getWsdl().getBytes())));
 			param.appendChild(wsdlElem);
 		} catch (Exception e) {
-			LOG.log(Level.WARNING, "Unable to generate WSDL for service: " + serviceDescriptor.getName(), e);
+			LOG.warn("Unable to generate WSDL for service: " + serviceDescriptor.getName(), e);
 		}
 
 		// ********************* 2. Add secure pipe tag ************************
@@ -113,14 +114,20 @@ public class JxtaServiceImpl implements JxtaService {
 		List<ModuleSpecAdvertisement> serviceAdvertisements = max < Integer.MAX_VALUE ? new ArrayList<ModuleSpecAdvertisement>(
 				max)
 				: new ArrayList<ModuleSpecAdvertisement>();
-		LOG.log(Level.FINE, "Searching for service:" + serviceName);
+		Set<String> discoveredAdvertisementsIds = new HashSet<String>();
+		LOG.debug("Searching for service:" + serviceName);
 
 		// Initialize Discovery Service
 		DiscoveryService discoverySvc = getPeerGroup().getDiscoveryService();
 		while (true) {
 			long timeElapsed = System.currentTimeMillis() - startTime;
 			if (timeElapsed > timeoutMillis) {
-				throw new TimeoutException("Discover service " + serviceName + " timeout after" + timeElapsed + " ms.");
+				if (serviceAdvertisements.size() == 0) {
+					throw new TimeoutException("Discover service " + serviceName + " timeout after " + timeElapsed
+							+ " ms.");
+				} else {
+					return serviceAdvertisements;
+				}
 			}
 			try {
 				System.out.println("Looking for local advertisements...");
@@ -131,20 +138,22 @@ public class JxtaServiceImpl implements JxtaService {
 						// Make sure it is a ModuleSpecAdvertisement (we will
 						// also find ModuleClass and Pipe advertisements)
 						Advertisement tempAdv = advs.nextElement();
-						if (tempAdv instanceof ModuleSpecAdvertisement) {
-							LOG.log(Level.FINE, "Found advertisement for " + serviceName + " in cache.");
+						if (tempAdv instanceof ModuleSpecAdvertisement
+								&& !discoveredAdvertisementsIds.contains(tempAdv.getID().toString())) {
+							LOG.debug("Found advertisement for " + serviceName + " in cache.");
 							serviceAdvertisements.add((ModuleSpecAdvertisement) tempAdv);
+							discoveredAdvertisementsIds.add(tempAdv.getID().toString());
 						}
 					}
 					if (serviceAdvertisements.size() == max) {
 						break;
 					}
 				}
-				LOG.log(Level.FINE, "Looking remotely for service advertisement: " + serviceName);
+				LOG.debug("Looking remotely for service advertisement: " + serviceName);
 				discoverySvc.getRemoteAdvertisements(null, DiscoveryService.ADV, "Name", serviceName, max, null);
 				Thread.sleep(500);
 			} catch (IOException e) {
-				LOG.log(Level.WARNING, "Found nothing! for:" + serviceName, e);
+				LOG.debug("Found nothing! for:" + serviceName, e);
 			}
 		}
 		return serviceAdvertisements;
@@ -161,7 +170,7 @@ public class JxtaServiceImpl implements JxtaService {
 			try {
 				configuration.load();
 			} catch (Exception e) {
-				LOG.log(Level.WARNING, "Unable to load configuration, generating new configuration.", e);
+				LOG.warn("Unable to load configuration, generating new configuration.", e);
 				needToConfigure = true;
 			}
 		}
@@ -178,7 +187,7 @@ public class JxtaServiceImpl implements JxtaService {
 			try {
 				configuration.save();
 			} catch (IOException e) {
-				LOG.log(Level.WARNING, "Unable to save peer configuration.", e);
+				LOG.warn("Unable to save peer configuration.", e);
 			}
 		}
 

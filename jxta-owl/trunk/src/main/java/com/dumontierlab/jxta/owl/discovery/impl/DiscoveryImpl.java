@@ -20,7 +20,7 @@ import com.dumontierlab.jxta.owl.service.DistributedKnowledgeBaseFragmentService
 
 public class DiscoveryImpl implements Discovery {
 
-	private static final long TIMEOUT = 5000; // 5sec
+	private static final long TIMEOUT = 120000; // 2min
 	private final JxtaService jxta;
 
 	public DiscoveryImpl(JxtaService jxta) {

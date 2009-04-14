@@ -4,14 +4,17 @@ import java.rmi.RemoteException;
 
 import net.jxta.soap.ServiceDescriptor;
 
+import org.apache.log4j.Logger;
 import org.mindswap.pellet.utils.ATermUtils;
 
 import aterm.ATermAppl;
-import aterm.ATermFactory;
 
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
+import com.dumontierlab.jxta.owl.reasoner.impl.DistributedKnowledgeBaseFragmentImpl;
 
 public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedKnowledgeBaseFragmentService {
+
+	private static final Logger LOG = Logger.getLogger(DistributedKnowledgeBaseFragmentServiceImpl.class);
 
 	public static final ServiceDescriptor DESCRIPTOR = new ServiceDescriptor(
 			DistributedKnowledgeBaseFragmentServiceImpl.class.getName(), // class
@@ -26,48 +29,96 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 			false, // secure policy flag (use default=false)
 			null); // security policy type (use no policy)
 
-	private DistributedKnowledgeBaseFragment fragment;
-	private final ATermFactory factory;
+	private final DistributedKnowledgeBaseFragment fragment;
 
 	public DistributedKnowledgeBaseFragmentServiceImpl() {
-		factory = ATermUtils.getFactory();
-
+		fragment = SingletonKbFragment.getInstance();
 	}
 
 	public void addClass(String c) {
-		fragment.addClass((ATermAppl) factory.parse(c));
+		fragment.addClass(deserialize(c));
 	}
 
 	public void addAsymmetricProperty(String p) throws RemoteException {
-		fragment.addAsymmetricProperty((ATermAppl) factory.parse(p));
+		fragment.addAsymmetricProperty(deserialize(p));
 	}
 
 	public void addPropertyValue(String p, String s, String o) {
-		fragment.addPropertyValue((ATermAppl) factory.parse(p), (ATermAppl) factory.parse(s), (ATermAppl) factory
-				.parse(o));
+		fragment.addPropertyValue(deserialize(p), deserialize(s), deserialize(o));
 	}
 
 	public void addDatatypeProperty(String p) {
-		fragment.addDatatypeProperty(factory.parse(p));
+		fragment.addDatatypeProperty(deserialize(p));
 	}
 
 	public void addDifferent(String i1, String i2) {
-		fragment.addDifferent((ATermAppl) factory.parse(i1), (ATermAppl) factory.parse(i2));
+		fragment.addDifferent(deserialize(i1), deserialize(i2));
 	}
 
 	public void addDisjointClass(String c1, String c2) {
-		fragment.addDisjointClass((ATermAppl) factory.parse(c1), (ATermAppl) factory.parse(c2));
+		fragment.addDisjointClass(deserialize(c1), deserialize(c2));
 	}
 
 	public void addDomain(String p, String c) {
-		fragment.addDomain(factory.parse(p), (ATermAppl) factory.parse(c));
+		fragment.addDomain(deserialize(p), deserialize(c));
 	}
 
 	public void addEquivalentClass(String c1, String c2) {
-		fragment.addEquivalentClass((ATermAppl) factory.parse(c1), (ATermAppl) factory.parse(c2));
+		fragment.addEquivalentClass(deserialize(c1), deserialize(c2));
 	}
 
 	public void addRange(String p, String c) {
-		fragment.addEquivalentClass((ATermAppl) factory.parse(p), (ATermAppl) factory.parse(c));
+		fragment.addEquivalentClass(deserialize(p), deserialize(c));
+	}
+
+	@Override
+	public void addIndividual(String i) {
+		fragment.addIndividual(deserialize(i));
+	}
+
+	@Override
+	public void addType(String i, String c) {
+		fragment.addType(deserialize(i), deserialize(c));
+	}
+
+	@Override
+	public void addObjectProperty(String p) {
+		fragment.addObjectProperty(deserialize(p));
+	}
+
+	@Override
+	public void addEquivalentProperty(String p1, String p2) {
+		fragment.addEquivalentProperty(deserialize(p1), deserialize(p2));
+	}
+
+	@Override
+	public void addTransitiveProperty(String p) {
+		fragment.addTransitiveProperty(deserialize(p));
+	}
+
+	@Override
+	public void addSame(String i1, String i2) {
+		fragment.addSame(deserialize(i1), deserialize(i2));
+	}
+
+	private ATermAppl deserialize(String string) {
+		try {
+			return (ATermAppl) ATermUtils.term(string);
+		} catch (Exception e) {
+			LOG.error("Aterm parsing exception: " + string, e);
+			return null;
+		}
+	}
+
+	private static class SingletonKbFragment {
+		private static DistributedKnowledgeBaseFragment instance;
+
+		public static DistributedKnowledgeBaseFragment getInstance() {
+			if (instance == null) {
+				instance = new DistributedKnowledgeBaseFragmentImpl();
+			}
+			return instance;
+		}
+
 	}
 }

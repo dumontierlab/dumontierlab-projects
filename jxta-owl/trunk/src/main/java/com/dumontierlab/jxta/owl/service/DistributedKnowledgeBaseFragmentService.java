@@ -22,4 +22,15 @@ public interface DistributedKnowledgeBaseFragmentService {
 
 	void addRange(String p, String c);
 
+	void addIndividual(String string);
+
+	void addType(String i, String c);
+
+	void addObjectProperty(String p);
+
+	void addEquivalentProperty(String p1, String p2);
+
+	void addTransitiveProperty(String p);
+
+	void addSame(String i1, String i2);
 }
