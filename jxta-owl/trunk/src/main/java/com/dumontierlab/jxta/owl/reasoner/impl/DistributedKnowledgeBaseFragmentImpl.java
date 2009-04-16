@@ -2,9 +2,11 @@ package com.dumontierlab.jxta.owl.reasoner.impl;
 
 import org.apache.log4j.Logger;
 import org.mindswap.pellet.KnowledgeBase;
+import org.mindswap.pellet.PelletOptions;
 
 import aterm.ATermAppl;
 
+import com.dumontierlab.jxta.owl.reasoner.DistributedCompletionStrategy;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
 
 public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledgeBaseFragment {
@@ -15,6 +17,7 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 
 	public DistributedKnowledgeBaseFragmentImpl() {
 		LOG.debug("creating DistributedKnowledgeBaseFragment");
+		PelletOptions.DEFAULT_COMPLETION_STRATEGY = DistributedCompletionStrategy.class;
 		kb = new KnowledgeBase();
 	}
 
@@ -39,6 +42,9 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	@Override
 	public void addDifferent(ATermAppl i1, ATermAppl i2) {
 		LOG.debug("addDifferent(" + i1 + ", " + i2 + ")");
+		if (kb.getABox().getIndividual(i2) == null) {
+			addRemoteIndividual(i2);
+		}
 		kb.addDifferent(i1, i2);
 	}
 
@@ -106,5 +112,15 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	public void addSame(ATermAppl i1, ATermAppl i2) {
 		LOG.debug("addSame(" + i1 + ",  " + i2 + ")");
 		kb.addSame(i1, i2);
+	}
+
+	@Override
+	public boolean isConsistent() {
+		return kb.isConsistent();
+	}
+
+	private void addRemoteIndividual(ATermAppl i) {
+		addIndividual(i);
+		addType(i, DistributedReasoningHelper.getRemoteClass());
 	}
 }

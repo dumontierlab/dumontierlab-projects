@@ -29,13 +29,15 @@ public class ClientTest {
 		try {
 			JxtaService jxta = new JxtaServiceImpl("testPeer-client", seeds, ".jxta");
 			Discovery discovery = new DiscoveryImpl(jxta);
-			Collection<WorkerPeer<DistributedKnowledgeBaseFragment>> peers = discovery.discoverPeers(1);
+			Collection<WorkerPeer<DistributedKnowledgeBaseFragment>> peers = discovery.discoverPeers(2);
 			DistributedKnowledgeBase kb = new DistributedKnowledgeBase(peers);
 
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.loadOntology(URI.create("http://www.w3.org/TR/owl-guide/wine.rdf"));
 			Loader loader = new Loader(kb);
 			loader.load(ontology, manager);
+
+			kb.isConsistent();
 
 		} catch (Exception e) {
 			LOG.fatal(e.getMessage(), e);

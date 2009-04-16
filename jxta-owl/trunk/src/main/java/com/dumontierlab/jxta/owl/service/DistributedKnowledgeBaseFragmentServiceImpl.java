@@ -101,6 +101,11 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 		fragment.addSame(deserialize(i1), deserialize(i2));
 	}
 
+	@Override
+	public boolean isConsistent() {
+		return fragment.isConsistent();
+	}
+
 	private ATermAppl deserialize(String string) {
 		try {
 			return (ATermAppl) ATermUtils.term(string);

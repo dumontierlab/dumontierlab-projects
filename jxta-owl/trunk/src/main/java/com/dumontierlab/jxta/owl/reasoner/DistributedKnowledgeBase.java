@@ -220,6 +220,17 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		peer.getService().addSame(i1, i2);
 	}
 
+	@Override
+	public boolean isConsistent() {
+		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : peers) {
+			boolean isConsistent = peer.getService().isConsistent();
+			if (!isConsistent) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/* ------------- helper method --- */
 	private WorkerPeer<DistributedKnowledgeBaseFragment> getResponsiblePeer(ATerm term) {
 		BigInteger hash = DhtHelper.hash(term);

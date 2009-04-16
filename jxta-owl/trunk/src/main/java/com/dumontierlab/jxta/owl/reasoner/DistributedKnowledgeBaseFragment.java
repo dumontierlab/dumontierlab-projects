@@ -36,4 +36,6 @@ public interface DistributedKnowledgeBaseFragment {
 
 	void addSame(ATermAppl i1, ATermAppl i2);
 
+	boolean isConsistent();
+
 }

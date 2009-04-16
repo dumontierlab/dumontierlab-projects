@@ -33,4 +33,6 @@ public interface DistributedKnowledgeBaseFragmentService {
 	void addTransitiveProperty(String p);
 
 	void addSame(String i1, String i2);
+
+	boolean isConsistent();
 }

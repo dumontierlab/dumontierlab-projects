@@ -94,6 +94,11 @@ public class DistributedKnowledgeBaseFragmentServiceAdapter implements Distribut
 		service.addSame(serialize(i1), serialize(i2));
 	}
 
+	@Override
+	public boolean isConsistent() {
+		return service.isConsistent();
+	}
+
 	private String serialize(ATerm term) {
 		StringBuilder sb = new StringBuilder();
 		serialize(term, sb);
