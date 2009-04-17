@@ -1,4 +1,4 @@
-package com.dumontierlab.jxta.owl.reasoner;
+package com.dumontierlab.jxta.owl.reasoner.impl;
 
 import java.util.List;
 import java.util.Set;
@@ -18,7 +18,10 @@ public class DistributedTBoxFragment extends TBoxExpImpl {
 	@Override
 	public List<Pair<ATermAppl, Set<ATermAppl>>> unfold(ATermAppl c) {
 		List<Pair<ATermAppl, Set<ATermAppl>>> localUnfold = super.unfold(c);
-		// TODO for each term that is not local do remote unfolding.
+		if (localUnfold == null) {
+			return null;
+		}
+
 		return localUnfold;
 	}
 }

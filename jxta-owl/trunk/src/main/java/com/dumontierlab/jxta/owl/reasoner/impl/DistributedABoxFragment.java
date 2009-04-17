@@ -1,4 +1,4 @@
-package com.dumontierlab.jxta.owl.reasoner;
+package com.dumontierlab.jxta.owl.reasoner.impl;
 
 import org.mindswap.pellet.ABox;
 import org.mindswap.pellet.KnowledgeBase;

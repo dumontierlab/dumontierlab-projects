@@ -1,6 +1,10 @@
 package com.dumontierlab.jxta.owl.reasoner;
 
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Set;
+
+import org.mindswap.pellet.utils.Pair;
 
 import aterm.ATermAppl;
 
@@ -37,5 +41,7 @@ public interface DistributedKnowledgeBaseFragment {
 	void addSame(ATermAppl i1, ATermAppl i2);
 
 	boolean isConsistent();
+
+	List<Pair<ATermAppl, Set<ATermAppl>>> unfold(ATermAppl aterm);
 
 }

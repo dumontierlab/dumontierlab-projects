@@ -1,12 +1,15 @@
 package com.dumontierlab.jxta.owl.reasoner.impl;
 
+import java.util.List;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.mindswap.pellet.KnowledgeBase;
 import org.mindswap.pellet.PelletOptions;
+import org.mindswap.pellet.utils.Pair;
 
 import aterm.ATermAppl;
 
-import com.dumontierlab.jxta.owl.reasoner.DistributedCompletionStrategy;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
 
 public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledgeBaseFragment {
@@ -19,6 +22,7 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 		LOG.debug("creating DistributedKnowledgeBaseFragment");
 		PelletOptions.DEFAULT_COMPLETION_STRATEGY = DistributedCompletionStrategy.class;
 		kb = new KnowledgeBase();
+		kb.setTBox(new DistributedTBoxFragment(kb));
 	}
 
 	@Override
@@ -117,6 +121,11 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	@Override
 	public boolean isConsistent() {
 		return kb.isConsistent();
+	}
+
+	@Override
+	public List<Pair<ATermAppl, Set<ATermAppl>>> unfold(ATermAppl c) {
+		return kb.getTBox().unfold(c);
 	}
 
 	private void addRemoteIndividual(ATermAppl i) {

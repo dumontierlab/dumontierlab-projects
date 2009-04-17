@@ -1,14 +1,19 @@
 package com.dumontierlab.jxta.owl.service;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import net.jxta.soap.ServiceDescriptor;
 
 import org.apache.log4j.Logger;
-import org.mindswap.pellet.utils.ATermUtils;
+import org.mindswap.pellet.utils.Pair;
 
 import aterm.ATermAppl;
 
+import com.dumontierlab.jxta.owl.io.ATermSerializer;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
 import com.dumontierlab.jxta.owl.reasoner.impl.DistributedKnowledgeBaseFragmentImpl;
 
@@ -106,10 +111,29 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 		return fragment.isConsistent();
 	}
 
+	@Override
+	public HashMap<String, String[]> unfold(String c) {
+		List<Pair<ATermAppl, Set<ATermAppl>>> unfolding = fragment.unfold(deserialize(c));
+		HashMap<String, String[]> map = new HashMap<String, String[]>();
+		for (Pair<ATermAppl, Set<ATermAppl>> pair : unfolding) {
+			String[] array = new String[pair.second.size()];
+			int index = 0;
+			for (ATermAppl term : pair.second) {
+				array[index++] = serialize(term);
+			}
+			map.put(serialize(pair.first), array);
+		}
+		return map;
+	}
+
+	private String serialize(ATermAppl term) {
+		return ATermSerializer.serialize(term);
+	}
+
 	private ATermAppl deserialize(String string) {
 		try {
-			return (ATermAppl) ATermUtils.term(string);
-		} catch (Exception e) {
+			return ATermSerializer.deserialize(string);
+		} catch (IOException e) {
 			LOG.error("Aterm parsing exception: " + string, e);
 			return null;
 		}

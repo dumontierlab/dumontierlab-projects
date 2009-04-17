@@ -18,6 +18,7 @@ import com.dumontierlab.jxta.owl.jxta.JxtaServiceImpl;
 import com.dumontierlab.jxta.owl.loader.Loader;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBase;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
+import com.dumontierlab.jxta.owl.reasoner.impl.DistributedHashTable;
 
 public class ClientTest {
 
@@ -30,7 +31,8 @@ public class ClientTest {
 			JxtaService jxta = new JxtaServiceImpl("testPeer-client", seeds, ".jxta");
 			Discovery discovery = new DiscoveryImpl(jxta);
 			Collection<WorkerPeer<DistributedKnowledgeBaseFragment>> peers = discovery.discoverPeers(2);
-			DistributedKnowledgeBase kb = new DistributedKnowledgeBase(peers);
+			DistributedKnowledgeBase kb = new DistributedKnowledgeBase(
+					new DistributedHashTable<DistributedKnowledgeBaseFragment>(peers));
 
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.loadOntology(URI.create("http://www.w3.org/TR/owl-guide/wine.rdf"));

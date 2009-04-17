@@ -1,6 +1,7 @@
 package com.dumontierlab.jxta.owl.service;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 public interface DistributedKnowledgeBaseFragmentService {
 
@@ -35,4 +36,6 @@ public interface DistributedKnowledgeBaseFragmentService {
 	void addSame(String i1, String i2);
 
 	boolean isConsistent();
+
+	HashMap<String, String[]> unfold(String c);
 }

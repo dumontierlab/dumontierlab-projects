@@ -1,17 +1,26 @@
 package com.dumontierlab.jxta.owl.service;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Map.Entry;
 
-import org.mindswap.pellet.utils.ATermUtils;
+import org.apache.log4j.Logger;
+import org.mindswap.pellet.utils.Pair;
 
-import aterm.AFun;
 import aterm.ATerm;
 import aterm.ATermAppl;
-import aterm.ATermList;
 
+import com.dumontierlab.jxta.owl.io.ATermSerializer;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
 
 public class DistributedKnowledgeBaseFragmentServiceAdapter implements DistributedKnowledgeBaseFragment {
+
+	private static final Logger LOG = Logger.getLogger(DistributedKnowledgeBaseFragmentServiceAdapter.class);
 
 	private final DistributedKnowledgeBaseFragmentService service;
 
@@ -99,45 +108,33 @@ public class DistributedKnowledgeBaseFragmentServiceAdapter implements Distribut
 		return service.isConsistent();
 	}
 
-	private String serialize(ATerm term) {
-		StringBuilder sb = new StringBuilder();
-		serialize(term, sb);
-		return sb.toString();
+	@Override
+	public List<Pair<ATermAppl, Set<ATermAppl>>> unfold(ATermAppl c) {
+		List<Pair<ATermAppl, Set<ATermAppl>>> unfolding = new ArrayList<Pair<ATermAppl, Set<ATermAppl>>>();
+		HashMap<String, String[]> map = service.unfold(serialize(c));
+		for (Entry<String, String[]> entry : map.entrySet()) {
+			ATermAppl first = deserialize(entry.getKey());
+			Set<ATermAppl> second = new HashSet<ATermAppl>();
+			for (String value : entry.getValue()) {
+				second.add(deserialize(value));
+			}
+			Pair<ATermAppl, Set<ATermAppl>> pair = new Pair<ATermAppl, Set<ATermAppl>>(first, second);
+			unfolding.add(pair);
+		}
+		return unfolding;
 	}
 
-	private void serialize(ATerm term, StringBuilder sb) {
-		if (term instanceof ATermAppl) {
-			ATermAppl appl = (ATermAppl) term;
-			if (ATermUtils.isPrimitive(appl)) {
-				sb.append("\"" + appl.getAFun().getName() + "\"");
-			} else {
-				AFun fun = appl.getAFun();
-				sb.append(fun.getName());
-				if (fun.getArity() > 0) {
-					sb.append("(");
-					for (ATerm arg : appl.getArgumentArray()) {
-						serialize(arg, sb);
-						sb.append(", ");
-					}
-					sb.deleteCharAt(sb.length() - 1);
-					sb.deleteCharAt(sb.length() - 1);
-					sb.append(")");
-				}
-			}
-		} else if (term instanceof ATermList) {
-			ATermList list = (ATermList) term;
-			sb.append("[");
-			if (!list.isEmpty()) {
-				int i = 0;
-				for (; i < list.getLength() - 1; i++) {
-					serialize(list.elementAt(i), sb);
-					sb.append(", ");
-				}
-				serialize(list.elementAt(i), sb);
-			}
-			sb.append("]");
-		} else {
-			sb.append(term.toString());
+	private String serialize(ATerm term) {
+		return ATermSerializer.serialize(term);
+	}
+
+	private ATermAppl deserialize(String string) {
+		try {
+			return ATermSerializer.deserialize(string);
+		} catch (IOException e) {
+			LOG.error("Aterm parsing exception: " + string, e);
+			return null;
 		}
 	}
+
 }
