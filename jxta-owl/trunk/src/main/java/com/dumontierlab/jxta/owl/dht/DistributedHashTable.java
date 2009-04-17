@@ -1,4 +1,4 @@
-package com.dumontierlab.jxta.owl.reasoner.impl;
+package com.dumontierlab.jxta.owl.dht;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -7,8 +7,6 @@ import java.util.List;
 
 import aterm.ATermAppl;
 
-import com.dumontierlab.jxta.owl.dht.DhtHelper;
-import com.dumontierlab.jxta.owl.dht.WorkerPeer;
 
 public class DistributedHashTable<E> {
 

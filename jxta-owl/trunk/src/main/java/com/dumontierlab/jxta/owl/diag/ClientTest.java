@@ -10,6 +10,7 @@ import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
+import com.dumontierlab.jxta.owl.dht.DistributedHashTable;
 import com.dumontierlab.jxta.owl.dht.WorkerPeer;
 import com.dumontierlab.jxta.owl.discovery.Discovery;
 import com.dumontierlab.jxta.owl.discovery.impl.DiscoveryImpl;
@@ -18,7 +19,6 @@ import com.dumontierlab.jxta.owl.jxta.JxtaServiceImpl;
 import com.dumontierlab.jxta.owl.loader.Loader;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBase;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
-import com.dumontierlab.jxta.owl.reasoner.impl.DistributedHashTable;
 
 public class ClientTest {
 

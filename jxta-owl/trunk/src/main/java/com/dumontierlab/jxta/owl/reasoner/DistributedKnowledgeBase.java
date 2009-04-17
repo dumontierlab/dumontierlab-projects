@@ -13,8 +13,8 @@ import aterm.ATerm;
 import aterm.ATermAppl;
 import aterm.ATermList;
 
+import com.dumontierlab.jxta.owl.dht.DistributedHashTable;
 import com.dumontierlab.jxta.owl.dht.WorkerPeer;
-import com.dumontierlab.jxta.owl.reasoner.impl.DistributedHashTable;
 
 public class DistributedKnowledgeBase extends KnowledgeBase {
 
