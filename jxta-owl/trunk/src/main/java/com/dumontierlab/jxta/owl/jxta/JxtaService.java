@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.protocol.ModuleSpecAdvertisement;
+import net.jxta.soap.SOAPService;
 import net.jxta.soap.ServiceDescriptor;
 
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaException;
@@ -13,7 +14,7 @@ public interface JxtaService {
 
 	PeerGroup getPeerGroup();
 
-	void advertiseSoapService(ServiceDescriptor serviceDescriptor) throws JxtaException;
+	SOAPService deploySoapService(ServiceDescriptor serviceDescriptor) throws JxtaException;
 
 	Collection<ModuleSpecAdvertisement> discoverService(String serviceName, long timeoutMillis)
 			throws InterruptedException, TimeoutException;

@@ -1,5 +1,6 @@
 package com.dumontierlab.jxta.owl.service;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
@@ -35,7 +36,16 @@ public interface DistributedKnowledgeBaseFragmentService {
 
 	void addSame(String i1, String i2);
 
+	void addSubClass(String sub, String sup);
+
+	void addDatatype(String p);
+
 	boolean isConsistent();
 
+	boolean isSatisfiable(String c);
+
 	HashMap<String, String[]> unfold(String c);
+
+	void addRemoteService(String advertisement) throws IOException;
+
 }

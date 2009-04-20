@@ -5,24 +5,35 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.mindswap.pellet.KnowledgeBase;
-import org.mindswap.pellet.PelletOptions;
+import org.mindswap.pellet.utils.ATermUtils;
 import org.mindswap.pellet.utils.Pair;
 
+import aterm.ATerm;
 import aterm.ATermAppl;
+import aterm.ATermList;
 
+import com.dumontierlab.jxta.owl.dht.DistributedHashTable;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
 
 public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledgeBaseFragment {
 
 	private static final Logger LOG = Logger.getLogger(DistributedKnowledgeBaseFragmentImpl.class);
 
+	private final DistributedHashTable<DistributedKnowledgeBaseFragment> hashTable;
 	private final KnowledgeBase kb;
+	private final DistributedTBoxFragment tbox;
 
 	public DistributedKnowledgeBaseFragmentImpl() {
 		LOG.debug("creating DistributedKnowledgeBaseFragment");
-		PelletOptions.DEFAULT_COMPLETION_STRATEGY = DistributedCompletionStrategy.class;
+
+		// Initialize the hashTable containing itself.
+		hashTable = new DistributedHashTable<DistributedKnowledgeBaseFragment>();
+
+		// PelletOptions.DEFAULT_COMPLETION_STRATEGY =
+		// DistributedCompletionStrategy.class;
 		kb = new KnowledgeBase();
-		kb.setTBox(new DistributedTBoxFragment(kb));
+		tbox = new DistributedTBoxFragment(kb, hashTable);
+		kb.setTBox(tbox);
 	}
 
 	@Override
@@ -46,7 +57,7 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	@Override
 	public void addDifferent(ATermAppl i1, ATermAppl i2) {
 		LOG.debug("addDifferent(" + i1 + ", " + i2 + ")");
-		if (kb.getABox().getIndividual(i2) == null) {
+		if (isRemoteIndividual(i2)) {
 			addRemoteIndividual(i2);
 		}
 		kb.addDifferent(i1, i2);
@@ -55,30 +66,41 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	@Override
 	public void addDisjointClass(ATermAppl c1, ATermAppl c2) {
 		LOG.debug("addDisjointClass(" + c1 + ", " + c2 + ")");
+		addRemotePrimitives(c2);
 		kb.addDisjointClass(c1, c2);
 	}
 
 	@Override
 	public void addDomain(ATermAppl p, ATermAppl c) {
 		LOG.debug("addDomain(" + p + ", " + c + ")");
+		addRemotePrimitives(c);
 		kb.addDomain(p, c);
 	}
 
 	@Override
 	public void addEquivalentClass(ATermAppl c1, ATermAppl c2) {
 		LOG.debug("addEquivalentClass(" + c1 + ", " + c2 + ")");
+		addRemotePrimitives(c2);
 		kb.addEquivalentClass(c1, c2);
 	}
 
 	@Override
 	public void addPropertyValue(ATermAppl p, ATermAppl s, ATermAppl o) {
 		LOG.debug("addPropertyValue(" + p + ", " + s + ", " + o + ")");
+		if (!kb.isDatatypeProperty(p)) {
+			if (isRemoteIndividual(o)) {
+				addRemoteIndividual(o);
+			}
+		}
 		kb.addPropertyValue(p, s, o);
 	}
 
 	@Override
 	public void addRange(ATermAppl p, ATermAppl c) {
 		LOG.debug("addRange(" + p + ", " + c + ")");
+		if (!kb.isDatatypeProperty(p)) {
+			addRemotePrimitives(c);
+		}
 		kb.addRange(p, c);
 	}
 
@@ -91,6 +113,7 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	@Override
 	public void addType(ATermAppl i, ATermAppl c) {
 		LOG.debug("addType(" + i + ", " + c + ")");
+		addRemotePrimitives(c);
 		kb.addType(i, c);
 	}
 
@@ -115,12 +138,35 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	@Override
 	public void addSame(ATermAppl i1, ATermAppl i2) {
 		LOG.debug("addSame(" + i1 + ",  " + i2 + ")");
+		if (isRemoteIndividual(i2)) {
+			addRemoteIndividual(i2);
+		}
 		kb.addSame(i1, i2);
 	}
 
 	@Override
+	public void addSubClass(ATermAppl sub, ATermAppl sup) {
+		LOG.debug("addSubClass(" + sub + ",  " + sup + ")");
+		addRemotePrimitives(sup);
+		kb.addSubClass(sub, sup);
+	}
+
+	@Override
+	public void addDatatype(ATerm p) {
+		LOG.debug("addDatatype(" + p + ")");
+		kb.addDatatype(p);
+	}
+
+	@Override
 	public boolean isConsistent() {
+		LOG.debug("Checking consistency");
 		return kb.isConsistent();
+	}
+
+	@Override
+	public boolean isSatisfiable(ATermAppl c) {
+		LOG.debug("Concept satisfiability for: " + c);
+		return kb.isSatisfiable(c);
 	}
 
 	@Override
@@ -128,8 +174,57 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 		return kb.getTBox().unfold(c);
 	}
 
+	public DistributedHashTable<DistributedKnowledgeBaseFragment> getHashTable() {
+		return hashTable;
+	}
+
+	private void addRemotePrimitives(ATermAppl description) {
+		if (ATermUtils.isPrimitive(description)) {
+			if (isRemoteClass(description)) {
+				addRemoteClass(description);
+			}
+		} else if (ATermUtils.isNot(description)) {
+			addRemotePrimitives((ATermAppl) description.getArgument(0));
+		} else if (ATermUtils.isAnd(description)) {
+			ATermList list = (ATermList) description.getArgument(0);
+			for (int i = 0; i < list.getLength(); i++) {
+				addRemotePrimitives((ATermAppl) list.elementAt(i));
+			}
+		} else if (ATermUtils.isSomeValues(description)) {
+			addRemotePrimitives((ATermAppl) description.getArgument(1));
+		} else if (ATermUtils.isCard(description)) {
+			addRemotePrimitives((ATermAppl) description.getArgument(2));
+		} else if (ATermUtils.isOr(description)) {
+			ATermList list = (ATermList) description.getArgument(0);
+			for (int i = 0; i < list.getLength(); i++) {
+				addRemotePrimitives((ATermAppl) list.elementAt(i));
+			}
+		} else if (ATermUtils.isAllValues(description)) {
+			addRemotePrimitives((ATermAppl) description.getArgument(1));
+		} else if (ATermUtils.isNominal(description)) {
+			if (!ATermUtils.isLiteral((ATermAppl) description.getArgument(0))) {
+				ATermAppl individual = (ATermAppl) description.getArgument(0);
+				if (isRemoteIndividual(individual)) {
+					addRemoteIndividual(individual);
+				}
+			}
+		}
+	}
+
+	private boolean isRemoteIndividual(ATermAppl individual) {
+		return kb.getABox().getIndividual(individual) == null;
+	}
+
+	private boolean isRemoteClass(ATermAppl c) {
+		return !ATermUtils.isTop(c) && !ATermUtils.isBottom(c) && !kb.getClasses().contains(c);
+	}
+
 	private void addRemoteIndividual(ATermAppl i) {
 		addIndividual(i);
-		addType(i, DistributedReasoningHelper.getRemoteClass());
+		kb.addType(i, DistributedReasoningHelper.getRemoteClass());
+	}
+
+	private void addRemoteClass(ATermAppl c) {
+		tbox.addRemoteClass(c);
 	}
 }

@@ -887,11 +887,11 @@ public class LoaderVisitor implements OWLObjectVisitor {
 
 	@Override
 	public void visit(OWLFunctionalDataPropertyAxiom axiom) {
+		throw new UnsupportedFeatureException("functional properties are not supported.");
+		// axiom.getProperty().accept(this);
+		// ATermAppl p = term;
 
-		axiom.getProperty().accept(this);
-		ATermAppl p = term;
-
-		kb.addFunctionalProperty(p);
+		// kb.addFunctionalProperty(p);
 	}
 
 	@Override

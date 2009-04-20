@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.mindswap.pellet.utils.Pair;
 
+import aterm.ATerm;
 import aterm.ATermAppl;
 
 public interface DistributedKnowledgeBaseFragment {
@@ -40,7 +41,13 @@ public interface DistributedKnowledgeBaseFragment {
 
 	void addSame(ATermAppl i1, ATermAppl i2);
 
+	void addSubClass(ATermAppl sub, ATermAppl sup);
+
+	void addDatatype(ATerm p);
+
 	boolean isConsistent();
+
+	boolean isSatisfiable(ATermAppl c);
 
 	List<Pair<ATermAppl, Set<ATermAppl>>> unfold(ATermAppl aterm);
 

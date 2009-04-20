@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import org.mindswap.pellet.KnowledgeBase;
 import org.mindswap.pellet.owlapi.PelletLoader;
-import org.mindswap.pellet.utils.ATermUtils;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -19,10 +18,10 @@ public class PelletConsistency {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		loader.setManager(manager);
 		loader.load(Collections.singleton(manager.loadOntologyFromPhysicalURI(URI
-				.create("file:///Users/alex/ontologies/inconsistentTBox/inconsistentTBox"))));
+				.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl"))));
 		System.out.println(kb.isConsistent());
 
-		System.out.println(kb.isSatisfiable(ATermUtils.makeTermAppl("http://semanticscience.org/inconsistentTBox#C")));
+		// System.out.println(kb.isSatisfiable(ATermUtils.makeTermAppl("http://semanticscience.org/inconsistentTBox#C")));
 
 	}
 

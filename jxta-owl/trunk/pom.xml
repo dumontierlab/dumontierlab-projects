@@ -90,6 +90,11 @@
 			<artifactId>aterm-java</artifactId>
 			<version>1.6.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.guice</groupId>
+			<artifactId>guice</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 
 

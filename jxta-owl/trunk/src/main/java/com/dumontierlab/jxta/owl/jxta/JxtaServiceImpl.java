@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,9 +33,14 @@ import net.jxta.soap.ServiceDescriptor;
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.UrlBase64;
 
+import com.dumontierlab.jxta.owl.configuration.JxtaOwlOptions;
+import com.dumontierlab.jxta.owl.inject.annotation.Option;
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaBootstrapException;
 import com.dumontierlab.jxta.owl.jxta.exception.JxtaException;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+@Singleton
 public class JxtaServiceImpl implements JxtaService {
 
 	private static final Logger LOG = Logger.getLogger(JxtaServiceImpl.class);
@@ -45,9 +51,12 @@ public class JxtaServiceImpl implements JxtaService {
 
 	private volatile PeerGroup netPeerGroup;
 
-	public JxtaServiceImpl(String peerName, Collection<URI> seedsUris, String jxtaHome) throws JxtaBootstrapException {
+	@Inject
+	public JxtaServiceImpl(@Option(JxtaOwlOptions.PEER_NAME_OPT) String peerName,
+			@Option(JxtaOwlOptions.JXTA_HOME) String jxtaHome) throws JxtaBootstrapException {
 		this.peerName = peerName;
-		this.seedsUris = seedsUris;
+		// TODO: make this configurable.
+		seedsUris = Collections.singleton(URI.create("http://dsg.ce.unipr.it/research/SP2A/rdvlist.txt"));
 		this.jxtaHome = jxtaHome;
 		startJxta();
 	}
@@ -56,7 +65,8 @@ public class JxtaServiceImpl implements JxtaService {
 		return netPeerGroup;
 	}
 
-	public void advertiseSoapService(ServiceDescriptor serviceDescriptor) throws JxtaException {
+	@Override
+	public SOAPService deploySoapService(ServiceDescriptor serviceDescriptor) throws JxtaException {
 		// TODO: make lifetime and expiration a parameter for this method.
 		SOAPService service = new SOAPService();
 
@@ -99,6 +109,7 @@ public class JxtaServiceImpl implements JxtaService {
 		// Start a new ServiceThread running this service
 		new SOAPServiceThread(service).start();
 
+		return service;
 	}
 
 	@Override
@@ -184,11 +195,11 @@ public class JxtaServiceImpl implements JxtaService {
 				configuration.addRdvSeedingURI(seed);
 			}
 
-			try {
-				configuration.save();
-			} catch (IOException e) {
-				LOG.warn("Unable to save peer configuration.", e);
-			}
+			// try {
+			// configuration.save();
+			// } catch (IOException e) {
+			// LOG.warn("Unable to save peer configuration.", e);
+			// }
 		}
 
 		try {

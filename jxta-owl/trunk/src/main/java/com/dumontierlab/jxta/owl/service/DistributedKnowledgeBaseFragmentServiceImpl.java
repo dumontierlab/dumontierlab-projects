@@ -1,11 +1,19 @@
 package com.dumontierlab.jxta.owl.service;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
+
+import net.jxta.document.AdvertisementFactory;
+import net.jxta.document.MimeMediaType;
+import net.jxta.document.StructuredDocumentFactory;
+import net.jxta.document.XMLDocument;
+import net.jxta.protocol.ModuleSpecAdvertisement;
 import net.jxta.soap.ServiceDescriptor;
 
 import org.apache.log4j.Logger;
@@ -13,6 +21,8 @@ import org.mindswap.pellet.utils.Pair;
 
 import aterm.ATermAppl;
 
+import com.dumontierlab.jxta.owl.dht.RemoteService;
+import com.dumontierlab.jxta.owl.inject.ServiceLocator;
 import com.dumontierlab.jxta.owl.io.ATermSerializer;
 import com.dumontierlab.jxta.owl.reasoner.DistributedKnowledgeBaseFragment;
 import com.dumontierlab.jxta.owl.reasoner.impl.DistributedKnowledgeBaseFragmentImpl;
@@ -34,7 +44,7 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 			false, // secure policy flag (use default=false)
 			null); // security policy type (use no policy)
 
-	private final DistributedKnowledgeBaseFragment fragment;
+	private final DistributedKnowledgeBaseFragmentImpl fragment;
 
 	public DistributedKnowledgeBaseFragmentServiceImpl() {
 		fragment = SingletonKbFragment.getInstance();
@@ -73,7 +83,7 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 	}
 
 	public void addRange(String p, String c) {
-		fragment.addEquivalentClass(deserialize(p), deserialize(c));
+		fragment.addRange(deserialize(p), deserialize(c));
 	}
 
 	@Override
@@ -107,13 +117,31 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 	}
 
 	@Override
+	public void addSubClass(String sub, String sup) {
+		fragment.addSubClass(deserialize(sub), deserialize(sup));
+	}
+
+	@Override
+	public void addDatatype(String p) {
+		fragment.addDatatypeProperty(deserialize(p));
+	}
+
+	@Override
 	public boolean isConsistent() {
 		return fragment.isConsistent();
 	}
 
 	@Override
+	public boolean isSatisfiable(String c) {
+		return fragment.isSatisfiable(deserialize(c));
+	}
+
+	@Override
 	public HashMap<String, String[]> unfold(String c) {
 		List<Pair<ATermAppl, Set<ATermAppl>>> unfolding = fragment.unfold(deserialize(c));
+		if (unfolding == null) {
+			return null;
+		}
 		HashMap<String, String[]> map = new HashMap<String, String[]>();
 		for (Pair<ATermAppl, Set<ATermAppl>> pair : unfolding) {
 			String[] array = new String[pair.second.size()];
@@ -124,6 +152,23 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 			map.put(serialize(pair.first), array);
 		}
 		return map;
+	}
+
+	@Override
+	public void addRemoteService(String advertisement) throws IOException {
+		XMLDocument xml = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8,
+				new StringReader(advertisement));
+		ModuleSpecAdvertisement moduleSpecAdvertisement = (ModuleSpecAdvertisement) AdvertisementFactory
+				.newAdvertisement(xml);
+
+		DistributedKnowledgeBaseFragmentService service = ServiceLocator.getInstance().getBindingFactory().getBinding(
+				DistributedKnowledgeBaseFragmentService.class, getServiceNameQName(),
+				DistributedKnowledgeBaseFragmentServiceImpl.DESCRIPTOR, moduleSpecAdvertisement);
+
+		fragment.getHashTable().addPeer(
+				new RemoteService<DistributedKnowledgeBaseFragment>(moduleSpecAdvertisement.getID().toString(),
+						new DistributedKnowledgeBaseFragmentServiceAdapter(service)));
+
 	}
 
 	private String serialize(ATermAppl term) {
@@ -140,14 +185,20 @@ public class DistributedKnowledgeBaseFragmentServiceImpl implements DistributedK
 	}
 
 	private static class SingletonKbFragment {
-		private static DistributedKnowledgeBaseFragment instance;
+		private static DistributedKnowledgeBaseFragmentImpl instance;
 
-		public static DistributedKnowledgeBaseFragment getInstance() {
+		public static DistributedKnowledgeBaseFragmentImpl getInstance() {
 			if (instance == null) {
 				instance = new DistributedKnowledgeBaseFragmentImpl();
 			}
 			return instance;
 		}
 
+	}
+
+	private QName getServiceNameQName() {
+		// TODO: construct the URI using reflection ...
+		return new QName("http://impl.service.owl.jxta.dumontierlab.com",
+				DistributedKnowledgeBaseFragmentServiceImpl.DESCRIPTOR.getName());
 	}
 }

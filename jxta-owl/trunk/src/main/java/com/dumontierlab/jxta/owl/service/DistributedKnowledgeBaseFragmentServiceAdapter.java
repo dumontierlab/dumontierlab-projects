@@ -104,14 +104,32 @@ public class DistributedKnowledgeBaseFragmentServiceAdapter implements Distribut
 	}
 
 	@Override
+	public void addSubClass(ATermAppl sub, ATermAppl sup) {
+		service.addSubClass(serialize(sub), serialize(sup));
+	}
+
+	@Override
+	public void addDatatype(ATerm p) {
+		service.addDatatype(serialize(p));
+	}
+
+	@Override
 	public boolean isConsistent() {
 		return service.isConsistent();
+	}
+
+	@Override
+	public boolean isSatisfiable(ATermAppl c) {
+		return service.isSatisfiable(serialize(c));
 	}
 
 	@Override
 	public List<Pair<ATermAppl, Set<ATermAppl>>> unfold(ATermAppl c) {
 		List<Pair<ATermAppl, Set<ATermAppl>>> unfolding = new ArrayList<Pair<ATermAppl, Set<ATermAppl>>>();
 		HashMap<String, String[]> map = service.unfold(serialize(c));
+		if (map == null) {
+			return null;
+		}
 		for (Entry<String, String[]> entry : map.entrySet()) {
 			ATermAppl first = deserialize(entry.getKey());
 			Set<ATermAppl> second = new HashSet<ATermAppl>();

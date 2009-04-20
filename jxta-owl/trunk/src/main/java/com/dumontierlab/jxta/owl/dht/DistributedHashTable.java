@@ -2,26 +2,38 @@ package com.dumontierlab.jxta.owl.dht;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import aterm.ATermAppl;
 
-
 public class DistributedHashTable<E> {
 
-	private final List<WorkerPeer<E>> peers;
+	private final List<RemoteService<E>> peers;
 	private BigInteger[] peersHashes;
 
-	public DistributedHashTable(Collection<WorkerPeer<E>> peers) {
-		this.peers = new ArrayList<WorkerPeer<E>>(peers);
+	public DistributedHashTable() {
+		this.peers = new ArrayList<RemoteService<E>>();
 	}
 
-	public Collection<WorkerPeer<E>> getPeers() {
+	public DistributedHashTable(Collection<RemoteService<E>> peers) {
+		this.peers = new ArrayList<RemoteService<E>>(peers);
+	}
+
+	public Collection<RemoteService<E>> getPeers() {
 		return peers;
 	}
 
-	public WorkerPeer<E> getResponsiblePeer(ATermAppl term) {
+	public void addPeer(RemoteService<E> peer) {
+		peers.add(peer);
+		if (peersHashes != null) {
+			peersHashes = Arrays.copyOf(peersHashes, peersHashes.length + 1);
+			peersHashes[peersHashes.length - 1] = DhtHelper.hash(peer.getId(), true);
+		}
+	}
+
+	public RemoteService<E> getResponsiblePeer(ATermAppl term) {
 		BigInteger hash = DhtHelper.hash(term);
 
 		int closest = DhtHelper.getClosest(hash, getPeersHashes());
@@ -32,8 +44,8 @@ public class DistributedHashTable<E> {
 		if (peersHashes == null) {
 			peersHashes = new BigInteger[peers.size()];
 			int i = 0;
-			for (WorkerPeer<?> peer : peers) {
-				peersHashes[i++] = DhtHelper.hash(peer.getPeerId(), true);
+			for (RemoteService<?> peer : peers) {
+				peersHashes[i++] = DhtHelper.hash(peer.getId(), true);
 			}
 		}
 		return peersHashes;

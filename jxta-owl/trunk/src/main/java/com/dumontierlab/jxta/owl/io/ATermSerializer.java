@@ -13,10 +13,38 @@ public class ATermSerializer {
 
 	public static ATermAppl deserialize(String string) throws IOException {
 		try {
-			return (ATermAppl) ATermUtils.term(string);
+			return (ATermAppl) removeQuotes(ATermUtils.term(string));
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
+	}
+
+	private static ATerm removeQuotes(ATerm term) {
+		if (term instanceof ATermAppl) {
+			ATermAppl appl = (ATermAppl) term;
+			if (ATermUtils.isPrimitive(appl)) {
+				// remove quotes
+				String name = appl.getAFun().getName();
+				return ATermUtils.makeTermAppl(name);
+			} else {
+				String name = appl.getAFun().getName();
+				ATerm[] processedArgs = new ATerm[appl.getArity()];
+				int i = 0;
+				for (ATerm arg : appl.getArgumentArray()) {
+					processedArgs[i++] = removeQuotes(arg);
+				}
+				AFun fun = ATermUtils.getFactory().makeAFun(name, appl.getArity(), false);
+				return ATermUtils.makeTermAppl(fun, processedArgs);
+			}
+		} else if (term instanceof ATermList) {
+			ATermList list = (ATermList) term;
+			ATerm[] elements = new ATerm[list.getLength()];
+			for (int i = 0; i < list.getLength(); i++) {
+				elements[i] = removeQuotes(list.elementAt(i));
+			}
+			return ATermUtils.makeList(elements);
+		}
+		return term;
 	}
 
 	public static String serialize(ATerm term) {

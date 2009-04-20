@@ -14,7 +14,7 @@ import aterm.ATermAppl;
 import aterm.ATermList;
 
 import com.dumontierlab.jxta.owl.dht.DistributedHashTable;
-import com.dumontierlab.jxta.owl.dht.WorkerPeer;
+import com.dumontierlab.jxta.owl.dht.RemoteService;
 
 public class DistributedKnowledgeBase extends KnowledgeBase {
 
@@ -31,20 +31,20 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		if (c.equals(ATermUtils.TOP) || ATermUtils.isComplexClass(c)) {
 			return;
 		}
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(c);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(c);
 		peer.getService().addClass(c);
 	}
 
 	@Override
 	public Individual addIndividual(ATermAppl i) {
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i);
 		peer.getService().addIndividual(i);
 		return null; // TODO: Why does this method have to return something?
 	}
 
 	@Override
 	public void addType(ATermAppl i, ATermAppl c) {
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i);
 		peer.getService().addType(i, c);
 	}
 
@@ -75,7 +75,7 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	public void addAsymmetricProperty(ATermAppl p) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			try {
 				peer.getService().addAsymmetricProperty(p);
 			} catch (RemoteException e) {
@@ -88,46 +88,38 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 
 	@Override
 	public void addComplementClass(ATermAppl c1, ATermAppl c2) {
-		ATermAppl primitiveClass = null;
-		ATermAppl complement = null;
-		// TODO maybe check for isPrimitiveOrNeation
-		if (ATermUtils.isPrimitive(c1)) {
-			primitiveClass = c1;
-			complement = c2;
-		} else if (ATermUtils.isPrimitive(c2)) {
-			primitiveClass = c2;
-			complement = c1;
-		} else {
-			throw new UnsupportedFeatureException("General class axioms are not supported.");
-		}
-		ATermAppl notComplement = ATermUtils.makeNot(complement);
+		ATermAppl[] terms = getInTerminologyOrder(c1, c2);
 
-		if (primitiveClass.equals(notComplement)) {
+		ATermAppl notComplement = ATermUtils.makeNot(terms[1]);
+
+		if (terms[0].equals(notComplement)) {
 			return;
 		}
-
-		addEquivalentClass(primitiveClass, notComplement);
+		addEquivalentClass(terms[0], notComplement);
 
 	}
 
 	@Override
 	public boolean addPropertyValue(ATermAppl p, ATermAppl s, ATermAppl o) {
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(s);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(s);
 		peer.getService().addPropertyValue(p, s, o);
 		return true;
 	}
 
 	@Override
 	public void addDatatype(ATerm p) {
-
-		super.addDatatype(p);
+		// TODO: Properties are not distributed therefore axioms about them are
+		// sent to every peer.
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+			peer.getService().addDatatype(p);
+		}
 	}
 
 	@Override
 	public boolean addObjectProperty(ATerm p) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			peer.getService().addObjectProperty((ATermAppl) p);
 		}
 		return true;
@@ -137,7 +129,7 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	public boolean addDatatypeProperty(ATerm p) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			peer.getService().addDatatypeProperty((ATermAppl) p);
 		}
 		return true;
@@ -145,14 +137,15 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 
 	@Override
 	public void addDifferent(ATermAppl i1, ATermAppl i2) {
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i1);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i1);
 		peer.getService().addDifferent(i1, i2);
 	}
 
 	@Override
 	public void addDisjointClass(ATermAppl c1, ATermAppl c2) {
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(c1);
-		peer.getService().addDisjointClass(c1, c2);
+		ATermAppl terms[] = getInTerminologyOrder(c1, c2);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(terms[0]);
+		peer.getService().addDisjointClass(terms[0], terms[1]);
 	}
 
 	@Override
@@ -171,22 +164,32 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	public void addDomain(ATerm p, ATermAppl c) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			peer.getService().addDomain((ATermAppl) p, c);
 		}
 	}
 
 	@Override
 	public void addEquivalentClass(ATermAppl c1, ATermAppl c2) {
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(c1);
-		peer.getService().addEquivalentClass(c1, c2);
+		ATermAppl terms[] = getInTerminologyOrder(c1, c2);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(terms[0]);
+		peer.getService().addEquivalentClass(terms[0], terms[1]);
+	}
+
+	@Override
+	public void addSubClass(ATermAppl sub, ATermAppl sup) {
+		if (!ATermUtils.isPrimitive(sub)) {
+			throw new UnsupportedFeatureException("General class axioms are not supported.");
+		}
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(sub);
+		peer.getService().addSubClass(sub, sup);
 	}
 
 	@Override
 	public void addEquivalentProperty(ATermAppl p1, ATermAppl p2) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			peer.getService().addEquivalentProperty(p1, p2);
 		}
 	}
@@ -195,7 +198,7 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	public void addRange(ATerm p, ATermAppl c) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			peer.getService().addRange((ATermAppl) p, c);
 		}
 	}
@@ -204,26 +207,51 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	public void addTransitiveProperty(ATermAppl p) {
 		// TODO: Properties are not distributed therefore axioms about them are
 		// sent to every peer.
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			peer.getService().addTransitiveProperty(p);
 		}
 	}
 
 	@Override
 	public void addSame(ATermAppl i1, ATermAppl i2) {
-		WorkerPeer<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i1);
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(i1);
 		peer.getService().addSame(i1, i2);
 	}
 
 	@Override
 	public boolean isConsistent() {
-		for (WorkerPeer<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
+		for (RemoteService<DistributedKnowledgeBaseFragment> peer : hashTable.getPeers()) {
 			boolean isConsistent = peer.getService().isConsistent();
 			if (!isConsistent) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean isSatisfiable(ATermAppl c) {
+		if (!ATermUtils.isPrimitive(c)) {
+			// TODO:implement this;
+			throw new UnsupportedFeatureException("Satifiability of complex concepts is not supported yet");
+		}
+		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(c);
+		return peer.getService().isSatisfiable(c);
+	}
+
+	private ATermAppl[] getInTerminologyOrder(ATermAppl c1, ATermAppl c2) {
+		// TODO maybe check for isPrimitiveOrNeation
+		ATermAppl[] terms = new ATermAppl[2];
+		if (ATermUtils.isPrimitive(c1)) {
+			terms[0] = c1;
+			terms[1] = c2;
+		} else if (ATermUtils.isPrimitive(c2)) {
+			terms[0] = c2;
+			terms[1] = c1;
+		} else {
+			throw new UnsupportedFeatureException("General class axioms are not supported.");
+		}
+		return terms;
 	}
 
 }
