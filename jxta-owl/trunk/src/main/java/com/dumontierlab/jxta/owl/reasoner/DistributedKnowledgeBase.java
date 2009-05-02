@@ -254,4 +254,9 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 		return terms;
 	}
 
+	@Override
+	public boolean isSubClassOf(ATermAppl c1, ATermAppl c2) {
+		ATermAppl test = ATermUtils.makeAnd(c1, ATermUtils.negate(c2));
+		return !isSatisfiable(test);
+	}
 }

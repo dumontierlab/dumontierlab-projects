@@ -43,9 +43,21 @@ public class ClientTest {
 
 			loader.load(ontology, manager);
 
-			System.out.println(kb.isSatisfiable(ATermUtils
-					.makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#DryEucalyptForest")));
+			System.out
+					.println("is DryEucalyptForest satisfiable? : "
+							+ kb
+									.isSatisfiable(ATermUtils
+											.makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#DryEucalyptForest")));
 			System.exit(0);
+
+			boolean isSubclass = kb
+					.isSubClassOf(
+							ATermUtils
+									.makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#MaleStudentWith3Daughters"),
+							ATermUtils
+									.makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Person"));
+
+			System.out.println("is subclass? " + isSubclass);
 
 		} catch (Exception e) {
 			LOG.fatal(e.getMessage(), e);
