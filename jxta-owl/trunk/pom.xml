@@ -3,7 +3,7 @@
 	<groupId>com.dumontierlab</groupId>
 	<artifactId>jxta-owl</artifactId>
 	<name>P2P OWL Reasoner implemented over JXTA</name>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<description />
 
 	<parent>
@@ -13,9 +13,9 @@
 	</parent>
 	
 	<scm>
-        <connection>scm:svn:https://dumontierlab-projects.googlecode.com/svn/jxta-owl/tags/jxta-owl-0.0.2</connection>
-        <developerConnection>scm:svn:https://dumontierlab-projects.googlecode.com/svn/jxta-owl/tags/jxta-owl-0.0.2</developerConnection>
-        <url>https://dumontierlab-projects.googlecode.com/svn/jxta-owl/tags/jxta-owl-0.0.2</url>
+        <connection>scm:svn:https://dumontierlab-projects.googlecode.com/svn/jxta-owl/trunk/</connection>
+        <developerConnection>scm:svn:https://dumontierlab-projects.googlecode.com/svn/jxta-owl/trunk/</developerConnection>
+        <url>https://dumontierlab-projects.googlecode.com/svn/jxta-owl/trunk/</url>
     </scm>
 
 	<properties>
