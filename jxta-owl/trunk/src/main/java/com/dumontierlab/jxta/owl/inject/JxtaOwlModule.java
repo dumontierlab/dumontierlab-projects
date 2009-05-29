@@ -33,8 +33,12 @@ public class JxtaOwlModule extends AbstractModule {
 	}
 
 	private String getRandomPeerName() {
+		StringBuilder name = new StringBuilder();
 		byte[] bytes = new byte[16];
 		new Random().nextBytes(bytes);
-		return new String(bytes);
+		for (byte b : bytes) {
+			name.append(Integer.toHexString(b));
+		}
+		return name.toString();
 	}
 }

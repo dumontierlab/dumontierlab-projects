@@ -232,8 +232,8 @@ public class DistributedKnowledgeBase extends KnowledgeBase {
 	@Override
 	public boolean isSatisfiable(ATermAppl c) {
 		if (!ATermUtils.isPrimitive(c)) {
-			// TODO:implement this;
-			throw new UnsupportedFeatureException("Satifiability of complex concepts is not supported yet");
+			// just pick a peer
+			hashTable.getPeers().iterator().next().getService().isSatisfiable(c);
 		}
 		RemoteService<DistributedKnowledgeBaseFragment> peer = hashTable.getResponsiblePeer(c);
 		return peer.getService().isSatisfiable(c);

@@ -24,10 +24,16 @@ public class DistributedKnowledgeBaseFragmentImpl implements DistributedKnowledg
 	private final DistributedTBoxFragment tbox;
 
 	public DistributedKnowledgeBaseFragmentImpl() {
-		LOG.debug("creating DistributedKnowledgeBaseFragment");
+		this(new DistributedHashTable<DistributedKnowledgeBaseFragment>());
+	}
 
-		// Initialize the hashTable containing itself.
-		hashTable = new DistributedHashTable<DistributedKnowledgeBaseFragment>();
+	/**
+	 * for testing
+	 */
+	public DistributedKnowledgeBaseFragmentImpl(DistributedHashTable<DistributedKnowledgeBaseFragment> dht) {
+		LOG.debug("creating DistributedKnowledgeBaseFragment");
+		// Initialize the hashTable.
+		hashTable = dht;
 
 		// PelletOptions.DEFAULT_COMPLETION_STRATEGY =
 		// DistributedCompletionStrategy.class;

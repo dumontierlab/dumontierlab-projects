@@ -29,13 +29,13 @@ public class ClientTest {
 			ServiceLocator locator = Bootstrapper.bootstap();
 
 			Discovery discovery = locator.getDiscovery();
-			Collection<RemoteService<DistributedKnowledgeBaseFragment>> peers = discovery.discoverPeers(2);
+			Collection<RemoteService<DistributedKnowledgeBaseFragment>> peers = discovery.discoverPeers(3);
 			DistributedKnowledgeBase kb = new DistributedKnowledgeBase(
 					new DistributedHashTable<DistributedKnowledgeBaseFragment>(peers));
 
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
-					.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl"));
+					.create("http://www.co-ode.org/ontologies/pizza/pizza_20041007.owl"));
 			Loader loader = new Loader(kb);
 			// loader.load(Collections.singleton(manager.loadOntologyFromPhysicalURI(URI
 			// .create("file:///Users/alex/ontologies/inconsistentTBox/inconsistentTBox"))),
@@ -43,19 +43,16 @@ public class ClientTest {
 
 			loader.load(ontology, manager);
 
-			System.out
-					.println("is DryEucalyptForest satisfiable? : "
-							+ kb
-									.isSatisfiable(ATermUtils
-											.makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#DryEucalyptForest")));
-			System.exit(0);
+			// System.out
+			// .println("is DryEucalyptForest satisfiable? : "
+			// + kb
+			// .isSatisfiable(ATermUtils
+			// .makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#DryEucalyptForest")));
+			// System.exit(0);
 
-			boolean isSubclass = kb
-					.isSubClassOf(
-							ATermUtils
-									.makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#MaleStudentWith3Daughters"),
-							ATermUtils
-									.makeTermAppl("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Person"));
+			boolean isSubclass = kb.isSubClassOf(ATermUtils
+					.makeTermAppl("http://www.co-ode.org/ontologies/pizza/pizza_20041007.owl#TobascoPepperSauce"),
+					ATermUtils.makeTermAppl("http://www.co-ode.org/ontologies/pizza/pizza_20041007.owl#PizzaTopping"));
 
 			System.out.println("is subclass? " + isSubclass);
 
