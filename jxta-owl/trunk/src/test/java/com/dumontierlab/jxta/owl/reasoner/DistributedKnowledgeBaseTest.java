@@ -60,7 +60,7 @@ public class DistributedKnowledgeBaseTest {
 	public void testIsSubClassOf() throws OWLOntologyCreationException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.loadOntologyFromPhysicalURI(URI
-				.create("http://semanticscience.googlecode.com/svn/trunk/ontology/saenger-rna_no_role_chains.owl"));
+				.create("http://www.co-ode.org/ontologies/pizza/pizza_20041007.owl"));
 		Loader loader = new Loader(kb);
 		loader.load(ontology, manager);
 
