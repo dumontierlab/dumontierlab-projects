@@ -1,0 +1,165 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.dumontierlab</groupId>
+	<artifactId>jxta-owl</artifactId>
+	<name>P2P OWL Reasoner implemented over JXTA</name>
+	<version>0.0.2</version>
+	<description />
+
+	<parent>
+		<groupId>com.dumontierlab</groupId>
+		<artifactId>parent-pom</artifactId>
+		<version>1.1</version>
+	</parent>
+	
+	<scm>
+        <connection>scm:svn:https://dumontierlab-projects.googlecode.com/svn/jxta-owl/tags/jxta-owl-0.0.2</connection>
+        <developerConnection>scm:svn:https://dumontierlab-projects.googlecode.com/svn/jxta-owl/tags/jxta-owl-0.0.2</developerConnection>
+        <url>https://dumontierlab-projects.googlecode.com/svn/jxta-owl/tags/jxta-owl-0.0.2</url>
+    </scm>
+
+	<properties>
+		<owlapi.version>2.1.1</owlapi.version>
+		<pellet.version>2.0.0-rc5</pellet.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.jxta</groupId>
+			<artifactId>jxta-jxse</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dumontierlab</groupId>
+			<artifactId>jxta-soap</artifactId>
+			<version>0.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-wsdl4j</artifactId>
+			<version>1.5.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>owlapi</groupId>
+			<artifactId>impl</artifactId>
+			<version>${owlapi.version}</version>
+		</dependency>
+		<dependency>
+  			<groupId>owlapi</groupId>
+  			<artifactId>apibinding</artifactId>
+  			<version>${owlapi.version}</version>
+  		</dependency>
+		<dependency>
+			<groupId>com.clarkparsia</groupId>
+			<artifactId>pellet-core</artifactId>
+			<version>${pellet.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.clarkparsia</groupId>
+			<artifactId>pellet-owlapi</artifactId>
+			<version>${pellet.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.clarkparsia</groupId>
+			<artifactId>pellet-datatypes</artifactId>
+			<version>${pellet.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.clarkparsia</groupId>
+			<artifactId>pellet-rules</artifactId>
+			<version>${pellet.version}</version>
+		</dependency>
+		<dependency>
+  			<groupId>com.clarkparsia</groupId>
+  			<artifactId>pellet-el</artifactId>
+  			<version>${pellet.version}</version>
+  		</dependency>
+  		<dependency>
+  			<groupId>com.sun</groupId>
+  			<artifactId>xsdlib</artifactId>
+  			<version>2.2.0</version>
+  		</dependency>
+  		<dependency>
+  			<groupId>com.sun</groupId>
+  			<artifactId>relaxngDatatype</artifactId>
+  			<version>2.2.0</version>
+  		</dependency>
+		<dependency>
+			<groupId>aterm</groupId>
+			<artifactId>aterm-java</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.guice</groupId>
+			<artifactId>guice</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.6</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+
+
+	<build>
+		<!--
+			Make sure our GWT module definition(s) and Java source code are also
+			included in JAR
+		
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+		</resources>-->
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<outputDirectory>target/classes</outputDirectory>
+				</configuration>
+				<executions>
+          			<execution>
+            			<phase>compile</phase> <!-- append to the compile phase. -->
+          			</execution>
+        		</executions>
+			</plugin>
+		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+            			<descriptor>src/main/assembly/assembly.xml</descriptor>
+          			</descriptors>
+				</configuration>
+				<executions>
+          			<execution>
+            			<id>make-assembly</id> <!-- this is used for inheritance merges -->
+            			<phase>package</phase> <!-- append to the packaging phase. -->
+            			<goals>
+              				<goal>single</goal> <!-- goals == mojos -->
+            			</goals>
+          			</execution>
+        		</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>
