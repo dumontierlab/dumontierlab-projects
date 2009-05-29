@@ -166,6 +166,8 @@ public class JxtaServiceImpl implements JxtaService {
 			} catch (IOException e) {
 				LOG.debug("Found nothing! for:" + serviceName, e);
 			}
+			discoverySvc.getRemoteAdvertisements(null, DiscoveryService.ADV, "Name", serviceName, max
+					- serviceAdvertisements.size());
 		}
 		return serviceAdvertisements;
 	}

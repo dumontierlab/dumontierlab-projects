@@ -29,7 +29,7 @@ public class ClientTest {
 			ServiceLocator locator = Bootstrapper.bootstap();
 
 			Discovery discovery = locator.getDiscovery();
-			Collection<RemoteService<DistributedKnowledgeBaseFragment>> peers = discovery.discoverPeers(3);
+			Collection<RemoteService<DistributedKnowledgeBaseFragment>> peers = discovery.discoverPeers(2);
 			DistributedKnowledgeBase kb = new DistributedKnowledgeBase(
 					new DistributedHashTable<DistributedKnowledgeBaseFragment>(peers));
 
