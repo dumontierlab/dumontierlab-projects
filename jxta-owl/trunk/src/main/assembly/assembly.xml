@@ -14,7 +14,7 @@
     <fileSet>
     	<fileMode>0755</fileMode>
     	<includes>
-    		<include>run*</include>
+    		<include>pdb2rdf.*</include>
     	</includes>
     </fileSet>
     <fileSet>
